@@ -1,0 +1,20 @@
+/* Design tokens - will be updated once Figma design specs are provided */
+:root {
+  --color-primary-gold: #d4af37;
+  --color-gold-light: #f3e5ab;
+  --color-gold-dark: #aa7c11;
+  --color-bg-dark: #0f1115;
+  --color-surface-dark: #181b22;
+  --color-surface-card: #21252f;
+  --color-text-main: #f9f9fb;
+  --color-text-muted: #9ba3b4;
+  --color-border: rgba(212, 175, 55, 0.2);
+
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --border-radius-sm: 8px;
+  --border-radius-md: 14px;
+  --border-radius-lg: 20px;
+}

@@ -1,0 +1,77 @@
+@import url('./variables.css');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.init-container {
+  max-width: 680px;
+  width: 100%;
+  text-align: center;
+  padding: 3rem 2.5rem;
+  background: var(--color-surface-dark);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.init-badge {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--color-primary-gold);
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.init-title {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  color: var(--color-primary-gold);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.init-subtitle {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.status-box {
+  background: var(--color-surface-card);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  text-align: left;
+  border-left: 3px solid var(--color-primary-gold);
+}
+
+.status-box h4 {
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  margin-bottom: 0.35rem;
+}
+
+.status-box p {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
