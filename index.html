@@ -1,25 +1,615 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jewelry Management System | عم دهب</title>
+  <title>StockPilot (AURUM OS) — Haute Joaillerie Management System | عم دهب</title>
+  
+  <!-- Modern Typography (Cinzel for Luxury Headings + Plus Jakarta Sans for Data UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main class="init-container">
-    <div class="init-badge">Project Initialized</div>
-    <h1 class="init-title">Jewelry Management System</h1>
-    <p class="init-subtitle">نظام إدارة مجوهرات عم دهب — Repository linked and project workspace ready.</p>
-    
-    <div class="status-box">
-      <h4>Design Status</h4>
-      <p>UI implementation is on hold pending Figma design specifications. Ready to implement the exact design once provided.</p>
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="sidebar">
+    <div class="brand-section">
+      <div class="brand-icon">⚜</div>
+      <div>
+        <div class="brand-title" id="brand-title-text">AURUM <span>OS</span></div>
+        <div class="brand-subtitle" id="brand-subtitle-text">Haute Joaillerie POS</div>
+      </div>
     </div>
-  </main>
+
+    <div class="terminal-badge">
+      <span style="color:var(--text-muted); font-size:0.7rem;">TERMINAL</span>
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span>LIVE LBM</span>
+      </div>
+    </div>
+
+    <div class="nav-group-title">OPERATIONS</div>
+    <ul class="nav-menu">
+      <li class="nav-item active">
+        <button data-view="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span data-i18n="dashboard">Dashboard</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="inventory">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          <span data-i18n="inventory">Inventory Vault</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="pos">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          <span data-i18n="pos">POS Counter</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="gold-engine">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg>
+          <span data-i18n="gold_engine">Gold Engine</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="vault-security-pill">
+        <span>VAULT STATUS</span>
+        <span>SECURE • 999.9</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:0.25rem;">
+        <span>v4.8.2</span>
+        <span>Cairo GMT+2</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN WRAPPER ==================== -->
+  <div class="main-wrapper">
+
+    <!-- Top Sticky Header -->
+    <header class="top-header">
+      <div class="ticker-strip">
+        <div class="ticker-item">
+          <span class="ticker-label">24K:</span>
+          <span id="ticker-24k">3,420 EGP/g</span>
+          <span class="ticker-trend">▲ +1.2%</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-label">21K:</span>
+          <span id="ticker-21k">2,992.5 EGP/g</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-label">18K:</span>
+          <span id="ticker-18k">2,565 EGP/g</span>
+        </div>
+      </div>
+
+      <div class="header-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search SKU, Barcode, Client... (Ctrl+K)">
+        <span class="search-badge">Ctrl+K</span>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Switcher (Dark Mode AURUM OS <-> Light Mode StockPilot PRO) -->
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light / Dark Theme">
+          🌓
+        </button>
+
+        <!-- Language Switcher (EN <-> AR) -->
+        <button class="btn-lang" id="lang-toggle-btn">
+          عربي (RTL)
+        </button>
+
+        <!-- User Profile -->
+        <div class="user-badge">
+          <div class="user-avatar">MA</div>
+          <div class="user-info">
+            <span class="user-name">Mona Al-Sayed</span>
+            <span class="user-boutique">Cairo Flagship</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+    <main id="view-dashboard" class="view-container active">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">EXECUTIVE TERMINAL • CAIRO FLAGSHIP • VAULT A & B</div>
+          <h1 class="page-title">Maison D'Or Atelier Overview</h1>
+          <p class="page-subtitle">Real-time appraisal, automated assay reconciliation, and high-frequency bullion trading matrix.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="document.querySelector('[data-view=\'pos\']').click()">
+            ⚡ Quick Sale (POS)
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Top Metric Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="total_valuation">VAULT TOTAL VALUATION</span>
+            <span class="metric-badge">+3.4%</span>
+          </div>
+          <div class="metric-val">42,650,800 <small>EGP</small></div>
+          <div class="metric-footer">
+            <span>NW: 14,210.50g</span> • <span>Tare: 1,420.10g</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="todays_sales">TODAY'S POS SALES</span>
+            <span class="metric-badge">+14.2%</span>
+          </div>
+          <div class="metric-val">485,200 <small>EGP</small></div>
+          <div class="metric-footer">
+            <span>18 Completed Slips</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="realized_margin">REALIZED MARGIN & FEES</span>
+            <span class="metric-badge" style="background:var(--gold-badge); color:var(--gold-primary);">FABRIQUE</span>
+          </div>
+          <div class="metric-val">86,400 <small>EGP</small></div>
+          <div class="metric-footer">
+            <span>Making: 54,200</span> • <span>Spread: 32,200</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="active_pieces">ACTIVE ATELIER PIECES</span>
+            <span class="metric-badge" style="background:rgba(59, 130, 246, 0.15); color:#60a5fa;">4 QC READY</span>
+          </div>
+          <div class="metric-val">28 <small>IN WORKS</small></div>
+          <div class="metric-footer">
+            <span>999.9 Fine Casting Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Tri-Grid (Left: Digital Vault Quick, Center: Featured Masterpiece & Pipeline, Right: Portfolio Charts) -->
+      <div class="dashboard-tri-grid">
+        
+        <!-- Left: Quick Vault Items -->
+        <div class="card-panel">
+          <div class="panel-header">
+            <div class="panel-title">⚜ Digital Vault</div>
+            <span style="font-size:0.75rem; color:var(--text-muted);">3,842 in custody</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div class="cart-item-row" onclick="addToCart('prod-1')" style="cursor:pointer;">
+              <div>
+                <div style="font-weight:700;">1. Aethelred Solitaire</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">18K • 14.82g GW • 450/g Fee</div>
+              </div>
+              <div style="font-weight:700; color:var(--gold-primary);">73,850 EGP</div>
+            </div>
+            <div class="cart-item-row" onclick="addToCart('prod-2')" style="cursor:pointer;">
+              <div>
+                <div style="font-weight:700;">2. Vendôme Choker</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">21K • 38.40g GW • 280/g Fee</div>
+              </div>
+              <div style="font-weight:700; color:var(--gold-primary);">125,650 EGP</div>
+            </div>
+            <div class="cart-item-row" onclick="addToCart('prod-3')" style="cursor:pointer;">
+              <div>
+                <div style="font-weight:700;">3. Nile Royal Bangles</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">21K • 54.20g GW • 190/g Fee</div>
+              </div>
+              <div style="font-weight:700; color:var(--gold-primary);">172,500 EGP</div>
+            </div>
+            <div class="cart-item-row" onclick="addToCart('prod-4')" style="cursor:pointer;">
+              <div>
+                <div style="font-weight:700;">4. PAMP Suisse Ingot 50g</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">24K • 50.00g Fine 999.9</div>
+              </div>
+              <div style="font-weight:700; color:var(--gold-primary);">174,250 EGP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center: Featured Masterpiece & Production Pipeline -->
+        <div class="card-panel masterpiece-card">
+          <div class="panel-header">
+            <span class="badge" style="background:var(--gold-badge); color:var(--gold-primary); font-size:0.75rem; font-weight:700;">FEATURED MASTERPIECE</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">SKU: AUR-7841-SOL</span>
+          </div>
+
+          <div class="masterpiece-image-wrap">
+            <img src="assets/images/diamond_solitaire_ring_1792597878725.jpg" alt="Aethelred Solitaire">
+          </div>
+
+          <h2 class="masterpiece-title">Aethelred Solitaire Royale</h2>
+          <p class="masterpiece-spec">Round Brilliant 2.1ct Diamond • GIA #22849102 • 18K Yellow Gold</p>
+
+          <div class="masterpiece-breakdown">
+            <div>
+              <div class="breakdown-label">RAW GOLD VALUE</div>
+              <div class="breakdown-val">31,036 EGP</div>
+            </div>
+            <div>
+              <div class="breakdown-label">MAKING CHARGE</div>
+              <div class="breakdown-val">6,669 EGP</div>
+            </div>
+            <div>
+              <div class="breakdown-label">DIAMOND TARE</div>
+              <div class="breakdown-val">36,145 EGP</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; padding:0.8rem;" onclick="addToCart('prod-1')">
+            🛒 Commit to POS Counter (73,850 EGP)
+          </button>
+
+          <!-- Production Pipeline Steps -->
+          <div style="margin-top:1.5rem; text-align:left;">
+            <div class="breakdown-label">ATELIER PRODUCTION PIPELINE (18 ACTIVE CUSTOM PIECES)</div>
+            <div class="pipeline-steps">
+              <div class="pipeline-step">
+                <div class="step-circle active">24</div>
+                <span class="step-label">1. CAD/Wax</span>
+              </div>
+              <div class="pipeline-step">
+                <div class="step-circle active">18</div>
+                <span class="step-label">2. Casting</span>
+              </div>
+              <div class="pipeline-step">
+                <div class="step-circle active">12</div>
+                <span class="step-label">3. Setting</span>
+              </div>
+              <div class="pipeline-step">
+                <div class="step-circle">9</div>
+                <span class="step-label">4. QC Assay</span>
+              </div>
+              <div class="pipeline-step">
+                <div class="step-circle">4</div>
+                <span class="step-label">5. Ready POS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Portfolio Valuation Trend & Reserve Allocation -->
+        <div class="card-panel">
+          <div class="panel-header">
+            <div class="panel-title">Portfolio Valuation Trend</div>
+            <span style="font-size:0.75rem; color:var(--emerald-live);">● Bullion vs Gems</span>
+          </div>
+
+          <div style="background:var(--bg-surface-subtle); border-radius:var(--radius-sm); padding:1rem; margin-bottom:1.25rem;">
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">VAULT ASSAYED WEIGHT BY KARAT</div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem;">
+              <span>● 21K Bridal & Modern Jewelry</span>
+              <strong>54%</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem;">
+              <span>● 18K Gemstone Sets</span>
+              <strong>28%</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem;">
+              <span>● 24K Minted Bars</span>
+              <strong>15%</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+              <span>● 22K Gulf Filigree</span>
+              <strong>3%</strong>
+            </div>
+          </div>
+
+          <div class="panel-header">
+            <div class="panel-title">Live Vault Operations</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-size:0.78rem;">
+            <div style="padding:0.5rem; background:var(--bg-surface-subtle); border-radius:4px; border-left:3px solid var(--emerald-live);">
+              <div style="font-weight:700;">Sold: 21K Damascene Ring</div>
+              <div style="color:var(--text-muted);">+21,569 EGP • 8 mins ago</div>
+            </div>
+            <div style="padding:0.5rem; background:var(--bg-surface-subtle); border-radius:4px; border-left:3px solid var(--gold-primary);">
+              <div style="font-weight:700;">Custody Inflow: +500g 24K Ingot</div>
+              <div style="color:var(--text-muted);">Valcambi Mint Sealed • 42m ago</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 2: INVENTORY VAULT ==================== -->
+    <main id="view-inventory" class="view-container">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">MAISON CAIRO VAULT • SYNCED WITH LBM LIVE INDEX</div>
+          <h1 class="page-title">Digital Vault Inventory</h1>
+          <p class="page-subtitle">Real-time bullion weights, calibrated tare deductions, dynamic karat re-pricing, and serialized hallmarking.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="alert('Auditing physical inventory tags...')">⚖ Stock Count Audit</button>
+          <button class="btn btn-primary" onclick="alert('Add Jewelry Piece form opened')">+ Add New Jewelry Piece</button>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="card-panel" style="padding:0;">
+        <div class="table-responsive">
+          <table class="vault-table">
+            <thead>
+              <tr>
+                <th>PIECE / SKU</th>
+                <th>PURITY</th>
+                <th>GROSS WT.</th>
+                <th>STONE TARE</th>
+                <th>NET GOLD</th>
+                <th>MAKING FEE</th>
+                <th>RETAIL (EGP)</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body">
+              <!-- Rendered via js/app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 3: POS COUNTER ==================== -->
+    <main id="view-pos" class="view-container">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">REGISTER #04 / TARIQ AL-FAHIM (SENIOR APPRAISER) • METTLER USB SCALE: CALIBRATED 0.000g</div>
+          <h1 class="page-title">Point of Sale (Counter Terminal)</h1>
+          <p class="page-subtitle">Real-time Karat spot valuations locked to Cairo Precious Metals Exchange ticker.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-outline-gold" id="btn-open-scrap-modal" data-i18n="scrap_trade_in">
+            + Gold Scrap / Trade-In
+          </button>
+        </div>
+      </div>
+
+      <div class="pos-layout">
+        <!-- Catalog Cards Grid -->
+        <div class="pos-catalog-grid" id="pos-product-grid">
+          <!-- Rendered via js/app.js -->
+        </div>
+
+        <!-- Cart Registry Column -->
+        <aside class="cart-panel">
+          <div class="panel-header">
+            <div class="panel-title" data-i18n="cart_registry">Cart Registry</div>
+            <span id="cart-item-count" class="metric-badge">0 items</span>
+          </div>
+
+          <!-- VIP Customer Banner -->
+          <div style="background:var(--bg-surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:0.75rem; margin-bottom:0.75rem; display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <div style="font-weight:700; font-size:0.85rem;">Laila Nour El-Din</div>
+              <div style="font-size:0.72rem; color:var(--gold-primary);">VIP Tier 1 • 4,200 Aurum Pts</div>
+            </div>
+            <div style="font-size:1.1rem;">💎</div>
+          </div>
+
+          <!-- Items in cart -->
+          <div class="cart-items-list" id="cart-items-container">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Financial Calculation Breakdown -->
+          <div class="cart-calculations-box">
+            <div class="calc-line">
+              <span>Total Net Gold Weight</span>
+              <strong id="calc-net-gold">0.00 g</strong>
+            </div>
+            <div class="calc-line">
+              <span>Metal Base Value (Market Fix)</span>
+              <span id="calc-metal-val">0 EGP</span>
+            </div>
+            <div class="calc-line">
+              <span data-i18n="making_charges">Making Charges (Fabrique)</span>
+              <span id="calc-making-val">+ 0 EGP</span>
+            </div>
+            <div class="calc-line">
+              <span data-i18n="subtotal">Gross Goods Subtotal</span>
+              <span id="calc-subtotal">0 EGP</span>
+            </div>
+            <div class="calc-line" style="color:var(--emerald-live);">
+              <span>Customer Scrap Credit Deducted</span>
+              <span id="calc-scrap-val">- 0 EGP</span>
+            </div>
+            <div class="calc-line">
+              <span data-i18n="tax_eta">ETA Statutory Sales Tax (14% on Making)</span>
+              <span id="calc-vat-val">+ 0 EGP</span>
+            </div>
+            <div class="calc-line total-line">
+              <span data-i18n="net_payable">NET PAYABLE TOTAL</span>
+              <span id="calc-total-val">0 EGP</span>
+            </div>
+          </div>
+
+          <!-- Checkout Buttons -->
+          <button class="btn btn-primary" id="btn-complete-checkout" style="width:100%; padding:0.85rem; font-size:0.95rem;" data-i18n="checkout">
+            Complete Sale & Issue ETA Invoice
+          </button>
+        </aside>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 4: GOLD ENGINE ==================== -->
+    <main id="view-gold-engine" class="view-container">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">AURUM ENGINE • BULLION ARBITRAGE & COGS • LIVE SAGHA FEED</div>
+          <h1 class="page-title">Global Vault Master Rate & Karat Cascade</h1>
+          <p class="page-subtitle">Central Egyptian Bullion Clearinghouse (Sagha Desk) automated assay synchronization.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 380px; gap:1.5rem;">
+        <div>
+          <!-- Base 24K Recalibration Box -->
+          <div class="card-panel" style="margin-bottom:1.5rem;">
+            <div class="panel-header">
+              <div class="panel-title">BASE 24K PURE INGOT RATE (999.9 FINE / 100.0%)</div>
+              <span style="color:var(--emerald-live); font-size:0.75rem; font-weight:700;">● LBM: $2,342.40 / oz</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="position:relative; flex-grow:1;">
+                <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-weight:700; color:var(--gold-primary);">EGP</span>
+                <input type="number" id="ge-base-24k" class="form-input" style="padding-left:3rem; font-size:1.35rem; font-weight:700;" value="3420.00" step="5">
+              </div>
+              <button class="btn btn-primary" id="btn-update-global-rate" style="padding:0.75rem 1.5rem;">
+                ⚡ Update Global Rate
+              </button>
+            </div>
+          </div>
+
+          <!-- Karat Cascade Grid -->
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem;">
+            <div class="card-panel" style="text-align:center;">
+              <div style="font-size:0.75rem; color:var(--text-muted);">22 KARAT (91.67%)</div>
+              <div style="font-size:1.45rem; font-weight:700; color:var(--gold-primary); margin:0.35rem 0;" id="ge-rate-22k">3,135 EGP</div>
+              <div style="font-size:0.72rem; color:var(--emerald-live);">Spread: Sell +45 EGP</div>
+            </div>
+            <div class="card-panel" style="text-align:center; border-color:var(--gold-primary); background:var(--gold-badge);">
+              <div style="font-size:0.75rem; color:var(--gold-primary); font-weight:700;">21K BENCHMARK (87.5%)</div>
+              <div style="font-size:1.45rem; font-weight:700; color:var(--text-main); margin:0.35rem 0;" id="ge-rate-21k">2,992.50 EGP</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">Egyptian Pivot Standard</div>
+            </div>
+            <div class="card-panel" style="text-align:center;">
+              <div style="font-size:0.75rem; color:var(--text-muted);">18 KARAT (75.00%)</div>
+              <div style="font-size:1.45rem; font-weight:700; color:var(--gold-primary); margin:0.35rem 0;" id="ge-rate-18k">2,565 EGP</div>
+              <div style="font-size:0.72rem; color:var(--emerald-live);">Italian Standard</div>
+            </div>
+            <div class="card-panel" style="text-align:center;">
+              <div style="font-size:0.75rem; color:var(--text-muted);">14 KARAT (58.33%)</div>
+              <div style="font-size:1.45rem; font-weight:700; color:var(--gold-primary); margin:0.35rem 0;" id="ge-rate-14k">1,995 EGP</div>
+              <div style="font-size:0.72rem; color:var(--emerald-live);">Commercial Grade</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Making Charge Policy Rules -->
+        <div class="card-panel">
+          <div class="panel-header">
+            <div class="panel-title">Masnaeya & Profit Floors</div>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
+            Enforces atelier production thresholds, prevents cashier undercutting, and locks minimum cash contributions.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div class="cart-item-row">
+              <div>
+                <div style="font-weight:700;">Italian Laser Chains (18K)</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Floor: +12% Net</div>
+              </div>
+              <div style="font-weight:700;">180.00 EGP/g</div>
+            </div>
+            <div class="cart-item-row">
+              <div>
+                <div style="font-weight:700;">Handcrafted Filigree (21K)</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Khan el-Khalili Atelier</div>
+              </div>
+              <div style="font-weight:700;">250.00 EGP/g</div>
+            </div>
+            <div class="cart-item-row">
+              <div>
+                <div style="font-weight:700;">Plain Bullion & BTC Bars</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Sealed Packaging</div>
+              </div>
+              <div style="font-weight:700;">45.00 EGP/g</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL: SCRAP GOLD TRADE-IN ==================== -->
+  <div class="modal-backdrop" id="scrap-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">♻ Customer Scrap Gold Trade-in</h3>
+        <button id="close-scrap-modal" style="background:none; border:none; color:var(--text-muted); font-size:1.25rem; cursor:pointer;">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Gold Purity / Karat</label>
+        <select id="scrap-karat" class="form-select">
+          <option value="18K">18K (75.0% - Italian Standard)</option>
+          <option value="21K" selected>21K (87.5% - Egyptian Benchmark)</option>
+          <option value="24K">24K (99.9% - Pure Ingot)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gross Scrap Weight (Grams)</label>
+        <input type="number" id="scrap-weight" class="form-input" placeholder="e.g. 12.40" step="0.01" value="12.40">
+      </div>
+      <div class="form-group">
+        <label>Applied Buy-Back Rate (EGP / Gram)</label>
+        <input type="number" id="scrap-rate" class="form-input" value="2565.00" step="5">
+      </div>
+      <button class="btn btn-primary" id="apply-scrap-tradein" style="width:100%; margin-top:0.75rem;">
+        Apply Deduction to Current Invoice
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: LUXURY ETA TAX INVOICE ==================== -->
+  <div class="modal-backdrop" id="invoice-modal">
+    <div class="modal-box" style="max-width:650px;">
+      <div style="text-align:center; margin-bottom:1.25rem; border-bottom:1px solid var(--border-subtle); padding-bottom:1rem;">
+        <h2 style="font-family:var(--font-serif); font-size:1.5rem; color:var(--gold-primary);">MAISON D'OR HAUTE JOAILLERIE</h2>
+        <p style="font-size:0.75rem; color:var(--text-muted);">Cairo Flagship Boutique • Egyptian Tax Authority (ETA) Registered</p>
+        <div style="margin-top:0.5rem; font-weight:700; font-size:0.95rem;" id="inv-modal-number">INV-2026-1082</div>
+        <div style="font-size:0.72rem; color:var(--text-muted);" id="inv-modal-date"></div>
+      </div>
+
+      <table class="vault-table" style="margin-bottom:1rem;">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Karat</th>
+            <th>GW</th>
+            <th>NW</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="inv-modal-items-tbody"></tbody>
+      </table>
+
+      <div style="background:var(--bg-surface-subtle); padding:1rem; border-radius:var(--radius-sm); margin-bottom:1.25rem;">
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.25rem; color:var(--gold-primary);">
+          <span>FINAL AMOUNT DUE:</span>
+          <span id="inv-modal-total"></span>
+        </div>
+        <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.5rem;">
+          Includes official Egyptian Hallmarking and 14% ETA VAT strictly on making fees.
+        </p>
+      </div>
+
+      <div style="display:flex; gap:1rem;">
+        <button class="btn btn-secondary" id="close-invoice-modal" style="flex:1;">Done</button>
+        <button class="btn btn-primary" onclick="window.print()" style="flex:1;">🖨 Print Invoice</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/app.js"></script>
 </body>

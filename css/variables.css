@@ -1,20 +1,75 @@
-/* Design tokens - will be updated once Figma design specs are provided */
+/* Design Tokens: Dark Mode (AURUM OS) & Light Mode (StockPilot PRO) */
+
 :root {
-  --color-primary-gold: #d4af37;
-  --color-gold-light: #f3e5ab;
-  --color-gold-dark: #aa7c11;
-  --color-bg-dark: #0f1115;
-  --color-surface-dark: #181b22;
-  --color-surface-card: #21252f;
-  --color-text-main: #f9f9fb;
-  --color-text-muted: #9ba3b4;
-  --color-border: rgba(212, 175, 55, 0.2);
+  /* Common Brand Colors */
+  --gold-primary: #d4af37;
+  --gold-secondary: #c59b27;
+  --gold-light: #f3e5ab;
+  --gold-dark: #8c6d1f;
+  --gold-badge: rgba(212, 175, 55, 0.15);
+  --gold-border: rgba(212, 175, 55, 0.28);
+  --gold-gradient: linear-gradient(135deg, #e8c858 0%, #d4af37 50%, #aa7c11 100%);
+  
+  --emerald-live: #10b981;
+  --emerald-bg: rgba(16, 185, 129, 0.12);
+  --ruby-alert: #ef4444;
+  --ruby-bg: rgba(239, 68, 68, 0.12);
+  
+  --font-serif: 'Cinzel', 'Playfair Display', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
-  --font-heading: 'Cinzel', serif;
-  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+}
 
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --border-radius-sm: 8px;
-  --border-radius-md: 14px;
-  --border-radius-lg: 20px;
+/* Default Theme: Dark Mode (AURUM OS - Haute Joaillerie) */
+[data-theme="dark"], body:not([data-theme="light"]) {
+  --bg-app: #0c0e12;
+  --bg-sidebar: #101217;
+  --bg-header: #101217;
+  --bg-surface: #14171f;
+  --bg-surface-elevated: #1a1e28;
+  --bg-surface-subtle: #12141a;
+  --bg-input: #0e1015;
+  
+  --text-main: #f5f6fa;
+  --text-secondary: #a0a6b5;
+  --text-muted: #6b7280;
+  
+  --border-subtle: #1f2430;
+  --border-card: #272d3d;
+  --border-highlight: rgba(212, 175, 55, 0.35);
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.65);
+  --shadow-gold: 0 0 24px rgba(212, 175, 55, 0.18);
+}
+
+/* Light Theme: StockPilot PRO (Maison D'Or) */
+[data-theme="light"] {
+  --bg-app: #f7f6f2;
+  --bg-sidebar: #edebe4;
+  --bg-header: #edebe4;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-subtle: #f4f3ee;
+  --bg-input: #ffffff;
+  
+  --text-main: #1c1c1f;
+  --text-secondary: #575762;
+  --text-muted: #8e8e99;
+  
+  --border-subtle: #e3e0d8;
+  --border-card: #dedad0;
+  --border-highlight: rgba(184, 142, 47, 0.4);
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.1);
+  --shadow-gold: 0 0 20px rgba(184, 142, 47, 0.12);
 }
