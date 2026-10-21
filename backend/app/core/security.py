@@ -1,10 +1,18 @@
 import hashlib
 import hmac
 import os
+import json
+import base64
 from datetime import datetime, timedelta, timezone
 from typing import Any, Union
-import jwt
 from app.core.config import settings
+
+def _b64url_encode(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')
+
+def _b64url_decode(data_str: str) -> bytes:
+    padding = '=' * (-len(data_str) % 4)
+    return base64.urlsafe_b64decode(data_str + padding)
 
 def get_password_hash(password: str) -> str:
     salt = os.urandom(16)
@@ -22,18 +30,61 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 def create_access_token(subject: Union[str, Any], role: str, expires_delta: timedelta = None) -> str:
+    """
+    Blueprint Section 1: Signs token using strict HS256 algorithm.
+    """
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    to_encode = {
-        "exp": expire,
+    header = {"alg": "HS256", "typ": "JWT"}
+    payload = {
+        "exp": int(expire.timestamp()),
         "sub": str(subject),
         "role": role
     }
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+
+    header_b64 = _b64url_encode(json.dumps(header, separators=(',', ':')).encode('utf-8'))
+    payload_b64 = _b64url_encode(json.dumps(payload, separators=(',', ':')).encode('utf-8'))
+    
+    signing_input = f"{header_b64}.{payload_b64}".encode('utf-8')
+    signature = hmac.new(settings.SECRET_KEY.encode('utf-8'), signing_input, hashlib.sha256).digest()
+    sig_b64 = _b64url_encode(signature)
+
+    return f"{header_b64}.{payload_b64}.{sig_b64}"
 
 def decode_access_token(token: str) -> dict:
-    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    """
+    Blueprint Section 1: Strictly validates HS256 signature and token expiration.
+    Guards against Algorithm Confusion attacks (rejects 'none' algorithm).
+    """
+    try:
+        parts = token.split(".")
+        if len(parts) != 3:
+            raise ValueError("Malformed token")
+
+        header_b64, payload_b64, sig_b64 = parts
+        header = json.loads(_b64url_decode(header_b64).decode('utf-8'))
+        
+        # Strict algorithm check
+        if header.get("alg") != "HS256":
+            raise ValueError(f"Unauthorized algorithm: {header.get('alg')}")
+
+        signing_input = f"{header_b64}.{payload_b64}".encode('utf-8')
+        expected_sig = hmac.new(settings.SECRET_KEY.encode('utf-8'), signing_input, hashlib.sha256).digest()
+        actual_sig = _b64url_decode(sig_b64)
+
+        if not hmac.compare_digest(expected_sig, actual_sig):
+            raise ValueError("Invalid token signature")
+
+        payload = json.loads(_b64url_decode(payload_b64).decode('utf-8'))
+        
+        # Check expiration
+        exp = payload.get("exp")
+        if exp and datetime.now(timezone.utc).timestamp() > exp:
+            raise ValueError("Token expired")
+
+        return payload
+    except Exception as e:
+        raise ValueError(f"Invalid token: {str(e)}")
