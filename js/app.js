@@ -189,6 +189,7 @@ const I18N = {
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
+  setupMobileDrawer();
   setupThemeToggle();
   setupLocaleToggle();
   setupGoldEngine();
@@ -198,6 +199,81 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTickerDisplay();
   setupModals();
 });
+
+// --- View Switching (Global Helper for Desktop & Mobile) ---
+window.switchToView = function(viewName) {
+  state.activeView = viewName;
+
+  // Update desktop sidebar items
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const btn = item.querySelector('button');
+    if (btn && btn.getAttribute('data-view') === viewName) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+
+  // Update mobile bottom taskbar items
+  document.querySelectorAll('.mobile-taskbar-btn').forEach(btn => {
+    if (btn.getAttribute('onclick')?.includes(viewName)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // Switch visible container
+  document.querySelectorAll('.view-container').forEach(view => {
+    view.classList.remove('active');
+  });
+  const activeContainer = document.getElementById(`view-${viewName}`);
+  if (activeContainer) {
+    activeContainer.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Close mobile sidebar if open
+  closeMobileSidebar();
+};
+
+// --- Navigation ---
+function setupNavigation() {
+  document.querySelectorAll('.nav-item button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-view');
+      switchToView(target);
+    });
+  });
+}
+
+// --- Mobile Drawer Handlers ---
+function setupMobileDrawer() {
+  const hamburgerBtn = document.getElementById('mobile-hamburger-btn');
+  const sidebar = document.getElementById('app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const closeBtn = document.getElementById('close-mobile-sidebar-btn');
+
+  if (hamburgerBtn && sidebar && backdrop) {
+    hamburgerBtn.addEventListener('click', () => {
+      sidebar.classList.add('mobile-open');
+      backdrop.classList.add('active');
+      if (closeBtn) closeBtn.style.display = 'block';
+    });
+
+    backdrop.addEventListener('click', closeMobileSidebar);
+    if (closeBtn) closeBtn.addEventListener('click', closeMobileSidebar);
+  }
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const closeBtn = document.getElementById('close-mobile-sidebar-btn');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+  if (backdrop) backdrop.classList.remove('active');
+  if (closeBtn) closeBtn.style.display = 'none';
+}
 
 // --- Theme Management ---
 function setupThemeToggle() {
@@ -241,25 +317,6 @@ function applyTranslations() {
   });
   renderInventoryTable();
   renderPOSCatalog();
-}
-
-// --- Navigation ---
-function setupNavigation() {
-  document.querySelectorAll('.nav-item button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      btn.parentElement.classList.add('active');
-
-      const target = btn.getAttribute('data-view');
-      state.activeView = target;
-
-      document.querySelectorAll('.view-container').forEach(view => {
-        view.classList.remove('active');
-      });
-      const activeContainer = document.getElementById(`view-${target}`);
-      if (activeContainer) activeContainer.classList.add('active');
-    });
-  });
 }
 
 // --- Live Ticker & Gold Engine ---
@@ -398,6 +455,7 @@ window.addToCart = function(productId) {
 
   state.cart.push(item);
   updateCartUI();
+  switchToView('pos');
 };
 
 window.removeFromCart = function(index) {

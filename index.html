@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>StockPilot (AURUM OS) — Haute Joaillerie Management System | عم دهب</title>
   
   <!-- Modern Typography (Cinzel for Luxury Headings + Plus Jakarta Sans for Data UI) -->
@@ -15,14 +15,19 @@
 </head>
 <body>
 
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
   <!-- ==================== SIDEBAR ==================== -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="app-sidebar">
     <div class="brand-section">
       <div class="brand-icon">⚜</div>
       <div>
         <div class="brand-title" id="brand-title-text">AURUM <span>OS</span></div>
         <div class="brand-subtitle" id="brand-subtitle-text">Haute Joaillerie POS</div>
       </div>
+      <!-- Close drawer button for mobile -->
+      <button id="close-mobile-sidebar-btn" style="display:none; margin-left:auto; background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer;">✕</button>
     </div>
 
     <div class="terminal-badge">
@@ -78,6 +83,10 @@
 
     <!-- Top Sticky Header -->
     <header class="top-header">
+      <button class="mobile-hamburger-btn" id="mobile-hamburger-btn" aria-label="Open Navigation">
+        ☰
+      </button>
+
       <div class="ticker-strip">
         <div class="ticker-item">
           <span class="ticker-label">24K:</span>
@@ -101,12 +110,12 @@
       </div>
 
       <div class="header-actions">
-        <!-- Theme Switcher (Dark Mode AURUM OS <-> Light Mode StockPilot PRO) -->
+        <!-- Theme Switcher -->
         <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light / Dark Theme">
           🌓
         </button>
 
-        <!-- Language Switcher (EN <-> AR) -->
+        <!-- Language Switcher -->
         <button class="btn-lang" id="lang-toggle-btn">
           عربي (RTL)
         </button>
@@ -131,7 +140,7 @@
           <p class="page-subtitle">Real-time appraisal, automated assay reconciliation, and high-frequency bullion trading matrix.</p>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="document.querySelector('[data-view=\'pos\']').click()">
+          <button class="btn btn-primary" onclick="switchToView('pos')">
             ⚡ Quick Sale (POS)
           </button>
         </div>
@@ -184,7 +193,7 @@
         </div>
       </div>
 
-      <!-- Dashboard Tri-Grid (Left: Digital Vault Quick, Center: Featured Masterpiece & Pipeline, Right: Portfolio Charts) -->
+      <!-- Dashboard Tri-Grid -->
       <div class="dashboard-tri-grid">
         
         <!-- Left: Quick Vault Items -->
@@ -225,7 +234,7 @@
           </div>
         </div>
 
-        <!-- Center: Featured Masterpiece & Production Pipeline -->
+        <!-- Center: Featured Masterpiece & Pipeline -->
         <div class="card-panel masterpiece-card">
           <div class="panel-header">
             <span class="badge" style="background:var(--gold-badge); color:var(--gold-primary); font-size:0.75rem; font-weight:700;">FEATURED MASTERPIECE</span>
@@ -286,7 +295,7 @@
           </div>
         </div>
 
-        <!-- Right: Portfolio Valuation Trend & Reserve Allocation -->
+        <!-- Right: Portfolio Trend & Operations -->
         <div class="card-panel">
           <div class="panel-header">
             <div class="panel-title">Portfolio Valuation Trend</div>
@@ -340,8 +349,8 @@
           <p class="page-subtitle">Real-time bullion weights, calibrated tare deductions, dynamic karat re-pricing, and serialized hallmarking.</p>
         </div>
         <div class="page-actions">
-          <button class="btn btn-secondary" onclick="alert('Auditing physical inventory tags...')">⚖ Stock Count Audit</button>
-          <button class="btn btn-primary" onclick="alert('Add Jewelry Piece form opened')">+ Add New Jewelry Piece</button>
+          <button class="btn btn-secondary" onclick="alert('Auditing physical inventory tags against scale...')">⚖ Stock Count Audit</button>
+          <button class="btn btn-primary" onclick="alert('Add Jewelry Piece form modal opened')">+ Add New Jewelry Piece</button>
         </div>
       </div>
 
@@ -461,7 +470,7 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr 380px; gap:1.5rem;">
+      <div style="display:grid; grid-template-columns: 1fr; gap:1.5rem;">
         <div>
           <!-- Base 24K Recalibration Box -->
           <div class="card-panel" style="margin-bottom:1.5rem;">
@@ -469,8 +478,8 @@
               <div class="panel-title">BASE 24K PURE INGOT RATE (999.9 FINE / 100.0%)</div>
               <span style="color:var(--emerald-live); font-size:0.75rem; font-weight:700;">● LBM: $2,342.40 / oz</span>
             </div>
-            <div style="display:flex; align-items:center; gap:1rem;">
-              <div style="position:relative; flex-grow:1;">
+            <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+              <div style="position:relative; flex-grow:1; min-width:200px;">
                 <span style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); font-weight:700; color:var(--gold-primary);">EGP</span>
                 <input type="number" id="ge-base-24k" class="form-input" style="padding-left:3rem; font-size:1.35rem; font-weight:700;" value="3420.00" step="5">
               </div>
@@ -480,8 +489,8 @@
             </div>
           </div>
 
-          <!-- Karat Cascade Grid -->
-          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem;">
+          <!-- Karat Cascade Grid (Mobile responsive) -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
             <div class="card-panel" style="text-align:center;">
               <div style="font-size:0.75rem; color:var(--text-muted);">22 KARAT (91.67%)</div>
               <div style="font-size:1.45rem; font-weight:700; color:var(--gold-primary); margin:0.35rem 0;" id="ge-rate-22k">3,135 EGP</div>
@@ -541,6 +550,28 @@
     </main>
 
   </div>
+
+  <!-- ==================== MOBILE BOTTOM TASKBAR (Blueprint Section 9) ==================== -->
+  <nav class="mobile-bottom-taskbar">
+    <div class="mobile-taskbar-grid">
+      <button class="mobile-taskbar-btn active" onclick="switchToView('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span data-i18n="dashboard">Dashboard</span>
+      </button>
+      <button class="mobile-taskbar-btn" onclick="switchToView('inventory')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+        <span data-i18n="inventory">Vault</span>
+      </button>
+      <button class="mobile-taskbar-btn" onclick="switchToView('pos')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span data-i18n="pos">POS</span>
+      </button>
+      <button class="mobile-taskbar-btn" onclick="switchToView('gold-engine')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg>
+        <span data-i18n="gold_engine">Rates</span>
+      </button>
+    </div>
+  </nav>
 
   <!-- ==================== MODAL: SCRAP GOLD TRADE-IN ==================== -->
   <div class="modal-backdrop" id="scrap-modal">
@@ -604,7 +635,7 @@
         </p>
       </div>
 
-      <div style="display:flex; gap:1rem;">
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
         <button class="btn btn-secondary" id="close-invoice-modal" style="flex:1;">Done</button>
         <button class="btn btn-primary" onclick="window.print()" style="flex:1;">🖨 Print Invoice</button>
       </div>
