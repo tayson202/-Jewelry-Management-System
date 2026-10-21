@@ -1,12 +1,13 @@
 /**
  * StockPilot (AURUM OS) - Haute Joaillerie Management System
- * Interactive Client Logic & Real-Time Calculation Engine
+ * Interactive Client Logic, Role-Based Access Control, Real-Time Calculations & USB Scale Simulator
  */
 
 // --- Global State ---
 const state = {
   theme: 'dark',
   locale: 'en',
+  userRole: 'ADMIN', // 'ADMIN' or 'EMPLOYEE'
   activeView: 'dashboard',
   base24kRate: 3420.00,
   taxRateOnMaking: 0.14,
@@ -15,8 +16,33 @@ const state = {
   tradeIns: [],
   discount: 0.0,
   currentKaratFilter: 'ALL',
-  
-  // Real inventory items matching Figma
+  searchQuery: '',
+
+  // Role profiles
+  users: {
+    ADMIN: {
+      name: "Mona Al-Sayed",
+      name_ar: "منى السيد",
+      title: "Shop Owner & Vault Master",
+      title_ar: "مالك المتجر ومدير الخزينة",
+      avatar: "MA",
+      roleLabel: "ADMIN",
+      canViewFinancials: true,
+      canUpdateGoldEngine: true
+    },
+    EMPLOYEE: {
+      name: "Tariq Al-Fahim",
+      name_ar: "طارق الفهيم",
+      title: "Senior Appraiser / Cashier",
+      title_ar: "كبير مثمني الذهب / أمين الصندوق",
+      avatar: "TF",
+      roleLabel: "EMPLOYEE",
+      canViewFinancials: false,
+      canUpdateGoldEngine: false
+    }
+  },
+
+  // Vault Inventory Items matching Figma
   inventory: [
     {
       id: "prod-1",
@@ -108,6 +134,31 @@ const state = {
       image: "assets/images/gold_bullion_sovereign_1792598760193.jpg",
       status: "IN_STOCK"
     }
+  ],
+
+  // Live Audit Logs
+  auditLogs: [
+    {
+      timestamp: "2026-10-21 20:30 UTC",
+      user: "Mona Al-Sayed",
+      action: "RECALIBRATE_GOLD_RATES",
+      entity: "GoldPrice",
+      details: "Master 24K spot rate set to 3,420.00 EGP/g"
+    },
+    {
+      timestamp: "2026-10-21 20:15 UTC",
+      user: "Tariq Al-Fahim",
+      action: "COMPLETE_SALE",
+      entity: "Sale (INV-2026-1082)",
+      details: "Issued invoice for 45,951.76 EGP with scrap deduction"
+    },
+    {
+      timestamp: "2026-10-21 19:40 UTC",
+      user: "Mona Al-Sayed",
+      action: "BULK_REPRICE",
+      entity: "Inventory",
+      details: "Recalculated valuation for 3,842 jewelry pieces"
+    }
   ]
 };
 
@@ -192,16 +243,165 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMobileDrawer();
   setupThemeToggle();
   setupLocaleToggle();
+  setupRoleToggle();
   setupGoldEngine();
+  setupSearch();
+  setupModals();
+  applyRolePermissions();
   renderInventoryTable();
   renderPOSCatalog();
+  renderAuditTable();
   updateCartUI();
   updateTickerDisplay();
-  setupModals();
 });
 
-// --- View Switching (Global Helper for Desktop & Mobile) ---
+// --- Toast Notification Helper ---
+window.showToast = function(message, type = 'info', icon = '✨') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <div style="flex:1;">${message}</div>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+};
+
+// --- Modal Helpers ---
+window.closeModal = function(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.classList.remove('active');
+};
+
+window.openNewPieceModal = function() {
+  document.getElementById('new-piece-modal')?.classList.add('active');
+};
+
+window.openCustomerModal = function() {
+  document.getElementById('new-customer-modal')?.classList.add('active');
+};
+
+window.openSupplierModal = function() {
+  document.getElementById('supplier-modal')?.classList.add('active');
+};
+
+window.openStaffModal = function() {
+  if (state.userRole !== 'ADMIN') {
+    showToast("Access Denied: Only Admin / Shop Owner can manage staff accounts.", "warning", "🔒");
+    return;
+  }
+  document.getElementById('new-staff-modal')?.classList.add('active');
+};
+
+// --- Role-Based Access Control (Admin vs Employee Dashboard) ---
+function setupRoleToggle() {
+  const btn = document.getElementById('role-toggle-btn');
+  if (!btn) return;
+  btn.addEventListener('click', toggleUserRole);
+}
+
+window.toggleUserRole = function() {
+  state.userRole = state.userRole === 'ADMIN' ? 'EMPLOYEE' : 'ADMIN';
+  applyRolePermissions();
+};
+
+function applyRolePermissions() {
+  const isAr = state.locale === 'ar';
+  const u = state.users[state.userRole];
+
+  // Header Role Label
+  const roleLabel = document.getElementById('current-role-label');
+  if (roleLabel) {
+    roleLabel.innerText = u.roleLabel;
+    roleLabel.style.color = state.userRole === 'ADMIN' ? 'var(--gold-primary)' : 'var(--emerald-live)';
+  }
+
+  // Header User Profile
+  const nameEl = document.getElementById('user-display-name');
+  const titleEl = document.getElementById('user-display-title');
+  const avatarEl = document.getElementById('user-avatar-badge');
+
+  if (nameEl) nameEl.innerText = isAr ? u.name_ar : u.name;
+  if (titleEl) titleEl.innerText = isAr ? u.title_ar : u.title;
+  if (avatarEl) avatarEl.innerText = u.avatar;
+
+  // Governance & Admin-Only Views in Sidebar
+  document.querySelectorAll('.admin-only-feature').forEach(el => {
+    el.style.display = state.userRole === 'ADMIN' ? '' : 'none';
+  });
+
+  // Sensitive Financial Metric Cards
+  const vaultValEl = document.getElementById('metric-vault-val');
+  const marginValEl = document.getElementById('metric-margin-val');
+
+  if (state.userRole === 'ADMIN') {
+    if (vaultValEl) vaultValEl.innerHTML = '42,650,800 <small>EGP</small>';
+    if (marginValEl) marginValEl.innerHTML = '86,400 <small>EGP</small>';
+  } else {
+    // Mask sensitive financial cards for Employee
+    if (vaultValEl) vaultValEl.innerHTML = '<span class="confidential-badge">🔒 CONFIDENTIAL [ADMIN]</span>';
+    if (marginValEl) marginValEl.innerHTML = '<span class="confidential-badge">🔒 RESTRICTED [OWNER]</span>';
+  }
+
+  // Dashboard Greeting Customization
+  const dashTitle = document.getElementById('dash-greeting-title');
+  const dashSub = document.getElementById('dash-greeting-subtitle');
+
+  if (state.userRole === 'ADMIN') {
+    if (dashTitle) dashTitle.innerText = isAr ? "لوحة المالك والمدير العام • خزينة ميزون دور" : "Maison D'Or Atelier Overview";
+    if (dashSub) dashSub.innerText = isAr ? "تقييم الخزينة في الوقت الفعلي، تسوية مصوغات الذهب وأرباح المصنعية IFRS." : "Real-time appraisal, automated assay reconciliation, and high-frequency bullion trading matrix.";
+  } else {
+    if (dashTitle) dashTitle.innerText = isAr ? "كاونتر المبيعات ونقطة البيع • الوردية النشطة" : "POS Counter Terminal & Floor Registry";
+    if (dashSub) dashSub.innerText = isAr ? "محطة الصندوق رقم 04 • تفعيل الميزان الإلكتروني وفحص كسر الذهب وإصدار الفواتير." : "Cashier Workstation #04 • Ready for live customer transactions, digital scale weighing & scrap trade-ins.";
+  }
+
+  // Gold Engine Permissions
+  const geInput = document.getElementById('ge-base-24k');
+  const geBtn = document.getElementById('btn-update-global-rate');
+  if (geInput && geBtn) {
+    if (state.userRole === 'ADMIN') {
+      geInput.removeAttribute('readonly');
+      geInput.style.opacity = '1';
+      geBtn.removeAttribute('disabled');
+      geBtn.innerText = isAr ? "تحديث سعر الذهب وإعادة الحساب" : "Recalibrate Spot & Reprice Vault";
+    } else {
+      geInput.setAttribute('readonly', 'true');
+      geInput.style.opacity = '0.7';
+      geBtn.setAttribute('disabled', 'true');
+      geBtn.innerText = isAr ? "🔒 التعديل مقتصر على المدير" : "🔒 Rate Updates Restricted to Admin";
+    }
+  }
+
+  // Redirect if employee is currently looking at admin-only view
+  if (state.userRole === 'EMPLOYEE' && ['reports', 'employees', 'audit'].includes(state.activeView)) {
+    switchToView('pos');
+  }
+
+  // Toast feedback
+  if (state.userRole === 'ADMIN') {
+    showToast("Switched to Admin Role (Mona Al-Sayed) — Full vault financials & governance unlocked", "info", "👑");
+  } else {
+    showToast("Switched to Employee Role (Tariq Al-Fahim) — POS counter active, confidential margins masked", "success", "👤");
+  }
+}
+
+// --- View Switching ---
 window.switchToView = function(viewName) {
+  // Guard admin views
+  if (state.userRole === 'EMPLOYEE' && ['reports', 'employees', 'audit'].includes(viewName)) {
+    showToast("Access Denied: This view requires Admin / Shop Owner security clearance.", "warning", "🔒");
+    return;
+  }
+
   state.activeView = viewName;
 
   // Update desktop sidebar items
@@ -233,11 +433,9 @@ window.switchToView = function(viewName) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Close mobile sidebar if open
   closeMobileSidebar();
 };
 
-// --- Navigation ---
 function setupNavigation() {
   document.querySelectorAll('.nav-item button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -283,7 +481,6 @@ function setupThemeToggle() {
     state.theme = state.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', state.theme);
     
-    // Update logo text based on theme to match Figma
     const brandTitle = document.getElementById('brand-title-text');
     const brandSub = document.getElementById('brand-subtitle-text');
     if (state.theme === 'light') {
@@ -306,6 +503,7 @@ function setupLocaleToggle() {
     document.documentElement.setAttribute('lang', state.locale);
     btn.innerText = state.locale === 'ar' ? 'English (LTR)' : 'عربي (RTL)';
     applyTranslations();
+    applyRolePermissions();
   });
 }
 
@@ -317,6 +515,81 @@ function applyTranslations() {
   });
   renderInventoryTable();
   renderPOSCatalog();
+}
+
+// --- Live Digital Scale Simulator (Mettler Toledo USB) ---
+window.simulateMettlerScale = function() {
+  const authenticWeights = [14.825, 21.450, 38.410, 54.205, 6.802, 8.000, 50.000, 18.250, 31.740];
+  const picked = authenticWeights[Math.floor(Math.random() * authenticWeights.length)];
+  state.scaleWeight = picked;
+
+  const displayEl = document.getElementById('scale-live-display');
+  if (displayEl) {
+    displayEl.innerText = `${picked.toFixed(3)}g`;
+    displayEl.classList.add('scale-pulse');
+    setTimeout(() => displayEl.classList.remove('scale-pulse'), 2500);
+  }
+
+  showToast(`⚖ Mettler Toledo USB Scale: ${picked.toFixed(3)}g captured (Assay Calibrated)`, "success", "⚖");
+};
+
+window.transferScaleToScrap = function() {
+  if (state.scaleWeight <= 0) {
+    simulateMettlerScale();
+  }
+  const input = document.getElementById('scrap-weight');
+  if (input) {
+    input.value = state.scaleWeight.toFixed(2);
+    showToast(`Transferred ${state.scaleWeight.toFixed(2)}g from USB scale to Scrap Form!`, "info", "📥");
+  }
+};
+
+// --- Karat Filter Chips ---
+window.setKaratFilter = function(karat) {
+  state.currentKaratFilter = karat;
+
+  // Update active chip classes in both views
+  document.querySelectorAll('#inventory-karat-filters .filter-chip').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(`'${karat}'`));
+  });
+  document.querySelectorAll('#pos-karat-filters .filter-chip').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(`'${karat}'`));
+  });
+
+  renderInventoryTable();
+  renderPOSCatalog();
+};
+
+// --- Live Search ---
+function setupSearch() {
+  const searchInput = document.querySelector('.header-search input');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', (e) => {
+    state.searchQuery = e.target.value.trim().toLowerCase();
+    renderInventoryTable();
+    renderPOSCatalog();
+  });
+}
+
+function getFilteredInventory() {
+  return state.inventory.filter(item => {
+    // Karat match
+    if (state.currentKaratFilter !== 'ALL' && item.karat !== state.currentKaratFilter) {
+      return false;
+    }
+    // Search query match
+    if (state.searchQuery) {
+      const q = state.searchQuery;
+      const matchSku = item.sku.toLowerCase().includes(q);
+      const matchName = item.name.toLowerCase().includes(q);
+      const matchNameAr = item.name_ar ? item.name_ar.toLowerCase().includes(q) : false;
+      const matchKarat = item.karat.toLowerCase().includes(q);
+      const matchCategory = item.category.toLowerCase().includes(q);
+      return matchSku || matchName || matchNameAr || matchKarat || matchCategory;
+    }
+    return true;
+  });
 }
 
 // --- Live Ticker & Gold Engine ---
@@ -333,9 +606,8 @@ function updateTickerDisplay() {
   if (el21) el21.innerText = `${r21.toLocaleString()} EGP/g`;
   if (el18) el18.innerText = `${r18.toLocaleString()} EGP/g`;
 
-  // Gold Engine rates display
   const ge24Input = document.getElementById('ge-base-24k');
-  if (ge24Input) ge24Input.value = r24.toFixed(2);
+  if (ge24Input && state.userRole === 'ADMIN') ge24Input.value = r24.toFixed(2);
 
   const ge22 = document.getElementById('ge-rate-22k');
   const ge21 = document.getElementById('ge-rate-21k');
@@ -352,6 +624,10 @@ function setupGoldEngine() {
   const btn = document.getElementById('btn-update-global-rate');
   if (!btn) return;
   btn.addEventListener('click', () => {
+    if (state.userRole !== 'ADMIN') {
+      showToast("Unauthorized: Only Admin / Owner can alter master gold rate.", "warning", "🔒");
+      return;
+    }
     const input = document.getElementById('ge-base-24k');
     const val = parseFloat(input.value);
     if (!isNaN(val) && val > 0) {
@@ -360,7 +636,9 @@ function setupGoldEngine() {
       renderInventoryTable();
       renderPOSCatalog();
       updateCartUI();
-      alert(`Master 24K rate updated to ${val} EGP/g. All karats and prices recalculated!`);
+      
+      logAuditAction("RECALIBRATE_GOLD_RATES", "GoldPrice", `Master 24K updated to ${val.toFixed(2)} EGP/g`);
+      showToast(`Master 24K spot gold rate updated to ${val} EGP/g. All jewelry pieces repriced!`, "success", "✨");
     }
   });
 }
@@ -371,16 +649,22 @@ function renderInventoryTable() {
   if (!tbody) return;
 
   const isAr = state.locale === 'ar';
+  const filtered = getFilteredInventory();
   tbody.innerHTML = '';
 
-  state.inventory.forEach(item => {
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);">No jewelry pieces match current filter criteria.</td></tr>`;
+    return;
+  }
+
+  filtered.forEach(item => {
     const price = getItemPrice(item);
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
     tr.innerHTML = `
       <td>
         <div style="display:flex; align-items:center; gap:0.75rem;">
-          <img src="${item.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
+          <img src="${item.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;" alt="${item.name}">
           <div>
             <div style="font-weight:700;">${isAr ? item.name_ar : item.name}</div>
             <div style="font-size:0.75rem; color:var(--text-muted);">${item.sku}</div>
@@ -409,9 +693,15 @@ function renderPOSCatalog() {
   if (!grid) return;
 
   const isAr = state.locale === 'ar';
+  const filtered = getFilteredInventory();
   grid.innerHTML = '';
 
-  state.inventory.forEach(item => {
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">No items found in POS catalog.</div>`;
+    return;
+  }
+
+  filtered.forEach(item => {
     const price = getItemPrice(item);
     const card = document.createElement('div');
     card.className = 'jewelry-card';
@@ -442,20 +732,20 @@ window.addToCart = function(productId) {
   if (!item) return;
 
   if (item.status === 'SOLD') {
-    alert("This piece is unique and has already been sold!");
+    showToast("This unique master piece has already been sold!", "warning", "⚠️");
     return;
   }
 
-  // Check if unique piece already in cart
   const exists = state.cart.find(c => c.id === item.id);
   if (exists) {
-    alert("Item is already in the current transaction cart.");
+    showToast("Unique item is already in the transaction cart.", "info", "ℹ️");
     return;
   }
 
   state.cart.push(item);
   updateCartUI();
   switchToView('pos');
+  showToast(`Added ${item.name} (${item.karat}) to cart`, "success", "🛒");
 };
 
 window.removeFromCart = function(index) {
@@ -471,6 +761,7 @@ window.addScrapTradeIn = function(karat, grossWt, ratePerG) {
     credit: parseFloat(grossWt) * parseFloat(ratePerG)
   });
   updateCartUI();
+  showToast(`Applied scrap trade-in credit: ${grossWt}g of ${karat}`, "success", "♻");
 };
 
 window.removeTradeIn = function(index) {
@@ -536,20 +827,29 @@ function updateCartUI() {
   });
 
   const grossSubtotal = totalMetalVal + totalMaking;
+  // Egyptian ETA Tax Rule: 14% VAT strictly on making fee
   const statutoryVat = Math.round((totalMaking * state.taxRateOnMaking) * 100) / 100;
   const netPayable = Math.max(0, grossSubtotal - totalScrapCredit + statutoryVat - state.discount);
 
   // Update Summary DOM
-  document.getElementById('calc-net-gold').innerText = `${totalNetGold.toFixed(2)} g`;
-  document.getElementById('calc-metal-val').innerText = `${Math.round(totalMetalVal).toLocaleString()} EGP`;
-  document.getElementById('calc-making-val').innerText = `+ ${Math.round(totalMaking).toLocaleString()} EGP`;
-  document.getElementById('calc-subtotal').innerText = `${Math.round(grossSubtotal).toLocaleString()} EGP`;
-  document.getElementById('calc-scrap-val').innerText = `- ${Math.round(totalScrapCredit).toLocaleString()} EGP`;
-  document.getElementById('calc-vat-val').innerText = `+ ${statutoryVat.toLocaleString()} EGP`;
-  document.getElementById('calc-total-val').innerText = `${Math.round(netPayable).toLocaleString()} EGP`;
+  const netGoldEl = document.getElementById('calc-net-gold');
+  const metalValEl = document.getElementById('calc-metal-val');
+  const makingValEl = document.getElementById('calc-making-val');
+  const subtotalEl = document.getElementById('calc-subtotal');
+  const scrapValEl = document.getElementById('calc-scrap-val');
+  const vatValEl = document.getElementById('calc-vat-val');
+  const totalValEl = document.getElementById('calc-total-val');
+
+  if (netGoldEl) netGoldEl.innerText = `${totalNetGold.toFixed(2)} g`;
+  if (metalValEl) metalValEl.innerText = `${Math.round(totalMetalVal).toLocaleString()} EGP`;
+  if (makingValEl) makingValEl.innerText = `+ ${Math.round(totalMaking).toLocaleString()} EGP`;
+  if (subtotalEl) subtotalEl.innerText = `${Math.round(grossSubtotal).toLocaleString()} EGP`;
+  if (scrapValEl) scrapValEl.innerText = `- ${Math.round(totalScrapCredit).toLocaleString()} EGP`;
+  if (vatValEl) vatValEl.innerText = `+ ${statutoryVat.toLocaleString()} EGP`;
+  if (totalValEl) totalValEl.innerText = `${Math.round(netPayable).toLocaleString()} EGP`;
 }
 
-// --- Modals & Actions ---
+// --- Modals & Actions Setup ---
 function setupModals() {
   // Scrap modal
   const btnScrap = document.getElementById('btn-open-scrap-modal');
@@ -559,8 +859,8 @@ function setupModals() {
 
   if (btnScrap && modalScrap) {
     btnScrap.addEventListener('click', () => modalScrap.classList.add('active'));
-    closeScrap.addEventListener('click', () => modalScrap.classList.remove('active'));
-    applyScrap.addEventListener('click', () => {
+    closeScrap?.addEventListener('click', () => modalScrap.classList.remove('active'));
+    applyScrap?.addEventListener('click', () => {
       const karat = document.getElementById('scrap-karat').value;
       const wt = parseFloat(document.getElementById('scrap-weight').value);
       const rate = parseFloat(document.getElementById('scrap-rate').value);
@@ -579,17 +879,21 @@ function setupModals() {
   if (btnCheckout && modalInvoice) {
     btnCheckout.addEventListener('click', () => {
       if (state.cart.length === 0) {
-        alert("Cart is empty! Add jewelry items first.");
+        showToast("Cart is empty! Add jewelry items first.", "warning", "⚠️");
         return;
       }
       populateInvoiceModal();
       modalInvoice.classList.add('active');
     });
-    closeInvoice.addEventListener('click', () => {
+    closeInvoice?.addEventListener('click', () => {
       modalInvoice.classList.remove('active');
+      // Mark as sold and clear cart
+      const invNo = document.getElementById('inv-modal-number').innerText;
+      logAuditAction("COMPLETE_SALE", `Sale (${invNo})`, `Checked out ${state.cart.length} items by ${state.users[state.userRole].name}`);
       state.cart = [];
       state.tradeIns = [];
       updateCartUI();
+      showToast(`Sale finalized & archived to audit ledger. Official receipt issued!`, "success", "🧾");
     });
   }
 }
@@ -618,4 +922,168 @@ function populateInvoiceModal() {
   });
 
   document.getElementById('inv-modal-total').innerText = document.getElementById('calc-total-val').innerText;
+}
+
+// --- Ingest New Jewelry Piece Form Handler ---
+window.handleAddNewPiece = function(e) {
+  e.preventDefault();
+
+  const nameEn = document.getElementById('piece-name-en').value.trim();
+  const nameAr = document.getElementById('piece-name-ar').value.trim();
+  const sku = document.getElementById('piece-sku').value.trim().toUpperCase();
+  const karat = document.getElementById('piece-karat').value;
+  const grossWt = parseFloat(document.getElementById('piece-gross-wt').value);
+  const stoneTare = parseFloat(document.getElementById('piece-stone-tare').value) || 0.0;
+  const makingFee = parseFloat(document.getElementById('piece-making-fee').value);
+  const category = document.getElementById('piece-category').value;
+
+  if (grossWt <= 0 || grossWt <= stoneTare) {
+    showToast("Invalid weights: Gross weight must exceed stone tare.", "warning", "⚠️");
+    return;
+  }
+
+  const netGold = Math.round((grossWt - stoneTare) * 100) / 100;
+
+  // Pick suitable category image
+  const defaultImages = {
+    rings: "assets/images/diamond_solitaire_ring_1792597878725.jpg",
+    necklaces: "assets/images/byzantine_gold_choker_1792598803717.jpg",
+    bangles: "assets/images/cleopatra_gold_cuff_1792598857432.jpg",
+    bullion: "assets/images/gold_bullion_sovereign_1792598760193.jpg",
+    earrings: "assets/images/damascene_gold_ring_1792598690682.jpg"
+  };
+
+  const newPiece = {
+    id: `prod-${Date.now()}`,
+    sku: sku,
+    name: nameEn,
+    name_ar: nameAr,
+    category: category,
+    karat: karat,
+    gross_wt: grossWt,
+    stone_tare: stoneTare,
+    net_gold: netGold,
+    making_fee: makingFee,
+    hallmark: `${karat} • OFFICIAL CAIRO ASSAY`,
+    image: defaultImages[category] || defaultImages.rings,
+    status: "IN_STOCK"
+  };
+
+  state.inventory.unshift(newPiece);
+  renderInventoryTable();
+  renderPOSCatalog();
+  closeModal('new-piece-modal');
+  e.target.reset();
+
+  logAuditAction("INGEST_VAULT_ITEM", `Piece (${sku})`, `Added ${nameEn} (${karat}, ${grossWt}g) to vault`);
+  showToast(`Successfully registered ${nameEn} (${sku}) into physical custody vault!`, "success", "✨");
+};
+
+// --- Customer CRM Registration Handler ---
+window.handleAddNewCustomer = function(e) {
+  e.preventDefault();
+  const name = document.getElementById('cust-name').value.trim();
+  const phone = document.getElementById('cust-phone').value.trim();
+  const tier = document.getElementById('cust-tier').value;
+
+  const tableBody = document.querySelector('#view-customers tbody');
+  if (tableBody) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${name}</strong></td>
+      <td>${phone}</td>
+      <td><span style="color:var(--gold-primary); font-weight:700;">${tier}</span></td>
+      <td><strong>500 pts</strong></td>
+      <td style="color:var(--gold-primary); font-weight:700;">0 EGP</td>
+      <td><button class="btn btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="switchToView('pos')">New Sale</button></td>
+    `;
+    tableBody.prepend(tr);
+  }
+
+  closeModal('new-customer-modal');
+  e.target.reset();
+  logAuditAction("REGISTER_CUSTOMER", `Client (${name})`, `Registered new VIP profile with tier ${tier}`);
+  showToast(`Client ${name} registered in Maison CRM with tier ${tier}!`, "success", "👤");
+};
+
+// --- Wholesale Bullion Inflow Handler ---
+window.handleSupplierInflow = function(e) {
+  e.preventDefault();
+  const vendor = document.getElementById('supp-vendor').value;
+  const karat = document.getElementById('supp-karat').value;
+  const wt = parseFloat(document.getElementById('supp-weight').value);
+  const val = parseFloat(document.getElementById('supp-value').value);
+
+  closeModal('supplier-modal');
+  e.target.reset();
+  logAuditAction("SUPPLIER_INFLOW", `Supplier (${vendor})`, `Ingested ${wt}g of ${karat} bullion valued at ${val.toLocaleString()} EGP`);
+  showToast(`Bullion Shipment Inflow: ${wt}g (${karat}) credited from ${vendor}!`, "success", "🚚");
+};
+
+// --- Staff Account Creation Handler ---
+window.handleAddStaff = function(e) {
+  e.preventDefault();
+  const name = document.getElementById('staff-name').value.trim();
+  const email = document.getElementById('staff-email').value.trim();
+  const role = document.getElementById('staff-role').value;
+  const terminal = document.getElementById('staff-terminal').value.trim();
+
+  const tbody = document.querySelector('#view-employees tbody');
+  if (tbody) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${name}</strong></td>
+      <td>${email}</td>
+      <td><span>👤 ${role}</span></td>
+      <td>${terminal}</td>
+      <td><span class="metric-badge">ACTIVE</span></td>
+      <td>POS Transactions & Scale Access</td>
+    `;
+    tbody.prepend(tr);
+  }
+
+  closeModal('new-staff-modal');
+  e.target.reset();
+  logAuditAction("CREATE_STAFF_ACCOUNT", `User (${email})`, `Provisioned role ${role} on ${terminal}`);
+  showToast(`Employee account created for ${name} (${email}) with terminal ${terminal}`, "success", "🛡");
+};
+
+// --- Stock Count Audit Simulator ---
+window.simulateStockAudit = function() {
+  showToast("Scanning 3,842 serialized RFID tags & calibrating hydrostatic weights...", "info", "🔍");
+  setTimeout(() => {
+    showToast("Audit Complete: 100% assay match. Zero unverified gold scrap detected.", "success", "✅");
+    logAuditAction("PHYSICAL_STOCK_AUDIT", "Custody Vault", "Completed 100% RFID & scale stock audit match");
+  }, 1200);
+};
+
+// --- Audit Trail Logging ---
+function logAuditAction(action, entity, details) {
+  const newLog = {
+    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC',
+    user: state.users[state.userRole].name,
+    action: action,
+    entity: entity,
+    details: details
+  };
+  state.auditLogs.unshift(newLog);
+  renderAuditTable();
+}
+
+function renderAuditTable() {
+  const tbody = document.getElementById('audit-log-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  state.auditLogs.slice(0, 15).forEach(log => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${log.timestamp}</td>
+      <td><strong>${log.user}</strong></td>
+      <td><strong style="color:var(--gold-primary);">${log.action}</strong></td>
+      <td>${log.entity}</td>
+      <td>${log.details}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 }

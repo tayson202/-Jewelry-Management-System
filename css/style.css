@@ -1307,6 +1307,143 @@ body {
 }
 
 /* ==========================================================================
+   11b. Confidential Masking & Employee Dashboard Enhancements
+   ========================================================================== */
+.confidential-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed rgba(245, 158, 11, 0.35);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+  user-select: none;
+}
+
+.employee-only-banner {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(212, 175, 55, 0.08) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.scale-pulse {
+  animation: scaleGlow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes scaleGlow {
+  0% {
+    color: var(--emerald-live);
+    text-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
+  }
+  100% {
+    color: #34d399;
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.9);
+  }
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  pointer-events: none;
+}
+
+[dir="rtl"] .toast-container {
+  right: auto;
+  left: 1.5rem;
+}
+
+.toast {
+  pointer-events: auto;
+  min-width: 280px;
+  max-width: 420px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.toast-success {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.toast-info {
+  border-color: var(--gold-primary);
+}
+
+.toast-warning {
+  border-color: #f59e0b;
+}
+
+/* Filter Chips */
+.filter-chip-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.filter-chip {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.filter-chip.active, .filter-chip:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+/* ==========================================================================
    12. Print Stylesheet (Blueprint Section 16)
    ========================================================================== */
 @media print {
