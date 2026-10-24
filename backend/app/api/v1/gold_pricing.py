@@ -99,3 +99,13 @@ def get_gold_price_history():
         {"date": "May 22", "label": "May 22 (2,890 EGP)", "price": 2890.00},
         {"date": "Now", "label": "Now (2,992.50 EGP)", "price": 2992.50}
     ]
+
+@router.get("/live-feed")
+async def get_live_market_feed(db: Session = Depends(get_db)):
+    """
+    Fetches real-time Egyptian gold market prices from primary provider (getdaleelak.com)
+    with ETag support and secondary fallback (goldpricestoday.net), saving snapshots to DB.
+    """
+    from app.services.gold_feed_service import GoldFeedService
+    return await GoldFeedService.fetch_market_feed(db=db)
+

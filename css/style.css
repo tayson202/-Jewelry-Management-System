@@ -33,7 +33,17 @@ body {
 [dir="rtl"] {
   direction: rtl;
   text-align: right;
-  font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: 'Cairo', 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] .brand-title,
+[dir="rtl"] .panel-title,
+[dir="rtl"] .page-title {
+  font-family: 'Cairo', 'Cinzel', serif;
+  font-weight: 700;
 }
 
 [dir="rtl"] p,
@@ -1477,3 +1487,553 @@ body {
     padding: 0 !important;
   }
 }
+
+/* ==========================================================================
+   13. Full-Screen Egyptian Gold Market Prices Dashboard
+   ========================================================================== */
+.gold-market-fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  background: radial-gradient(ellipse at 50% 8%, rgba(212, 175, 55, 0.15) 0%, rgba(13, 16, 23, 0.98) 55%, #080a0e 100%);
+  color: #f3f4f6;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+}
+
+.gold-market-fullscreen.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Header Area */
+.gmd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  margin-bottom: 1.5rem;
+}
+
+.gmd-brand-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gmd-logo-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d4af37, #996515);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.gmd-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+[dir="rtl"] .gmd-title {
+  font-family: 'Cairo', serif;
+}
+
+.gmd-title span {
+  color: var(--gold-primary, #d4af37);
+  background: linear-gradient(135deg, #f7d070, #d4af37, #aa781c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gmd-subtitle {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 0.15rem;
+}
+
+/* Digital Clock in Cairo Time */
+.gmd-clock-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(18, 22, 32, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 10px;
+  padding: 0.5rem 1.25rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.gmd-clock-time {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: 'Courier New', monospace, var(--font-sans);
+  color: var(--gold-primary, #d4af37);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.gmd-clock-date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Status Pill */
+.gmd-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gmd-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.gmd-status-pill.live {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+.gmd-status-pill.live .gmd-status-dot {
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulse-green 2s infinite;
+}
+
+.gmd-status-pill.delayed {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+}
+.gmd-status-pill.delayed .gmd-status-dot {
+  background: #f59e0b;
+}
+
+.gmd-status-pill.offline {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+.gmd-status-pill.offline .gmd-status-dot {
+  background: #ef4444;
+}
+
+@keyframes pulse-green {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Action Controls */
+.gmd-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.gmd-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #f3f4f6;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.gmd-btn:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--gold-primary, #d4af37);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.gmd-btn-primary {
+  background: linear-gradient(135deg, #d4af37, #996515);
+  border-color: #d4af37;
+  color: #0b0d10;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.gmd-btn-primary:hover {
+  background: linear-gradient(135deg, #f3cf6a, #d4af37);
+  color: #000;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.5);
+}
+
+/* Quick Indicators Ribbon */
+.gmd-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.gmd-ribbon-card {
+  background: rgba(18, 22, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gmd-ribbon-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gmd-ribbon-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Karats Grid */
+.gmd-karats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* Karat Card */
+.gmd-card {
+  background: linear-gradient(165deg, rgba(22, 28, 42, 0.85) 0%, rgba(13, 16, 24, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 14px;
+  padding: 1.4rem;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.gmd-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 12px 30px rgba(212, 175, 55, 0.15);
+}
+
+.gmd-card.hero-card {
+  border-width: 2px;
+  border-color: var(--gold-primary, #d4af37);
+  background: linear-gradient(165deg, rgba(30, 36, 52, 0.95) 0%, rgba(15, 19, 28, 0.98) 100%);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.22);
+}
+
+.gmd-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.gmd-karat-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gmd-purity-tag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--gold-primary, #d4af37);
+  font-weight: 700;
+}
+
+.gmd-badge-type {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.gmd-badge-verified {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.gmd-badge-indicative {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Prices Side-by-Side */
+.gmd-price-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gmd-price-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.gmd-price-box.sell {
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+  padding-inline-end: 0.75rem;
+}
+
+.gmd-price-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.gmd-price-num {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+  font-family: var(--font-sans);
+}
+
+.gmd-price-box.sell .gmd-price-num {
+  color: var(--gold-primary, #d4af37);
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.gmd-price-box.buy .gmd-price-num {
+  color: #34d399;
+}
+
+.gmd-price-unit {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #9ca3af;
+  margin-inline-start: 0.25rem;
+}
+
+/* Movement and Spread Row */
+.gmd-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.gmd-movement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.gmd-movement-badge.up {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.gmd-movement-badge.down {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.gmd-movement-badge.flat {
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.gmd-spread-text {
+  font-weight: 600;
+  color: #d1d5db;
+}
+
+.gmd-card-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  color: #6b7280;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Flash Animations on Price Change */
+@keyframes flash-gold-glow {
+  0% { box-shadow: 0 0 0px rgba(212, 175, 55, 0); }
+  50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.2); }
+  100% { box-shadow: 0 0 0px rgba(212, 175, 55, 0); }
+}
+
+.gmd-card.price-flash {
+  animation: flash-gold-glow 1.5s ease-out;
+}
+
+/* Dealers Table Section */
+.gmd-dealers-section {
+  background: rgba(15, 19, 28, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.gmd-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gmd-dealers-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gmd-dealers-table th {
+  text-align: start;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gmd-dealers-table td {
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Footer & Attribution */
+.gmd-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.gmd-attribution a {
+  color: var(--gold-primary, #d4af37);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.gmd-attribution a:hover {
+  color: #fff;
+}
+
+.gmd-timestamps {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Top Live Screen Bar in Main App Header */
+.btn-live-market-screen {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(153, 101, 21, 0.3));
+  border: 1px solid var(--gold-primary, #d4af37);
+  color: var(--gold-primary, #d4af37);
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.8rem;
+  animation: pulse-border 3s infinite;
+}
+
+.btn-live-market-screen:hover {
+  background: linear-gradient(135deg, #d4af37, #996515);
+  color: #000;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  transform: translateY(-1px);
+}
+
+@keyframes pulse-border {
+  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+@media (max-width: 768px) {
+  .gold-market-fullscreen {
+    padding: 1rem;
+  }
+  .gmd-karats-grid {
+    grid-template-columns: 1fr;
+  }
+  .gmd-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .gmd-actions {
+    justify-content: flex-end;
+  }
+}
+

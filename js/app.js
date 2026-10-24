@@ -186,54 +186,554 @@ function getItemPrice(item) {
 // --- Bilingual Dictionaries ---
 const I18N = {
   en: {
+    terminal: "TERMINAL",
+    live_lbm: "LIVE LBM",
+    nav_operations: "OPERATIONS",
+    nav_commerce: "COMMERCE & LEDGER",
+    nav_governance: "GOVERNANCE & VAULT",
     dashboard: "Dashboard",
     inventory: "Inventory Vault",
     pos: "POS Counter",
     gold_engine: "Gold Engine",
-    purchases: "Purchases",
-    customers: "Customers & Returns",
-    reports: "Analytics & Reports",
+    purchases: "Purchases & Suppliers",
+    customers: "Customers CRM",
+    reports: "Financial Reports & COGS",
+    staff_rbac: "Staff & RBAC",
+    audit_logs: "Audit Logs",
+    vault_status_label: "VAULT STATUS",
+    vault_status_val: "SECURE • 999.9",
     vault_status: "VAULT STATUS: SECURE • 999.9",
+    search_placeholder: "Search SKU, Barcode, Client... (Ctrl+K)",
+    role_prefix: "Role:",
+    dash_eyebrow: "EXECUTIVE TERMINAL • CAIRO FLAGSHIP • VAULT A & B",
+    dash_quick_pos: "⚡ Quick Sale (POS)",
     total_valuation: "VAULT TOTAL VALUATION",
     todays_sales: "TODAY'S POS SALES",
+    completed_slips: "18 Completed Slips",
     realized_margin: "REALIZED MARGIN & FEES",
+    badge_fabrique: "FABRIQUE",
+    making_and_spread: "Making: 54,200 • Spread: 32,200",
     active_pieces: "ACTIVE ATELIER PIECES",
-    search_placeholder: "Search SKU, Barcode, Client... (Ctrl+K)",
-    add_to_cart: "Add to Cart",
+    qc_ready: "4 QC READY",
+    in_works: "IN WORKS",
+    casting_active: "999.9 Fine Casting Active",
+    digital_vault: "⚜ Digital Vault",
+    in_custody: "3,842 in custody",
+    item_1_title: "1. Aethelred Solitaire",
+    item_2_title: "2. Vendôme Choker",
+    item_3_title: "3. Nile Royal Bangles",
+    item_4_title: "4. PAMP Suisse Ingot 50g",
+    featured_masterpiece: "FEATURED MASTERPIECE",
+    item_1_full_name: "Aethelred Solitaire Royale",
+    item_1_spec: "Round Brilliant 2.1ct Diamond • GIA #22849102 • 18K Yellow Gold",
+    raw_gold_val: "RAW GOLD VALUE",
+    making_charge: "MAKING CHARGE",
+    diamond_tare: "DIAMOND TARE",
+    commit_to_pos: "🛒 Commit to POS Counter (73,850 EGP)",
+    pipeline_title: "ATELIER PRODUCTION PIPELINE (18 ACTIVE CUSTOM PIECES)",
+    pipeline_cad: "1. CAD/Wax",
+    pipeline_casting: "2. Casting",
+    pipeline_setting: "3. Setting",
+    pipeline_qc: "4. QC Assay",
+    pipeline_ready: "5. Ready POS",
+    portfolio_trend: "Portfolio Valuation Trend",
+    bullion_vs_gems: "● Bullion vs Gems",
+    vault_assayed_by_karat: "VAULT ASSAYED WEIGHT BY KARAT",
+    bridal_21k: "● 21K Bridal & Modern Jewelry",
+    gem_18k: "● 18K Gemstone Sets",
+    bars_24k: "● 24K Minted Bars",
+    filigree_22k: "● 22K Gulf Filigree",
+    live_vault_ops: "Live Vault Operations",
+    vault_op_sold: "Sold: 21K Damascene Ring",
+    vault_op_inflow: "Custody Inflow: +500g 24K Ingot",
+    inv_eyebrow: "MAISON CAIRO VAULT • SYNCED WITH LBM LIVE INDEX",
+    inv_title: "Digital Vault Inventory",
+    inv_subtitle: "Real-time bullion weights, calibrated tare deductions, dynamic karat re-pricing, and serialized hallmarking.",
+    btn_stock_audit: "⚖ Stock Count Audit",
+    add_piece: "+ Add New Jewelry Piece",
+    filter_all: "All Karats (الكل)",
+    filter_24k: "24K Pure Bullion",
+    filter_21k: "21K Egyptian Standard",
+    filter_18k: "18K Italian Mounts",
+    th_piece_sku: "PIECE / SKU",
+    th_purity: "PURITY",
+    th_gross_wt: "GROSS WT.",
+    th_stone_tare: "STONE TARE",
+    th_net_gold: "NET GOLD",
+    th_making_fee: "MAKING FEE",
+    th_retail: "RETAIL (EGP)",
+    th_action: "ACTION",
+    pos_eyebrow: "REGISTER #04 / TARIQ AL-FAHIM (SENIOR APPRAISER) • METTLER USB SCALE: CALIBRATED 0.000g",
+    pos_title: "Point of Sale (Counter Terminal)",
+    pos_subtitle: "Real-time Karat spot valuations locked to Cairo Precious Metals Exchange ticker.",
+    scale_btn_prefix: "⚖ Weigh on USB Scale",
+    scrap_trade_in: "+ Gold Scrap / Trade-In",
+    pos_filter_all: "All Jewelry (جميع القطع)",
+    pos_filter_21k: "21K Bridal Sets",
+    pos_filter_18k: "18K Italian Mounts",
+    pos_filter_24k: "24K Investment Bars",
     cart_registry: "Cart Registry",
-    checkout: "Complete Sale & Issue ETA Invoice",
-    net_payable: "NET PAYABLE TOTAL",
+    vip_client_name: "Laila Nour El-Din",
+    vip_client_tier: "VIP Tier 1 • 4,200 Aurum Pts",
+    total_net_gold: "Total Net Gold Weight",
+    metal_base_value: "Metal Base Value (Market Fix)",
     making_charges: "Making Charges (Fabrique)",
     subtotal: "Gross Goods Subtotal",
+    scrap_credit_deducted: "Customer Scrap Credit Deducted",
     tax_eta: "ETA Statutory Sales Tax (14% on Making)",
-    scrap_trade_in: "+ Gold Scrap / Trade-In",
-    customer_tier: "VIP Tier 1",
-    add_piece: "+ Add New Jewelry Piece"
+    net_payable: "NET PAYABLE TOTAL",
+    checkout: "Complete Sale & Issue ETA Invoice",
+    ge_eyebrow: "AURUM ENGINE • BULLION ARBITRAGE & COGS • LIVE SAGHA FEED",
+    ge_title: "Global Vault Master Rate & Karat Cascade",
+    ge_subtitle: "Central Egyptian Bullion Clearinghouse (Sagha Desk) automated assay synchronization.",
+    ge_base_panel: "BASE 24K PURE INGOT RATE (999.9 FINE / 100.0%)",
+    lbm_price: "● LBM: $2,342.40 / oz",
+    btn_update_rate: "⚡ Update Global Rate",
+    ge_22k_title: "22 KARAT (91.67%)",
+    ge_22k_spread: "Spread: Sell +45 EGP",
+    ge_21k_title: "21K BENCHMARK (87.5%)",
+    ge_21k_subtitle: "Egyptian Pivot Standard",
+    ge_18k_title: "18 KARAT (75.00%)",
+    ge_18k_subtitle: "Italian Standard",
+    ge_14k_title: "14 KARAT (58.33%)",
+    ge_14k_subtitle: "Commercial Grade",
+    masnaeya_policy_title: "Masnaeya & Profit Floors",
+    masnaeya_policy_desc: "Enforces atelier production thresholds, prevents cashier undercutting, and locks minimum cash contributions.",
+    policy_italian_chains: "Italian Laser Chains (18K)",
+    policy_italian_floor: "Floor: +12% Net",
+    policy_filigree: "Handcrafted Filigree (21K)",
+    policy_filigree_floor: "Khan el-Khalili Atelier",
+    policy_bullion_bars: "Plain Bullion & BTC Bars",
+    policy_bullion_pack: "Sealed Packaging",
+    purchases_eyebrow: "RAW BULLION & ATELIER SUPPLY CHAIN",
+    purchases_title: "Purchases & Supplier Balances",
+    purchases_subtitle: "Track wholesale gold shipments, assayed metal weights, supplier receivables, and bullion accounts.",
+    btn_record_supplier: "+ Record Supplier Inflow",
+    supplier_debt: "TOTAL OUTSTANDING SUPPLIER DEBT",
+    across_desks: "Across 2 Primary Bullion Desks",
+    consignment_scrap: "CONSIGNMENT SCRAP HELD",
+    verified_vault: "Verified Hydrostatic Vault A",
+    monthly_bullion: "RAW BULLION PURCHASED (MONTH)",
+    active_vendors: "ACTIVE SUPPLIERS",
+    vendors_unit: "VENDORS",
+    th_supplier_desk: "SUPPLIER / DESK",
+    th_phone: "PHONE / CONTACT",
+    th_primary_metal: "PRIMARY METAL",
+    th_balance: "BALANCE (EGP)",
+    th_status: "STATUS",
+    supp_sagha_name: "Central Egyptian Bullion Clearinghouse (Sagha Desk)",
+    supp_ingot_type: "24K / 21K Ingot",
+    status_active: "ACTIVE",
+    btn_settle: "Settle",
+    supp_vicenza_name: "Vicenza Luxury Mounts SpA (Italy)",
+    supp_chain_type: "18K Laser Chain",
+    status_in_transit: "SETTLED IN TRANSIT",
+    crm_eyebrow: "VIP CLIENTELE & LOYALTY TIERS",
+    crm_title: "Customers & CRM Registry",
+    crm_subtitle: "Track customer acquisition, gold purchases, trade-in records, and loyalty privileges.",
+    btn_add_customer: "+ Register Customer",
+    th_client_name: "CLIENT NAME",
+    th_tier: "TIER",
+    th_reward_pts: "AURUM REWARD PTS",
+    th_lifetime_purchases: "LIFETIME PURCHASES",
+    tier_vip: "💎 VIP Tier 1",
+    tier_gold: "⭐ Gold Tier",
+    tier_standard: "Standard Tier",
+    btn_new_sale: "New Sale",
+    reports_eyebrow: "IFRS IAS 2 COMPLIANT COGS & MARGIN ANALYSIS",
+    reports_title: "Financial Reports & Profitability",
+    reports_subtitle: "Quarantined unrealized spot inflation, net operating profit, and store overhead breakdown.",
+    monthly_gross_revenue: "GROSS SALES REVENUE (MONTH)",
+    cogs_label: "COST OF GOODS SOLD (COGS)",
+    metal_cost_label: "Pure Metal Replacement Cost",
+    realized_workmanship: "REALIZED WORKMANSHIP PROFIT",
+    fabrique_label: "Fabrique Contribution",
+    net_operating_profit: "NET OPERATING PROFIT",
+    net_profit_footer: "Net of Rent, Salaries & Tax",
+    operating_expenses_ledger: "Monthly Operating Expense Ledger (مصاريف التشغيل)",
+    expense_rent_title: "Boutique & Atelier Rent (Zamalek / Cairo Flagship)",
+    expense_rent_desc: "Recurring Facility Cost",
+    expense_salaries_title: "Atelier Master Goldsmith Salaries & Appraiser Bonuses",
+    expense_salaries_desc: "6 Goldsmiths & 3 POS Appraisers",
+    expense_packaging_title: "Luxury Suede Packaging & Custom Velvet Presentation Cases",
+    expense_packaging_desc: "Bespoke Boxes with Embossed Gold Foil",
+    expense_transport_title: "Security Armored Transport & Hydrostatic Assay Calibration",
+    expense_transport_desc: "Mettler Toledo Certified Audit",
+    staff_eyebrow: "IDENTITY & ROLE-BASED ACCESS CONTROL",
+    staff_title: "Employee Accounts & Permissions",
+    staff_subtitle: "Control cashier privileges, audit trail ownership, and appraiser workstation authorizations.",
+    btn_add_staff: "+ Add Staff Account",
+    th_staff_member: "STAFF MEMBER",
+    th_email: "EMAIL",
+    th_role: "ROLE",
+    th_terminal: "TERMINAL ASSIGNED",
+    th_permissions: "PERMISSIONS",
+    role_owner_tag: "👑 ADMIN / OWNER",
+    perm_admin: "Full System & COGS Financials",
+    role_appraiser_tag: "👤 SENIOR APPRAISER",
+    perm_cashier: "POS Sales & Scrap Evaluation Only",
+    role_goldsmith_tag: "👤 ATELIER GOLDSMITH",
+    perm_goldsmith: "Production Pipeline & Assay Verification",
+    audit_eyebrow: "IMMUTABLE SECURITY LEDGER",
+    audit_title: "System Audit & Compliance Logs",
+    audit_subtitle: "Permanent cryptographic trail of all spot recalculations, sales checkouts, and stock overrides.",
+    th_timestamp: "TIMESTAMP",
+    th_user: "USER / CASHIER",
+    th_action_type: "ACTION",
+    th_entity: "ENTITY",
+    th_details: "DETAILS",
+    scrap_modal_title: "♻ Customer Scrap Gold Trade-in",
+    scrap_karat_label: "Gold Purity / Karat",
+    scrap_weight_label: "Gross Scrap Weight (Grams)",
+    btn_read_scale: "⚖ Read USB Scale",
+    scrap_rate_label: "Applied Buy-Back Rate (EGP / Gram)",
+    btn_apply_scrap: "Apply Deduction to Current Invoice",
+    inv_shop_title: "MAISON D'OR HAUTE JOAILLERIE",
+    inv_tax_reg: "Cairo Flagship Boutique • Egyptian Tax Authority (ETA) Registered",
+    inv_th_item: "Item",
+    inv_th_karat: "Karat",
+    inv_th_gw: "GW",
+    inv_th_nw: "NW",
+    inv_th_total: "Total",
+    inv_final_due: "FINAL AMOUNT DUE:",
+    inv_legal_note: "Includes official Egyptian Hallmarking and 14% ETA VAT strictly on making fees.",
+    btn_inv_done: "Done",
+    btn_inv_print: "🖨 Print Invoice",
+    add_piece_modal_title: "⚜ Add Jewelry Piece to Vault",
+    piece_name_en_label: "Piece Name (EN)",
+    piece_name_ar_label: "Piece Name (AR)",
+    piece_sku_label: "SKU / Hallmarking Code",
+    piece_karat_label: "Karat Purity",
+    piece_gw_label: "Gross Wt (g)",
+    piece_tare_label: "Tare / Gems (g)",
+    piece_making_label: "Making Fee (EGP/g)",
+    piece_category_label: "Category",
+    btn_save_piece: "Confirm & Ingest Into Custody Vault",
+    add_cust_modal_title: "👤 Register VIP Customer",
+    cust_name_label: "Full Customer Name",
+    cust_phone_label: "Mobile / WhatsApp Phone",
+    cust_tier_label: "Loyalty Tier",
+    btn_save_customer: "Save Client to Atelier Registry",
+    supp_modal_title: "🚚 Record Wholesale Bullion Inflow",
+    supp_vendor_label: "Wholesale Supplier / Clearing Desk",
+    supp_karat_label: "Metal Purity / Karat",
+    supp_weight_label: "Inflow Weight (Grams)",
+    supp_value_label: "Total Value (EGP)",
+    btn_save_supplier: "Ingest Wholesale Metal to Vault Ledger",
+    staff_modal_title: "🛡 Create Staff / Appraiser Account",
+    staff_name_label: "Employee Full Name",
+    staff_email_label: "Work Email",
+    staff_role_label: "System Role & RBAC Clearance",
+    staff_terminal_label: "Assigned Workstation Terminal",
+    btn_save_staff: "Provision User & Issue Cryptographic Token",
+    nav_live_market: "Live Gold Board",
+    nav_market_screen: "Live Gold Display",
+    dash_market_screen: "Live Gold Board",
+    gmd_brand_gold: "3M DAHAB",
+    gmd_title: "Egyptian Gold Market Board",
+    gmd_subtitle: "Real-Time Official Sagha & Bullion Pricing Display (Cairo Exchange)",
+    gmd_status_live: "LIVE • Verified Market Quotes",
+    gmd_status_delayed: "DELAYED • Cached Market Quotes",
+    gmd_status_offline: "OFFLINE • Operating with Local Vault Cache",
+    gmd_refresh: "Refresh Now",
+    gmd_fullscreen: "Fullscreen",
+    gmd_enter_dash: "Enter Management Dashboard ➔",
+    gmd_ribbon_gold_pound: "Gold Pound (8g 21K)",
+    gmd_ribbon_ounce_usd: "Global Gold Ounce (XAU/USD)",
+    gmd_ribbon_usd_egp: "Official USD / EGP Rate",
+    gmd_ribbon_next_refresh: "Next Auto Refresh",
+    gmd_dealers_title: "Live Dealer Quotes from Leading Egyptian Bullion Houses (21K)",
+    gmd_th_dealer: "Dealer / Bullion House",
+    gmd_th_karat: "Karat",
+    gmd_th_buy: "We Buy From You (EGP)",
+    gmd_th_sell: "We Sell To You (EGP)",
+    gmd_th_spread: "Spread",
+    gmd_th_status: "Status",
+    gmd_provider_label: "Primary Feed Provider:",
+    gmd_fallback_label: "Comparison Provider:",
+    gmd_disclaimer: "Reference spot rates for Egyptian jewelry market, subject to real-time changes.",
+    gmd_observed_label: "Source Observed:",
+    gmd_retrieved_label: "Last Retrieved:",
+    gmd_sell_label: "Sell (To Customer)",
+    gmd_buy_label: "Buy (From Customer)",
+    gmd_spread_label: "Trading Spread",
+    gmd_verified_quote: "Verified Sagha Quote",
+    gmd_indicative_quote: "Indicative Estimate"
   },
   ar: {
+    terminal: "محطة الصاغة",
+    live_lbm: "بورصة الذهب مباشر",
+    nav_operations: "العمليات والتشغيل",
+    nav_commerce: "المعاملات والتجارة",
+    nav_governance: "الإدارة والخزينة المركزية",
     dashboard: "لوحة التحكم",
     inventory: "خزينة المخزون",
     pos: "نقطة البيع (الكاونتر)",
     gold_engine: "محرك تسعير الذهب",
     purchases: "المشتريات والموردين",
-    customers: "العملاء والمرتجعات",
-    reports: "التقارير والأرباح",
+    customers: "سجل العملاء CRM",
+    reports: "التقارير المالية والأرباح",
+    staff_rbac: "الموظفين والصلاحيات",
+    audit_logs: "سجل التدقيق والأمان",
+    vault_status_label: "حالة الخزينة",
+    vault_status_val: "مؤمنة • 999.9",
     vault_status: "حالة الخزينة: مؤمنة • 999.9",
+    search_placeholder: "بحث بالكود، الباركود، العميل... (Ctrl+K)",
+    role_prefix: "الرتبة:",
+    dash_eyebrow: "المحطة الرئيسية • فرع القاهرة • خزينة أ & ب",
+    dash_quick_pos: "⚡ بيع سريع (كاونتر)",
     total_valuation: "إجمالي تقييم الخزينة",
     todays_sales: "مبيعات الكاونتر اليوم",
-    realized_margin: "هامش الربح والمصنعية المحققة",
-    active_pieces: "قطع تحت التصنيع بالورشة",
-    search_placeholder: "بحث بالكود، الباركود، العميل... (Ctrl+K)",
-    add_to_cart: "إضافة إلى الفاتورة",
+    completed_slips: "18 فاتورة مكتملة",
+    realized_margin: "أرباح المصنعية المحققة",
+    badge_fabrique: "المصنعية",
+    making_and_spread: "أجور المصنعية: 54,200 • فروق السعر: 32,200",
+    active_pieces: "قطع نشطة بالورشة",
+    qc_ready: "4 جاهزة للفحص",
+    in_works: "قيد التصنيع",
+    casting_active: "سكب وصب عيار 999.9 نشط",
+    digital_vault: "⚜ الخزينة الرقمية",
+    in_custody: "3,842 قطعة في الخزينة",
+    item_1_title: "1. خاتم سوليتير أثيلريد",
+    item_2_title: "2. طوق فاندوم الزهري",
+    item_3_title: "3. أساور النيل الملكية",
+    item_4_title: "4. سبيكة بامب 50 جرام",
+    featured_masterpiece: "القطعة الاستثنائية المميزة",
+    item_1_full_name: "خاتم سوليتير أثيلريد الملكي",
+    item_1_spec: "ألماس بريليانت 2.1 قيراط • شهادة GIA #22849102 • ذهب أصفر عيار 18",
+    raw_gold_val: "قيمة الذهب الخام",
+    making_charge: "قيمة المصنعية",
+    diamond_tare: "تصفية الفصوص",
+    commit_to_pos: "🛒 إضافة إلى الكاونتر للبيع (73,850 ج.م)",
+    pipeline_title: "مراحل تصنيع ورشة الذهب (18 قطعة مخصصة قيد العمل)",
+    pipeline_cad: "1. تصميم وشمع",
+    pipeline_casting: "2. صب وسكب",
+    pipeline_setting: "3. تركيب الفصوص",
+    pipeline_qc: "4. الدمغ ومطابقة العيار",
+    pipeline_ready: "5. جاهز للعرض",
+    portfolio_trend: "توزيع أوزان الخزينة حسب العيار",
+    bullion_vs_gems: "● سبائك ومصوغات",
+    vault_assayed_by_karat: "أوزان الخزينة المدموغة حسب العيار",
+    bridal_21k: "● عيار 21 مشغولات وزفاف",
+    gem_18k: "● عيار 18 أطقم مرصعة",
+    bars_24k: "● عيار 24 سبائك استثمار",
+    filigree_22k: "● عيار 22 خليجي منقوش",
+    live_vault_ops: "حركات الخزينة اللحظية",
+    vault_op_sold: "تم البيع: خاتم دمشقي عيار 21",
+    vault_op_inflow: "توريد للخزينة: +500 جرام سبيكة عيار 24",
+    inv_eyebrow: "خزينة ميزون دور • مربوطة بمؤشر الذهب العالمي",
+    inv_title: "خزينة المخزون والسبائك",
+    inv_subtitle: "أوزان الذهب الحية، تصفية الفصوص بدقة، تسعير لحظي لجميع العيارات، وأكواد الدمغة الرسمية.",
+    btn_stock_audit: "⚖ جرد ومطابقة الخزينة",
+    add_piece: "+ إضافة قطعة مجوهرات جديدة",
+    filter_all: "جميع العيارات (الكل)",
+    filter_24k: "عيار 24 سبائك نقية",
+    filter_21k: "عيار 21 المعيار المصري",
+    filter_18k: "عيار 18 إيطالي ومرصع",
+    th_piece_sku: "القطعة / الكود",
+    th_purity: "العيار",
+    th_gross_wt: "الوزن القائم",
+    th_stone_tare: "تصفية الفصوص",
+    th_net_gold: "صافي الذهب",
+    th_making_fee: "المصنعية/ج",
+    th_retail: "السعر الإجمالي (ج.م)",
+    th_action: "إجراء",
+    pos_eyebrow: "كاونتر رقم 04 / طارق الفهيم (كبير مثمني الذهب) • ميزان ميتلر USB: معاير 0.000 جرام",
+    pos_title: "نقطة البيع (كاونتر الصاغة)",
+    pos_subtitle: "تسعير لحظي لجرام الذهب مربوط بشاشة بورصة الصاغة المصرية.",
+    scale_btn_prefix: "⚖ قراءة الميزان الإلكتروني",
+    scrap_trade_in: "+ إضافة كسر دهب (استبدال)",
+    pos_filter_all: "جميع المعروضات",
+    pos_filter_21k: "أطقم عيار 21",
+    pos_filter_18k: "مشغولات عيار 18",
+    pos_filter_24k: "سبائك عيار 24",
     cart_registry: "بيان الفاتورة الحالية",
-    checkout: "إتمام البيع وإصدار الفاتورة الضريبية",
-    net_payable: "صافي المبلغ المستحق",
+    vip_client_name: "ليلى نور الدين",
+    vip_client_tier: "عميل مميز VIP فئة 1 • 4,200 نقطة ذهبية",
+    total_net_gold: "إجمالي صافي وزن الذهب",
+    metal_base_value: "قيمة الذهب الخام (سعر السوق)",
     making_charges: "إجمالي أجور المصنعية",
     subtotal: "إجمالي قيمة المصوغات",
+    scrap_credit_deducted: "خصم قيمة كسر الذهب المستبدل",
     tax_eta: "ضريبة القيمة المضافة (14% على المصنعية)",
-    scrap_trade_in: "+ إضافة كسر دهب (استبدال)",
-    customer_tier: "عميل مميز فئة أولى",
-    add_piece: "+ إضافة قطعة مجوهرات جديدة"
+    net_payable: "صافي المبلغ المستحق",
+    checkout: "إتمام البيع وإصدار الفاتورة الضريبية",
+    ge_eyebrow: "محرك أوروم • تسعير السبائك والمصنعية • ربط مباشر مع الصاغة",
+    ge_title: "السعر الرئيسي المرجعي وتسعير العيارات",
+    ge_subtitle: "تسوية ومزامنة أسعار الذهب لحظياً مع غرفة الصاغة المصرية والمقاصة المركزية.",
+    ge_base_panel: "سعر جرام عيار 24 الخام النقي (عيار 999.9 / 100%)",
+    lbm_price: "● أونصة الذهب: $2,342.40",
+    btn_update_rate: "⚡ تحديث سعر الذهب وإعادة الحساب",
+    ge_22k_title: "عيار 22 (91.67%)",
+    ge_22k_spread: "فرق البيع والشراء: +45 ج.م",
+    ge_21k_title: "عيار 21 (87.5% معيار السوق المصري)",
+    ge_21k_subtitle: "المعيار الأساسي للصاغة المصرية",
+    ge_18k_title: "عيار 18 (75.00%)",
+    ge_18k_subtitle: "معيار الذهب الإيطالي",
+    ge_14k_title: "عيار 14 (58.33%)",
+    ge_14k_subtitle: "العيار التجاري",
+    masnaeya_policy_title: "سياسة أجور المصنعية والحد الأدنى للربح",
+    masnaeya_policy_desc: "تطبيق حدود دنيا لأجور الورشة ومنع الكاشير من تخفيض المصنعية لحماية الأرباح.",
+    policy_italian_chains: "سلاسل ليزر إيطالي (عيار 18)",
+    policy_italian_floor: "الحد الأدنى: +12% صافي",
+    policy_filigree: "مشغولات مخرمة ومنقوشة (عيار 21)",
+    policy_filigree_floor: "ورش خان الخليلي",
+    policy_bullion_bars: "سبائك خام وجنيهات BTC",
+    policy_bullion_pack: "مغلفة ومدموغة رسمي",
+    purchases_eyebrow: "سلسلة إمداد الذهب الخام ومسابك الصاغة",
+    purchases_title: "المشتريات وحسابات الموردين",
+    purchases_subtitle: "متابعة شحنات الذهب بالجملة، وأوزان السبائك المدموغة، ومستحقات تجار الصاغة.",
+    btn_record_supplier: "+ تسجيل توريد ذهب خام",
+    supplier_debt: "إجمالي مستحقات الموردين القائمة",
+    across_desks: "عبر مكاتب التداول الرئيسية بالصاغة",
+    consignment_scrap: "كسر ذهب بالأمانة بالخزينة",
+    verified_vault: "خزينة أ - فحص هيدروستاتيكي",
+    monthly_bullion: "سبائك خام مشتراة (شهرياً)",
+    active_vendors: "الموردين النشطين",
+    vendors_unit: "تجار",
+    th_supplier_desk: "المورد / مكتب التداول",
+    th_phone: "الهاتف / التواصل",
+    th_primary_metal: "الذهب المورد",
+    th_balance: "الرصيد المتبقي (ج.م)",
+    th_status: "الحالة",
+    supp_sagha_name: "المقاصة المركزية لتجارة الذهب (غرفة الصاغة)",
+    supp_ingot_type: "سبائك عيار 24 وعيار 21",
+    status_active: "نشط",
+    btn_settle: "تسوية",
+    supp_vicenza_name: "شركة فيتشنزا الإيطالية للمصوغات (إيطاليا)",
+    supp_chain_type: "سلاسل ليزر عيار 18",
+    status_in_transit: "مسدد قيد الشحن",
+    crm_eyebrow: "كبار العملاء وفئات الولاء",
+    crm_title: "سجل العملاء وإدارة العلاقات CRM",
+    crm_subtitle: "متابعة مشتريات العملاء، وسجلات استبدال الذهب، ونقاط الولاء والمكافآت.",
+    btn_add_customer: "+ تسجيل عميل جديد",
+    th_client_name: "اسم العميل",
+    th_tier: "فئة العميل",
+    th_reward_pts: "نقاط أوروم الذهبية",
+    th_lifetime_purchases: "إجمالي المشتريات",
+    tier_vip: "💎 عميل VIP فئة 1",
+    tier_gold: "⭐ فئة ذهبية",
+    tier_standard: "فئة عادية",
+    btn_new_sale: "فاتورة جديدة",
+    reports_eyebrow: "تحليل تكلفة البضاعة المباعة وهوامش الربح طبقاً لمعايير المحاسبة",
+    reports_title: "التقارير المالية وهوامش الأرباح",
+    reports_subtitle: "فصل تضخم سعر الذهب عن صافي أرباح التشغيل والمصنعية والمصروفات.",
+    monthly_gross_revenue: "إجمالي إيراد المبيعات (الشهري)",
+    cogs_label: "تكلفة البضاعة المباعة (ذهب خام)",
+    metal_cost_label: "تكلفة استبدال المعدن الخام",
+    realized_workmanship: "أرباح المصنعية المحققة",
+    fabrique_label: "عائد وفروق المصنعية",
+    net_operating_profit: "صافي أرباح التشغيل",
+    net_profit_footer: "صافي بعد الإيجار والمرتبات والضرائب",
+    operating_expenses_ledger: "سجل مصاريف التشغيل الشهرية (مصاريف المتجر)",
+    expense_rent_title: "إيجار المعرض والورشة (فرع الزمالك / القاهرة)",
+    expense_rent_desc: "تكلفة المنشأة الدورية",
+    expense_salaries_title: "رواتب كبار الصاغة وحوافز مثمني الكاونتر",
+    expense_salaries_desc: "6 صاغة محترفين و3 مثمنين كاونتر",
+    expense_packaging_title: "علب قطيفة فاخرة وأكياس مخملية مطبوعة بماء الذهب",
+    expense_packaging_desc: "علب مخصصة مع دمغة ذهبية",
+    expense_transport_title: "حراسة مصفحة ومعايرة الموازين الإلكترونية الرسمية",
+    expense_transport_desc: "فحص واعتماد ميتلر توليدو الدوري",
+    staff_eyebrow: "إدارة الهوية وصلاحيات المستخدمين RBAC",
+    staff_title: "حسابات الموظفين والصلاحيات",
+    staff_subtitle: "تحديد صلاحيات الكاشير، وسجلات العمليات، ومحطات الوزن المعتمدة.",
+    btn_add_staff: "+ إضافة حساب موظف",
+    th_staff_member: "الموظف",
+    th_email: "البريد الإلكتروني",
+    th_role: "الرتبة / الدور",
+    th_terminal: "محطة العمل",
+    th_permissions: "الصلاحيات",
+    role_owner_tag: "👑 مالك المتجر / المدير العام",
+    perm_admin: "صلاحيات كاملة على النظام والتقارير المالية",
+    role_appraiser_tag: "👤 كبير مثمني الذهب / كاشير",
+    perm_cashier: "مبيعات الكاونتر وتثمين كسر الذهب فقط",
+    role_goldsmith_tag: "👤 صائغ ورشة محترف",
+    perm_goldsmith: "متابعة خط الإنتاج وفحص الدمغة والعيار",
+    audit_eyebrow: "سجل الأمان غير القابل للتعديل",
+    audit_title: "سجلات تدقيق النظام ومطابقة العمليات",
+    audit_subtitle: "توثيق مشفر لجميع عمليات تعديل الأسعار، وفواتير البيع، والتعديلات اليدوية.",
+    th_timestamp: "التوقيت",
+    th_user: "المستخدم / الكاشير",
+    th_action_type: "نوع الإجراء",
+    th_entity: "البيان / الفاتورة",
+    th_details: "التفاصيل",
+    scrap_modal_title: "♻ شراء واستبدال كسر ذهب من العميل",
+    scrap_karat_label: "عيار كسر الذهب",
+    scrap_weight_label: "الوزن القائم لكسر الذهب (جرام)",
+    btn_read_scale: "⚖ قراءة الميزان الإلكتروني",
+    scrap_rate_label: "سعر شراء الجرام المعتمد (ج.م / جرام)",
+    btn_apply_scrap: "تطبيق الخصم على الفاتورة الحالية",
+    inv_shop_title: "مجوهرات ميزون دور (عم دهب)",
+    inv_tax_reg: "المتجر الرئيسي - القاهرة • مسجل بمصلحة الضرائب المصرية (ETA)",
+    inv_th_item: "القطعة",
+    inv_th_karat: "العيار",
+    inv_th_gw: "وزن قائم",
+    inv_th_nw: "وزن صافي",
+    inv_th_total: "القيمة الإجمالية",
+    inv_final_due: "صافي المبلغ المطلوب سداده:",
+    inv_legal_note: "تشمل الدمغة الرسمية وضريبة القيمة المضافة 14% على المصنعية فقط طبقاً للقانون المصري.",
+    btn_inv_done: "إغلاق",
+    btn_inv_print: "🖨 طباعة الفاتورة الضريبية",
+    add_piece_modal_title: "⚜ إضافة قطعة مجوهرات إلى الخزينة",
+    piece_name_en_label: "اسم القطعة (بالإنجليزي)",
+    piece_name_ar_label: "اسم القطعة (بالعربي)",
+    piece_sku_label: "كود الصنف / الدمغة",
+    piece_karat_label: "العيار",
+    piece_gw_label: "الوزن القائم (جرام)",
+    piece_tare_label: "تصفية الفصوص (جرام)",
+    piece_making_label: "المصنعية (ج.م/جرام)",
+    piece_category_label: "التصنيف",
+    btn_save_piece: "تأكيد وإدراج القطعة في الخزينة",
+    add_cust_modal_title: "👤 تسجيل عميل VIP جديد",
+    cust_name_label: "اسم العميل بالكامل",
+    cust_phone_label: "رقم الهاتف / الواتساب",
+    cust_tier_label: "فئة الولاء",
+    btn_save_customer: "حفظ العميل في سجل الدار",
+    supp_modal_title: "🚚 تسجيل توريد سبائك ذهب خام بالجملة",
+    supp_vendor_label: "المورد / مكتب التداول",
+    supp_karat_label: "عيار الذهب",
+    supp_weight_label: "وزن الشحنة (جرام)",
+    supp_value_label: "القيمة الإجمالية (ج.م)",
+    btn_save_supplier: "إدراج الذهب المورد في رصيد الخزينة",
+    staff_modal_title: "🛡 إنشاء حساب موظف / مثمن ذهب",
+    staff_name_label: "الاسم بالكامل",
+    staff_email_label: "البريد الإلكتروني للعمل",
+    staff_role_label: "الرتبة والصلاحيات",
+    staff_terminal_label: "محطة الكاونتر المخصصة",
+    btn_save_staff: "إنشاء الحساب وإصدار رمز الأمان",
+    nav_live_market: "شاشة أسعار الصاغة",
+    nav_market_screen: "شاشة أسعار السوق المباشرة",
+    dash_market_screen: "شاشة أسعار الصاغة",
+    gmd_brand_gold: "3M DAHAB",
+    gmd_title: "بورصة أسعار الذهب بمصر",
+    gmd_subtitle: "شاشة العرض اللحظية لأسعار الصاغة والسبائك المصرية المعتمدة",
+    gmd_status_live: "مباشر • بيانات سوق معتمدة",
+    gmd_status_delayed: "متأخر • بيانات سوق سابقة",
+    gmd_status_offline: "غير متصل • وضع أوفلاين مع الخزينة",
+    gmd_refresh: "تحديث الآن",
+    gmd_fullscreen: "ملء الشاشة",
+    gmd_enter_dash: "الدخول إلى لوحة إدارة المتجر ➔",
+    gmd_ribbon_gold_pound: "جنيه الذهب (8 جرام عيار 21)",
+    gmd_ribbon_ounce_usd: "أوقية الذهب عالمياً (XAU/USD)",
+    gmd_ribbon_usd_egp: "سعر الدولار بالبنوك المصرية",
+    gmd_ribbon_next_refresh: "دورة التحديث التلقائي",
+    gmd_dealers_title: "أسعار التداول المباشرة لدى كبرى دور الصاغة والسبائك بمصر (عيار 21)",
+    gmd_th_dealer: "الجهة / دار الصاغة",
+    gmd_th_karat: "العيار",
+    gmd_th_buy: "سعر الشراء من العميل",
+    gmd_th_sell: "سعر البيع للعميل",
+    gmd_th_spread: "الفارق",
+    gmd_th_status: "الحالة",
+    gmd_provider_label: "مزود البيانات الأساسي:",
+    gmd_fallback_label: "مزود مقارن:",
+    gmd_disclaimer: "الأسعار استرشادية لتعاملات سوق الصاغة المصرية وتخضع لتقلبات السوق الفورية.",
+    gmd_observed_label: "توقيت رصد المصدر:",
+    gmd_retrieved_label: "آخر فحص ناجح:",
+    gmd_sell_label: "سعر البيع (للمستهلك)",
+    gmd_buy_label: "سعر الشراء (من المستهلك)",
+    gmd_spread_label: "فارق السعر",
+    gmd_verified_quote: "سعر صاغة معتمد",
+    gmd_indicative_quote: "عيار استرشادي"
   }
 };
 
@@ -253,6 +753,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAuditTable();
   updateCartUI();
   updateTickerDisplay();
+  if (window.MarketFeedEngine) {
+    MarketFeedEngine.init();
+  }
 });
 
 // --- Toast Notification Helper ---
@@ -508,13 +1011,41 @@ function setupLocaleToggle() {
 }
 
 function applyTranslations() {
-  const t = I18N[state.locale];
+  const t = I18N[state.locale] || I18N['en'];
+  const isAr = state.locale === 'ar';
+
+  // 1. Text elements with data-i18n
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (t[key]) el.innerText = t[key];
   });
+
+  // 2. Form input placeholders with data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t[key]) el.setAttribute('placeholder', t[key]);
+  });
+
+  // 3. Dynamic brand titles
+  const brandTitle = document.querySelector('.brand-title');
+  const brandSub = document.querySelector('.brand-subtitle');
+  if (brandTitle) brandTitle.innerText = isAr ? '3M DAHAB — دار المشغولات الذهبية' : '3M DAHAB JEWELRY OS';
+  if (brandSub) brandSub.innerText = isAr ? 'منظومة الصاغة وإدارة الخزينة ومكافحة التلاعب' : 'Haute Joaillerie & Vault ERP';
+
+  // 4. Update dynamic components
+  updateTickerDisplay();
   renderInventoryTable();
   renderPOSCatalog();
+  updateCartUI();
+  if (typeof renderAuditTable === 'function') renderAuditTable();
+
+  const gmdLang = document.getElementById('gmd-lang-label');
+  if (gmdLang) gmdLang.innerText = isAr ? 'English' : 'عربي';
+
+  if (window.MarketFeedEngine) {
+    MarketFeedEngine.updateClock();
+    MarketFeedEngine.renderUI();
+  }
 }
 
 // --- Live Digital Scale Simulator (Mettler Toledo USB) ---
@@ -594,6 +1125,7 @@ function getFilteredInventory() {
 
 // --- Live Ticker & Gold Engine ---
 function updateTickerDisplay() {
+  const isAr = state.locale === 'ar';
   const r24 = state.base24kRate;
   const r21 = getKaratRate('21K');
   const r18 = getKaratRate('18K');
@@ -602,9 +1134,12 @@ function updateTickerDisplay() {
   const el21 = document.getElementById('ticker-21k');
   const el18 = document.getElementById('ticker-18k');
 
-  if (el24) el24.innerText = `${r24.toLocaleString()} EGP/g`;
-  if (el21) el21.innerText = `${r21.toLocaleString()} EGP/g`;
-  if (el18) el18.innerText = `${r18.toLocaleString()} EGP/g`;
+  const rateUnit = isAr ? ' ج.م/جرام' : ' EGP/g';
+  const egpUnit = isAr ? ' ج.م' : ' EGP';
+
+  if (el24) el24.innerText = `${r24.toLocaleString()}${rateUnit}`;
+  if (el21) el21.innerText = `${r21.toLocaleString()}${rateUnit}`;
+  if (el18) el18.innerText = `${r18.toLocaleString()}${rateUnit}`;
 
   const ge24Input = document.getElementById('ge-base-24k');
   if (ge24Input && state.userRole === 'ADMIN') ge24Input.value = r24.toFixed(2);
@@ -614,10 +1149,10 @@ function updateTickerDisplay() {
   const ge18 = document.getElementById('ge-rate-18k');
   const ge14 = document.getElementById('ge-rate-14k');
 
-  if (ge22) ge22.innerText = `${getKaratRate('22K').toLocaleString()} EGP`;
-  if (ge21) ge21.innerText = `${getKaratRate('21K').toLocaleString()} EGP`;
-  if (ge18) ge18.innerText = `${getKaratRate('18K').toLocaleString()} EGP`;
-  if (ge14) ge14.innerText = `${getKaratRate('14K').toLocaleString()} EGP`;
+  if (ge22) ge22.innerText = `${getKaratRate('22K').toLocaleString()}${egpUnit}`;
+  if (ge21) ge21.innerText = `${getKaratRate('21K').toLocaleString()}${egpUnit}`;
+  if (ge18) ge18.innerText = `${getKaratRate('18K').toLocaleString()}${egpUnit}`;
+  if (ge14) ge14.innerText = `${getKaratRate('14K').toLocaleString()}${egpUnit}`;
 }
 
 function setupGoldEngine() {
@@ -653,9 +1188,13 @@ function renderInventoryTable() {
   tbody.innerHTML = '';
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);">No jewelry pieces match current filter criteria.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);">${isAr ? 'لا توجد قطع مطابقة لشروط البحث أو العيار المختار.' : 'No jewelry pieces match current filter criteria.'}</td></tr>`;
     return;
   }
+
+  const gUnit = isAr ? ' ج' : 'g';
+  const egpUnit = isAr ? ' ج.م' : ' EGP';
+  const feeUnit = isAr ? ' ج.م/ج' : ' EGP/g';
 
   filtered.forEach(item => {
     const price = getItemPrice(item);
@@ -672,14 +1211,14 @@ function renderInventoryTable() {
         </div>
       </td>
       <td><span class="karat-badge" style="position:static;">${item.karat}</span></td>
-      <td><strong>${item.gross_wt.toFixed(2)}g</strong></td>
-      <td style="color:var(--text-muted);">${item.stone_tare.toFixed(2)}g</td>
-      <td style="color:var(--gold-primary); font-weight:700;">${item.net_gold.toFixed(2)}g</td>
-      <td>${item.making_fee} EGP/g</td>
-      <td><strong style="color:var(--gold-primary); font-size:1rem;">${price.toLocaleString()} EGP</strong></td>
+      <td><strong>${item.gross_wt.toFixed(2)}${gUnit}</strong></td>
+      <td style="color:var(--text-muted);">${item.stone_tare.toFixed(2)}${gUnit}</td>
+      <td style="color:var(--gold-primary); font-weight:700;">${item.net_gold.toFixed(2)}${gUnit}</td>
+      <td>${item.making_fee}${feeUnit}</td>
+      <td><strong style="color:var(--gold-primary); font-size:1rem;">${price.toLocaleString()}${egpUnit}</strong></td>
       <td>
         <button class="btn btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="addToCart('${item.id}')">
-          ${isAr ? 'بيع' : 'POS'}
+          ${isAr ? 'بيع بالكاونتر' : 'POS'}
         </button>
       </td>
     `;
@@ -697,9 +1236,15 @@ function renderPOSCatalog() {
   grid.innerHTML = '';
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">No items found in POS catalog.</div>`;
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">${isAr ? 'لا توجد قطع مطابقة في كتالوج نقطة البيع.' : 'No items found in POS catalog.'}</div>`;
     return;
   }
+
+  const gUnit = isAr ? ' ج' : 'g';
+  const egpUnit = isAr ? 'ج.م' : 'EGP';
+  const feeLabel = isAr ? 'المصنعية' : 'Fee';
+  const feeUnit = isAr ? 'ج.م/ج' : 'EGP/g';
+  const addBtnText = isAr ? '+ أضف للسلة' : '+ Add';
 
   filtered.forEach(item => {
     const price = getItemPrice(item);
@@ -709,15 +1254,15 @@ function renderPOSCatalog() {
       <div class="jewelry-thumb">
         <img src="${item.image}" alt="${item.name}">
         <span class="karat-badge">${item.karat}</span>
-        <span class="weight-badge">${item.gross_wt.toFixed(2)}g</span>
+        <span class="weight-badge">${item.gross_wt.toFixed(2)}${gUnit}</span>
       </div>
       <div class="jewelry-details">
         <div class="jewelry-name">${isAr ? item.name_ar : item.name}</div>
-        <div class="jewelry-sku">${item.sku} • Fee: ${item.making_fee} EGP/g</div>
+        <div class="jewelry-sku">${item.sku} • ${feeLabel}: ${item.making_fee} ${feeUnit}</div>
         <div class="jewelry-price-row">
-          <div class="price-tag">${price.toLocaleString()} <small>EGP</small></div>
+          <div class="price-tag">${price.toLocaleString()} <small>${egpUnit}</small></div>
           <button class="btn btn-primary" style="padding:0.4rem 0.75rem; font-size:0.8rem;" onclick="addToCart('${item.id}')">
-            ${isAr ? '+ أضف' : '+ Add'}
+            ${addBtnText}
           </button>
         </div>
       </div>
@@ -770,9 +1315,10 @@ window.removeTradeIn = function(index) {
 };
 
 function updateCartUI() {
+  const isAr = state.locale === 'ar';
   const container = document.getElementById('cart-items-container');
   const countBadge = document.getElementById('cart-item-count');
-  if (countBadge) countBadge.innerText = `${state.cart.length} items`;
+  if (countBadge) countBadge.innerText = `${state.cart.length} ${isAr ? 'قطعة' : 'items'}`;
 
   if (!container) return;
   container.innerHTML = '';
@@ -780,6 +1326,12 @@ function updateCartUI() {
   let totalNetGold = 0.0;
   let totalMetalVal = 0.0;
   let totalMaking = 0.0;
+
+  const gUnit = isAr ? ' ج' : 'g';
+  const egpUnit = isAr ? ' ج.م' : ' EGP';
+  const nwLabel = isAr ? 'صافي الذهب' : 'NW';
+  const makingLabel = isAr ? 'المصنعية' : 'Making';
+  const removeLabel = isAr ? '✕ حذف' : '✕ Remove';
 
   state.cart.forEach((item, idx) => {
     const rate = getKaratRate(item.karat);
@@ -795,12 +1347,12 @@ function updateCartUI() {
     row.className = 'cart-item-row';
     row.innerHTML = `
       <div>
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-sub">${item.karat} • NW: ${item.net_gold.toFixed(2)}g • Making: ${makingVal.toLocaleString()} EGP</div>
+        <div class="cart-item-name">${isAr ? item.name_ar : item.name}</div>
+        <div class="cart-item-sub">${item.karat} • ${nwLabel}: ${item.net_gold.toFixed(2)}${gUnit} • ${makingLabel}: ${makingVal.toLocaleString()}${egpUnit}</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-weight:700; color:var(--gold-primary);">${itemTotal.toLocaleString()} EGP</div>
-        <button style="background:none; border:none; color:var(--ruby-alert); cursor:pointer; font-size:0.75rem;" onclick="removeFromCart(${idx})">✕ Remove</button>
+        <div style="font-weight:700; color:var(--gold-primary);">${itemTotal.toLocaleString()}${egpUnit}</div>
+        <button style="background:none; border:none; color:var(--ruby-alert); cursor:pointer; font-size:0.75rem;" onclick="removeFromCart(${idx})">${removeLabel}</button>
       </div>
     `;
     container.appendChild(row);
@@ -813,13 +1365,15 @@ function updateCartUI() {
     const scrapRow = document.createElement('div');
     scrapRow.className = 'cart-item-row';
     scrapRow.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    const scrapTitle = isAr ? `♻ كسر ذهب مستبدل (${t.karat})` : `♻ Scrap Trade-in (${t.karat})`;
+    const scrapRateText = isAr ? `${t.gross_wt.toFixed(2)} ج @ ${t.rate_per_g} ج.م/ج` : `${t.gross_wt.toFixed(2)}g @ ${t.rate_per_g} EGP/g`;
     scrapRow.innerHTML = `
       <div>
-        <div class="cart-item-name" style="color:var(--emerald-live);">♻ Scrap Trade-in (${t.karat})</div>
-        <div class="cart-item-sub">${t.gross_wt.toFixed(2)}g @ ${t.rate_per_g} EGP/g</div>
+        <div class="cart-item-name" style="color:var(--emerald-live);">${scrapTitle}</div>
+        <div class="cart-item-sub">${scrapRateText}</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-weight:700; color:var(--emerald-live);">- ${t.credit.toLocaleString()} EGP</div>
+        <div style="font-weight:700; color:var(--emerald-live);">- ${t.credit.toLocaleString()}${egpUnit}</div>
         <button style="background:none; border:none; color:var(--ruby-alert); cursor:pointer; font-size:0.75rem;" onclick="removeTradeIn(${idx})">✕</button>
       </div>
     `;
@@ -840,13 +1394,13 @@ function updateCartUI() {
   const vatValEl = document.getElementById('calc-vat-val');
   const totalValEl = document.getElementById('calc-total-val');
 
-  if (netGoldEl) netGoldEl.innerText = `${totalNetGold.toFixed(2)} g`;
-  if (metalValEl) metalValEl.innerText = `${Math.round(totalMetalVal).toLocaleString()} EGP`;
-  if (makingValEl) makingValEl.innerText = `+ ${Math.round(totalMaking).toLocaleString()} EGP`;
-  if (subtotalEl) subtotalEl.innerText = `${Math.round(grossSubtotal).toLocaleString()} EGP`;
-  if (scrapValEl) scrapValEl.innerText = `- ${Math.round(totalScrapCredit).toLocaleString()} EGP`;
-  if (vatValEl) vatValEl.innerText = `+ ${statutoryVat.toLocaleString()} EGP`;
-  if (totalValEl) totalValEl.innerText = `${Math.round(netPayable).toLocaleString()} EGP`;
+  if (netGoldEl) netGoldEl.innerText = `${totalNetGold.toFixed(2)}${gUnit}`;
+  if (metalValEl) metalValEl.innerText = `${Math.round(totalMetalVal).toLocaleString()}${egpUnit}`;
+  if (makingValEl) makingValEl.innerText = `+ ${Math.round(totalMaking).toLocaleString()}${egpUnit}`;
+  if (subtotalEl) subtotalEl.innerText = `${Math.round(grossSubtotal).toLocaleString()}${egpUnit}`;
+  if (scrapValEl) scrapValEl.innerText = `- ${Math.round(totalScrapCredit).toLocaleString()}${egpUnit}`;
+  if (vatValEl) vatValEl.innerText = `+ ${statutoryVat.toLocaleString()}${egpUnit}`;
+  if (totalValEl) totalValEl.innerText = `${Math.round(netPayable).toLocaleString()}${egpUnit}`;
 }
 
 // --- Modals & Actions Setup ---
@@ -879,7 +1433,7 @@ function setupModals() {
   if (btnCheckout && modalInvoice) {
     btnCheckout.addEventListener('click', () => {
       if (state.cart.length === 0) {
-        showToast("Cart is empty! Add jewelry items first.", "warning", "⚠️");
+        showToast(state.locale === 'ar' ? "سلة الكاونتر فارغة! أضف قطع مصوغات أولاً." : "Cart is empty! Add jewelry items first.", "warning", "⚠️");
         return;
       }
       populateInvoiceModal();
@@ -893,18 +1447,22 @@ function setupModals() {
       state.cart = [];
       state.tradeIns = [];
       updateCartUI();
-      showToast(`Sale finalized & archived to audit ledger. Official receipt issued!`, "success", "🧾");
+      showToast(state.locale === 'ar' ? "تم تأكيد عملية البيع وإصدار الفاتورة الضريبية وحفظ السجل!" : "Sale finalized & archived to audit ledger. Official receipt issued!", "success", "🧾");
     });
   }
 }
 
 function populateInvoiceModal() {
+  const isAr = state.locale === 'ar';
   const invNo = `INV-2026-${Math.floor(1000 + Math.random() * 9000)}`;
   document.getElementById('inv-modal-number').innerText = invNo;
-  document.getElementById('inv-modal-date').innerText = new Date().toLocaleString();
+  document.getElementById('inv-modal-date').innerText = new Date().toLocaleString(isAr ? 'ar-EG' : 'en-US');
 
   const tbody = document.getElementById('inv-modal-items-tbody');
   tbody.innerHTML = '';
+
+  const gUnit = isAr ? ' ج' : 'g';
+  const egpUnit = isAr ? ' ج.م' : ' EGP';
 
   state.cart.forEach(item => {
     const rate = getKaratRate(item.karat);
@@ -912,11 +1470,11 @@ function populateInvoiceModal() {
     const makingVal = item.gross_wt * item.making_fee;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${item.name} (${item.sku})</td>
+      <td>${isAr ? item.name_ar : item.name} (${item.sku})</td>
       <td>${item.karat}</td>
-      <td>${item.gross_wt.toFixed(2)}g</td>
-      <td>${item.net_gold.toFixed(2)}g</td>
-      <td>${Math.round(metalVal + makingVal).toLocaleString()} EGP</td>
+      <td>${item.gross_wt.toFixed(2)}${gUnit}</td>
+      <td>${item.net_gold.toFixed(2)}${gUnit}</td>
+      <td>${Math.round(metalVal + makingVal).toLocaleString()}${egpUnit}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1087,3 +1645,663 @@ function renderAuditTable() {
     tbody.appendChild(tr);
   });
 }
+
+// ==========================================================================
+// Full-Screen Egyptian Gold Market Prices Dashboard Engine (Production)
+// ==========================================================================
+window.openMarketScreen = function() {
+  const screen = document.getElementById('gold-market-screen');
+  if (screen) {
+    screen.classList.add('active');
+    MarketFeedEngine.updateClock();
+    MarketFeedEngine.startTimers();
+  }
+};
+
+window.closeMarketScreen = function() {
+  const screen = document.getElementById('gold-market-screen');
+  if (screen) {
+    screen.classList.remove('active');
+    showToast(state.locale === 'ar' ? 'تم الانتقال إلى لوحة إدارة الصاغة والمخزون' : 'Switched to Jewelry Management Dashboard', 'info', '⚜');
+  }
+};
+
+window.toggleHardwareFullscreen = function() {
+  if (!document.fullscreenElement) {
+    const el = document.getElementById('gold-market-screen') || document.documentElement;
+    if (el.requestFullscreen) {
+      el.requestFullscreen().catch(err => console.warn("Fullscreen request denied:", err));
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch(err => console.warn("Exit fullscreen failed:", err));
+    }
+  }
+};
+
+window.toggleMarketScreenLang = function() {
+  state.locale = state.locale === 'ar' ? 'en' : 'ar';
+  document.documentElement.setAttribute('dir', state.locale === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', state.locale);
+  const langBtn = document.getElementById('lang-toggle-btn');
+  if (langBtn) langBtn.innerText = state.locale === 'ar' ? 'English (LTR)' : 'عربي (RTL)';
+  applyTranslations();
+  applyRolePermissions();
+};
+
+window.refreshMarketFeedNow = function() {
+  MarketFeedEngine.fetchFeed(true);
+};
+
+window.MarketFeedEngine = {
+  POLL_INTERVAL_SEC: 60,
+  countdown: 60,
+  etag: null,
+  clockInterval: null,
+  pollInterval: null,
+  countdownInterval: null,
+  lastValidSnapshot: null,
+  previousSnapshot: null,
+  isFetching: false,
+  consecutiveErrors: 0,
+
+  init() {
+    // Restore cached snapshot from localStorage if available
+    try {
+      const stored = localStorage.getItem('aurum_market_feed_snapshot');
+      if (stored) {
+        this.lastValidSnapshot = JSON.parse(stored);
+        this.previousSnapshot = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn("Could not read local market snapshot cache:", e);
+    }
+
+    this.startTimers();
+    this.updateClock();
+
+    // Initial fetch
+    this.fetchFeed();
+
+    // If initial snapshot is present, render immediately
+    if (this.lastValidSnapshot) {
+      this.renderUI();
+    }
+  },
+
+  startTimers() {
+    this.stopTimers();
+
+    // 1. Digital Clock (ticks every 1s, zero network requests)
+    this.clockInterval = setInterval(() => {
+      this.updateClock();
+    }, 1000);
+
+    // 2. Countdown timer for polling indicator
+    this.countdown = this.POLL_INTERVAL_SEC;
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      const cdEl = document.getElementById('gmd-ribbon-countdown');
+      if (cdEl) cdEl.innerText = `${Math.max(0, this.countdown)}s`;
+
+      if (this.countdown <= 0) {
+        this.countdown = this.POLL_INTERVAL_SEC;
+        this.fetchFeed();
+      }
+    }, 1000);
+  },
+
+  stopTimers() {
+    if (this.clockInterval) clearInterval(this.clockInterval);
+    if (this.pollInterval) clearInterval(this.pollInterval);
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
+    this.clockInterval = null;
+    this.pollInterval = null;
+    this.countdownInterval = null;
+  },
+
+  updateClock() {
+    const timeEl = document.getElementById('gmd-clock-time');
+    const dateEl = document.getElementById('gmd-clock-date');
+    if (!timeEl && !dateEl) return;
+
+    const now = new Date();
+    const isAr = state.locale === 'ar';
+    const langCode = isAr ? 'ar-EG' : 'en-US';
+
+    try {
+      // Cairo Timezone (Africa/Cairo)
+      const timeFmt = new Intl.DateTimeFormat(langCode, {
+        timeZone: 'Africa/Cairo',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+
+      const dateFmt = new Intl.DateTimeFormat(langCode, {
+        timeZone: 'Africa/Cairo',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      if (timeEl) timeEl.innerText = timeFmt.format(now);
+      if (dateEl) {
+        const tzLabel = isAr ? 'توقيت القاهرة (Africa/Cairo)' : 'Cairo Time (Africa/Cairo)';
+        dateEl.innerText = `${dateFmt.format(now)} • ${tzLabel}`;
+      }
+    } catch (e) {
+      // Fallback
+      if (timeEl) timeEl.innerText = now.toLocaleTimeString();
+      if (dateEl) dateEl.innerText = now.toLocaleDateString();
+    }
+  },
+
+  async fetchFeed(force = false) {
+    if (this.isFetching) return;
+    this.isFetching = true;
+
+    const refreshBtn = document.getElementById('gmd-btn-refresh');
+    if (refreshBtn) refreshBtn.classList.add('scale-pulse');
+
+    const nowIso = new Date().toISOString();
+    let data = null;
+
+    try {
+      // A. Try backend proxy endpoint first (/api/v1/pricing/live-feed)
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const backendRes = await fetch('/api/v1/pricing/live-feed', {
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (backendRes.ok) {
+          data = await backendRes.json();
+        }
+      } catch (err) {
+        // Backend not running or static file deployment, proceed to direct client fetch
+      }
+
+      // B. If backend did not return data, fetch Daleelak directly (CORS is open)
+      if (!data) {
+        const headers = { 'Accept': 'application/json' };
+        if (this.etag && !force) {
+          headers['If-None-Match'] = this.etag;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        
+        try {
+          const res = await fetch('https://getdaleelak.com/api/v1/feed.json', {
+            headers,
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (res.status === 304 && this.lastValidSnapshot) {
+            // ETag matched! Existing data is fresh
+            this.lastValidSnapshot.retrieved_at = nowIso;
+            this.lastValidSnapshot.status = 'live';
+            this.renderUI();
+            this.consecutiveErrors = 0;
+            return;
+          }
+
+          if (res.ok) {
+            this.etag = res.headers.get('ETag');
+            const feedJson = await res.json();
+            data = this.parseDaleelakFeed(feedJson, nowIso);
+          }
+        } catch (fetchErr) {
+          clearTimeout(timeoutId);
+          console.warn("Primary Daleelak fetch error, attempting secondary fallback:", fetchErr);
+        }
+      }
+
+      // C. Secondary candidate fallback: goldpricestoday.net
+      if (!data) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          const secRes = await fetch('https://goldpricestoday.net/api/v1/egypt.json', {
+            headers: { 'Accept': 'application/json' },
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (secRes.ok) {
+            const secJson = await secRes.json();
+            data = this.parseGoldPricesTodayFeed(secJson, nowIso);
+          }
+        } catch (secErr) {
+          console.warn("Secondary goldpricestoday fetch error:", secErr);
+        }
+      }
+
+      // D. Process fetched data
+      if (data && data.karats) {
+        this.consecutiveErrors = 0;
+
+        // Calculate movements vs previous snapshot
+        if (this.lastValidSnapshot && this.lastValidSnapshot.karats) {
+          const prevKarats = this.lastValidSnapshot.karats;
+          for (const [k, cur] of Object.entries(data.karats)) {
+            if (prevKarats[k]) {
+              const prevSell = prevKarats[k].sell_price || 0;
+              const curSell = cur.sell_price || 0;
+              const diff = Math.round((curSell - prevSell) * 100) / 100;
+              const pct = prevSell > 0 ? Math.round((diff / prevSell * 100) * 100) / 100 : 0.0;
+              cur.movement = {
+                change_egp: diff,
+                change_pct: pct,
+                direction: diff > 0 ? 'up' : (diff < 0 ? 'down' : 'flat')
+              };
+            }
+          }
+        }
+
+        this.previousSnapshot = this.lastValidSnapshot;
+        this.lastValidSnapshot = data;
+
+        // Cache in localStorage
+        try {
+          localStorage.setItem('aurum_market_feed_snapshot', JSON.stringify(data));
+        } catch (e) {
+          // LocalStorage quota or access issue
+        }
+
+        // Synchronize with POS Master 24K engine
+        if (data.karats['24K'] && data.karats['24K'].sell_price > 0) {
+          state.base24kRate = data.karats['24K'].sell_price;
+          updateTickerDisplay();
+          renderInventoryTable();
+          renderPOSCatalog();
+          updateCartUI();
+        }
+
+        this.renderUI();
+      } else {
+        throw new Error("No valid data retrieved from any gold price provider");
+      }
+    } catch (err) {
+      this.consecutiveErrors++;
+      console.error("Market Feed retrieval failure:", err);
+
+      // If we have previous cached data, switch to offline mode while preserving prices
+      if (this.lastValidSnapshot) {
+        this.lastValidSnapshot.status = 'offline';
+        this.lastValidSnapshot.retrieved_at = nowIso;
+        this.renderUI();
+        showToast(
+          state.locale === 'ar' ? 'تعذر الاتصال بمزود الأسعار. يتم عرض آخر أسعار صاغة محفوظة.' : 'Gold market provider unreachable. Displaying cached prices.',
+          'warning',
+          '⚠️'
+        );
+      }
+    } finally {
+      this.isFetching = false;
+      if (refreshBtn) refreshBtn.classList.remove('scale-pulse');
+    }
+  },
+
+  parseDaleelakFeed(feed, nowIso) {
+    const assets = {};
+    if (Array.isArray(feed.assets)) {
+      feed.assets.forEach(a => { if (a && a.id) assets[a.id] = a; });
+    }
+
+    const g24 = assets['GOLD24K-EGP'] || {};
+    const g21 = assets['GOLD21K-EGP'] || {};
+    const g18 = assets['GOLD18K-EGP'] || {};
+    const gpound = assets['GOLDPOUND-EGP'] || {};
+    const usdAsset = assets['USD-EGP'] || {};
+
+    const observedAt = g24.observedAt || g21.observedAt || feed.generatedAt || nowIso;
+    const isFresh = g24.freshness?.state === 'fresh' && !g24.freshness?.stale;
+
+    const purities = {
+      '24K': { purity: '99.9% (1000)', factor: 1.0 },
+      '22K': { purity: '91.6% (916)', factor: 22 / 24 },
+      '21K': { purity: '87.5% (875)', factor: 21 / 24 },
+      '18K': { purity: '75.0% (750)', factor: 18 / 24 },
+      '14K': { purity: '58.3% (583)', factor: 14 / 24 },
+      '12K': { purity: '50.0% (500)', factor: 12 / 24 }
+    };
+
+    const karats = {};
+
+    // 24K, 21K, 18K Verified Quotes
+    [
+      { name: '24K', asset: g24, defaultSeller: 'Gold Bullion EG' },
+      { name: '21K', asset: g21, defaultSeller: 'Sagha Benchmark' },
+      { name: '18K', asset: g18, defaultSeller: 'Sagha Benchmark' }
+    ].forEach(k => {
+      const bestSell = k.asset.directions?.sell?.best || {};
+      const bestBuy = k.asset.directions?.buy?.best || {};
+      const sellVal = parseFloat(bestSell.value || 0);
+      const buyVal = parseFloat(bestBuy.value || 0);
+      const seller = bestSell.seller || bestBuy.seller || k.defaultSeller;
+
+      karats[k.name] = {
+        karat: k.name,
+        purity: purities[k.name].purity,
+        sell_price: sellVal,
+        buy_price: buyVal,
+        spread: Math.round((sellVal - buyVal) * 100) / 100,
+        source: 'getdaleelak.com',
+        best_seller: seller,
+        observed_at: k.asset.observedAt || observedAt,
+        is_indicative: false,
+        movement: { change_egp: 0, change_pct: 0, direction: 'flat' }
+      };
+    });
+
+    // Indicative 22K, 14K, 12K derived from 24K
+    const b24Sell = karats['24K'].sell_price;
+    const b24Buy = karats['24K'].buy_price;
+
+    ['22K', '14K', '12K'].forEach(kName => {
+      const factor = purities[kName].factor;
+      const sVal = Math.round((b24Sell * factor) * 100) / 100;
+      const bVal = Math.round((b24Buy * factor) * 100) / 100;
+      karats[kName] = {
+        karat: kName,
+        purity: purities[kName].purity,
+        sell_price: sVal,
+        buy_price: bVal,
+        spread: Math.round((sVal - bVal) * 100) / 100,
+        source: 'Indicative Benchmark (عيار استرشادي)',
+        best_seller: 'Standard Assay Ratio of 24K',
+        observed_at: observedAt,
+        is_indicative: true,
+        movement: { change_egp: 0, change_pct: 0, direction: 'flat' }
+      };
+    });
+
+    // Gold Pound
+    let poundSell = gpound.directions?.sell?.best?.value;
+    let poundBuy = gpound.directions?.buy?.best?.value;
+    if (!poundSell && karats['21K']) {
+      poundSell = Math.round(karats['21K'].sell_price * 8);
+      poundBuy = Math.round(karats['21K'].buy_price * 8);
+    }
+
+    // Dealers
+    const dealers = [];
+    if (Array.isArray(g21.sellers)) {
+      g21.sellers.forEach(s => {
+        dealers.push({
+          seller: s.seller,
+          seller_ar: s.sellerAr || s.seller,
+          karat: '21K',
+          buy: parseFloat(s.buy || 0),
+          sell: parseFloat(s.sell || 0),
+          spread: Math.round(((s.sell || 0) - (s.buy || 0)) * 100) / 100
+        });
+      });
+    }
+
+    return {
+      status: isFresh ? 'live' : 'delayed',
+      provider: 'Daleelak (getdaleelak.com)',
+      provider_url: 'https://getdaleelak.com/ar/api',
+      generated_at: feed.generatedAt || nowIso,
+      observed_at: observedAt,
+      retrieved_at: nowIso,
+      currency: 'EGP',
+      karats,
+      gold_pound: {
+        sell_price: parseFloat(poundSell || 0),
+        buy_price: parseFloat(poundBuy || 0),
+        weight_g: 8.00,
+        karat: '21K'
+      },
+      dealers,
+      indicators: {
+        usd_egp: parseFloat(usdAsset.benchmark?.sell || usdAsset.directions?.sell?.best?.value || 55.30),
+        global_xau_usd: parseFloat(g24.global?.value || 2740.0)
+      }
+    };
+  },
+
+  parseGoldPricesTodayFeed(feed, nowIso) {
+    const updated = feed.updated || nowIso;
+    const prices = feed.prices || {};
+
+    const purities = {
+      '24K': { purity: '99.9% (1000)' },
+      '22K': { purity: '91.6% (916)' },
+      '21K': { purity: '87.5% (875)' },
+      '18K': { purity: '75.0% (750)' },
+      '14K': { purity: '58.3% (583)' },
+      '12K': { purity: '50.0% (500)' }
+    };
+
+    const karats = {};
+    for (const [num, info] of Object.entries(prices)) {
+      const kName = `${num}K`;
+      if (purities[kName] && info.gram) {
+        const sellVal = Math.round(parseFloat(info.gram) * 100) / 100;
+        const spread = (kName === '21K' || kName === '24K') ? 25.0 : 35.0;
+        const buyVal = Math.max(0, Math.round((sellVal - spread) * 100) / 100);
+
+        karats[kName] = {
+          karat: kName,
+          purity: purities[kName].purity,
+          sell_price: sellVal,
+          buy_price: buyVal,
+          spread: spread,
+          source: 'goldpricestoday.net',
+          best_seller: 'Egyptian Gold Standard',
+          observed_at: updated,
+          is_indicative: kName === '22K' || kName === '14K' || kName === '12K',
+          movement: { change_egp: 0, change_pct: 0, direction: 'flat' }
+        };
+      }
+    }
+
+    const k21 = karats['21K'] || {};
+    const poundSell = Math.round((k21.sell_price || 0) * 8);
+    const poundBuy = Math.round((k21.buy_price || 0) * 8);
+
+    return {
+      status: 'live',
+      provider: 'GoldPricesToday (goldpricestoday.net)',
+      provider_url: 'https://goldpricestoday.net/developers/',
+      generated_at: updated,
+      observed_at: updated,
+      retrieved_at: nowIso,
+      currency: 'EGP',
+      karats,
+      gold_pound: {
+        sell_price: poundSell,
+        buy_price: poundBuy,
+        weight_g: 8.00,
+        karat: '21K'
+      },
+      dealers: [],
+      indicators: {
+        usd_egp: parseFloat(feed.fx?.rate || 55.30),
+        global_xau_usd: parseFloat(feed.spotUsdPerOunce || 2740.0)
+      }
+    };
+  },
+
+  renderUI() {
+    const snap = this.lastValidSnapshot;
+    if (!snap) return;
+
+    const isAr = state.locale === 'ar';
+    const t = I18N[state.locale] || I18N['en'];
+
+    // 1. Status Pill
+    const pill = document.getElementById('gmd-status-pill');
+    const pillText = document.getElementById('gmd-status-text');
+    if (pill && pillText) {
+      pill.className = `gmd-status-pill ${snap.status}`;
+      if (snap.status === 'live') {
+        pillText.innerText = t.gmd_status_live || 'LIVE • Verified Market Quotes';
+      } else if (snap.status === 'delayed') {
+        pillText.innerText = t.gmd_status_delayed || 'DELAYED • Cached Market Quotes';
+      } else {
+        pillText.innerText = t.gmd_status_offline || 'OFFLINE • Operating with Local Vault Cache';
+      }
+    }
+
+    // 2. Ribbon Values
+    const ribbonPound = document.getElementById('gmd-ribbon-pound');
+    const ribbonOunce = document.getElementById('gmd-ribbon-ounce');
+    const ribbonUsd = document.getElementById('gmd-ribbon-usd');
+
+    if (ribbonPound && snap.gold_pound) {
+      ribbonPound.innerText = `${snap.gold_pound.sell_price.toLocaleString()} ${isAr ? 'ج.م' : 'EGP'}`;
+    }
+    if (ribbonOunce && snap.indicators) {
+      ribbonOunce.innerText = `$${snap.indicators.global_xau_usd.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    }
+    if (ribbonUsd && snap.indicators) {
+      ribbonUsd.innerText = `${snap.indicators.usd_egp.toFixed(2)} ${isAr ? 'ج.م' : 'EGP'}`;
+    }
+
+    // 3. Timestamps
+    const obsEl = document.getElementById('gmd-observed-time');
+    const retEl = document.getElementById('gmd-retrieved-time');
+
+    if (obsEl && snap.observed_at) {
+      const d = new Date(snap.observed_at);
+      obsEl.innerText = d.toLocaleTimeString(isAr ? 'ar-EG' : 'en-US', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    if (retEl && snap.retrieved_at) {
+      const d = new Date(snap.retrieved_at);
+      retEl.innerText = d.toLocaleTimeString(isAr ? 'ar-EG' : 'en-US', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    // 4. Render Karat Cards
+    const container = document.getElementById('gmd-karats-container');
+    if (container && snap.karats) {
+      container.innerHTML = '';
+
+      // Order of karats to display: 21K (Hero), 24K (Hero), 18K, 22K, 14K, 12K
+      const order = ['21K', '24K', '18K', '22K', '14K', '12K'];
+      const unitLabel = isAr ? 'ج.م / جرام' : 'EGP / g';
+
+      order.forEach(k => {
+        const item = snap.karats[k];
+        if (!item) return;
+
+        const isHero = k === '21K' || k === '24K';
+        const card = document.createElement('div');
+        card.className = `gmd-card ${isHero ? 'hero-card' : ''}`;
+        card.id = `gmd-card-${k}`;
+
+        // Movement pill
+        const mov = item.movement || { change_egp: 0, change_pct: 0, direction: 'flat' };
+        let movBadgeClass = 'flat';
+        let movText = isAr ? 'مستقر 0.00' : 'Flat 0.00';
+
+        if (mov.direction === 'up') {
+          movBadgeClass = 'up';
+          movText = `▲ +${mov.change_egp.toFixed(2)} ${isAr ? 'ج.م' : 'EGP'} (+${mov.change_pct}%)`;
+        } else if (mov.direction === 'down') {
+          movBadgeClass = 'down';
+          movText = `▼ ${mov.change_egp.toFixed(2)} ${isAr ? 'ج.م' : 'EGP'} (${mov.change_pct}%)`;
+        }
+
+        // Trigger flash animation if price changed
+        if (mov.direction !== 'flat') {
+          card.classList.add('price-flash');
+          setTimeout(() => card.classList.remove('price-flash'), 1600);
+        }
+
+        const badgeTypeClass = item.is_indicative ? 'gmd-badge-indicative' : 'gmd-badge-verified';
+        const badgeTypeText = item.is_indicative ? (t.gmd_indicative_quote || 'Indicative Estimate') : (t.gmd_verified_quote || 'Verified Sagha Quote');
+
+        card.innerHTML = `
+          <div class="gmd-card-header">
+            <div>
+              <div class="gmd-karat-name">
+                <span>${isAr ? `ذهب عيار ${k.replace('K', '')}` : `${k} Gold`}</span>
+                <span class="gmd-purity-tag">${item.purity || ''}</span>
+              </div>
+              <div style="font-size:0.75rem; color:#9ca3af; margin-top:0.25rem;">
+                ${isHero ? (k === '21K' ? (isAr ? '★ معيار الصاغة الأكثر طلباً وتداولاً' : '★ Egyptian Market Standard') : (isAr ? '★ معيار السبائك النقية 999.9' : '★ Pure Investment Bullion')) : ''}
+              </div>
+            </div>
+            <span class="gmd-badge-type ${badgeTypeClass}">${badgeTypeText}</span>
+          </div>
+
+          <div class="gmd-price-columns">
+            <div class="gmd-price-box sell">
+              <span class="gmd-price-label">
+                <span>💰</span> ${t.gmd_sell_label || 'Sell (To Customer)'}
+              </span>
+              <div class="gmd-price-num">
+                ${item.sell_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                <span class="gmd-price-unit">${unitLabel}</span>
+              </div>
+            </div>
+
+            <div class="gmd-price-box buy">
+              <span class="gmd-price-label">
+                <span>📥</span> ${t.gmd_buy_label || 'Buy (From Customer)'}
+              </span>
+              <div class="gmd-price-num">
+                ${item.buy_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                <span class="gmd-price-unit">${unitLabel}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="gmd-card-meta">
+            <div>
+              <span class="gmd-movement-badge ${movBadgeClass}">${movText}</span>
+            </div>
+            <div>
+              <span style="color:#6b7280;">${t.gmd_spread_label || 'Spread'}:</span>
+              <span class="gmd-spread-text">${item.spread.toFixed(2)} ${isAr ? 'ج.م' : 'EGP'}</span>
+            </div>
+          </div>
+
+          <div class="gmd-card-footer">
+            <span>🏛 ${item.best_seller}</span>
+            <span>⚡ ${isAr ? 'سعر فوري' : 'Spot Quote'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 5. Render Dealers Table
+    const tbody = document.getElementById('gmd-dealers-tbody');
+    if (tbody) {
+      tbody.innerHTML = '';
+      const dealers = snap.dealers || [];
+
+      if (dealers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1.5rem; color:#6b7280;">${isAr ? 'يتم تحديث عروض كبرى دور الصاغة...' : 'Awaiting live quotes from dealer desks...'}</td></tr>`;
+      } else {
+        dealers.forEach(d => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${isAr ? (d.seller_ar || d.seller) : d.seller}</strong></td>
+            <td><span class="gmd-purity-tag">21K (875)</span></td>
+            <td style="color:#34d399; font-weight:700;">${d.buy.toLocaleString()} ${isAr ? 'ج.م' : 'EGP'}</td>
+            <td style="color:var(--gold-primary); font-weight:700;">${d.sell.toLocaleString()} ${isAr ? 'ج.م' : 'EGP'}</td>
+            <td style="color:#9ca3af;">${d.spread.toFixed(2)} ${isAr ? 'ج.م' : 'EGP'}</td>
+            <td><span class="gmd-badge-type gmd-badge-verified">${isAr ? 'معتمد' : 'ACTIVE'}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+  }
+};
+
