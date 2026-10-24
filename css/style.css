@@ -2563,7 +2563,7 @@ body.gold-popup-open {
   gap: 0.65rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 1rem;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -2582,6 +2582,83 @@ body.gold-popup-open {
 [dir="rtl"] .dashboard-quick-actions-title {
   margin-right: 0;
   margin-left: 0.5rem;
+}
+
+.quick-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.95rem;
+  background: var(--bg-surface-elevated, #161a22);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-main, #f3f4f6);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.quick-action-btn .qa-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.quick-action-btn svg {
+  flex-shrink: 0;
+  stroke: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.quick-action-btn:hover {
+  background: rgba(28, 33, 44, 0.95);
+  border-color: rgba(212, 175, 55, 0.45);
+  color: var(--gold-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.quick-action-btn:hover .qa-icon-wrap {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--gold-primary);
+}
+
+.quick-action-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.quick-action-btn.primary {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(212, 175, 55, 0.06) 100%);
+  border-color: rgba(212, 175, 55, 0.55);
+  color: var(--gold-primary);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.12);
+}
+
+.quick-action-btn.primary .qa-icon-wrap {
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--gold-primary);
+}
+
+.quick-action-btn.primary:hover {
+  background: var(--gold-gradient);
+  color: #0c0e12;
+  border-color: var(--gold-primary);
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+}
+
+.quick-action-btn.primary:hover .qa-icon-wrap {
+  background: rgba(0, 0, 0, 0.18);
+  color: #0c0e12;
 }
 
 /* Setup Wizard Steps */
