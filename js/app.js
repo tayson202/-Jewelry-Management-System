@@ -2284,7 +2284,6 @@ window.MarketFeedEngine = {
     }
 
     // 4. Render Karat Cards
-    const container = document.getElementById('gmd-karats-container');
     if (container && snap.karats) {
       container.innerHTML = '';
 

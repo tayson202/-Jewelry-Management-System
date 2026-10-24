@@ -14,6 +14,16 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="gold-popup-open">
+  <script>
+    // Fail-safe handler to ensure the Gold Market screen can immediately be dismissed
+    window.closeMarketScreen = window.closeMarketScreen || function() {
+      var s = document.getElementById('gold-market-screen');
+      var o = document.getElementById('gold-popup-overlay');
+      if (s) s.classList.remove('active');
+      if (o) o.classList.remove('active');
+      document.body.classList.remove('gold-popup-open');
+    };
+  </script>
 
   <!-- ==================== GOLD PRICES POPUP OVERLAY BACKDROP ==================== -->
   <div id="gold-popup-overlay" class="gold-popup-overlay active" onclick="closeMarketScreen()" aria-hidden="true"></div>
