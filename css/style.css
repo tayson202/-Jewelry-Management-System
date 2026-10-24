@@ -2631,16 +2631,18 @@ body.gold-popup-open {
    Developer Attribution & Application Global Footer
    ========================================================================== */
 .app-global-footer {
-  margin-top: 3.5rem;
-  padding: 1.75rem 2rem 2.5rem;
+  margin-top: auto;
+  padding: 2.5rem 2rem 3rem;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, transparent 0%, rgba(12, 14, 18, 0.5) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(12, 14, 18, 0.7) 100%);
   width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .developer-card {
