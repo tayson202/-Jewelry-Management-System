@@ -9,6 +9,10 @@
   padding: 0;
 }
 
+button, input, select, textarea {
+  font-family: inherit;
+}
+
 html {
   font-size: 14px;
   scroll-behavior: smooth;
@@ -17,7 +21,7 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-english);
   background-color: var(--bg-app);
   color: var(--text-main);
   min-height: 100vh;
@@ -29,20 +33,21 @@ body {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
-/* RTL Support - Direction Aware Typography */
-[dir="rtl"] {
-  direction: rtl;
-  text-align: right;
-  font-family: 'Cairo', 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
+/* LTR Support - English Typography (Inter) */
+[dir="ltr"], [lang="en"], :lang(en) {
+  font-family: var(--font-english);
 }
 
-[dir="rtl"] h1,
-[dir="rtl"] h2,
-[dir="rtl"] h3,
-[dir="rtl"] .brand-title,
-[dir="rtl"] .panel-title,
-[dir="rtl"] .page-title {
-  font-family: 'Cairo', 'Cinzel', serif;
+/* RTL Support - Direction Aware Arabic Typography (IBM Plex Sans Arabic) */
+[dir="rtl"], [lang="ar"], :lang(ar) {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-arabic);
+}
+
+[dir="rtl"] :is(h1, h2, h3, h4, h5, h6, .brand-title, .panel-title, .page-title, .card-title, .modal-title),
+[lang="ar"] :is(h1, h2, h3, h4, h5, h6, .brand-title, .panel-title, .page-title, .card-title, .modal-title) {
+  font-family: var(--font-arabic);
   font-weight: 700;
 }
 
@@ -1638,7 +1643,7 @@ body.gold-popup-open {
 }
 
 [dir="rtl"] .gmd-title {
-  font-family: 'Cairo', serif;
+  font-family: var(--font-arabic);
 }
 
 .gmd-title span {

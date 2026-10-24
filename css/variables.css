@@ -16,7 +16,10 @@
   --ruby-bg: rgba(239, 68, 68, 0.12);
   
   --font-serif: 'Cinzel', 'Playfair Display', serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
+  --font-english: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-arabic: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: 'Cinzel', 'IBM Plex Sans Arabic', serif;
 
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
