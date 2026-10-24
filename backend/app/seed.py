@@ -1,15 +1,20 @@
+import json
 from decimal import Decimal
 from datetime import datetime, timezone
 from app.core.database import SessionLocal, Base, engine
-from app.core.security import get_password_hash
-from app.models import User, GoldPrice, Category, Product, Customer, Supplier, Sale, SaleItem, TradeInItem, AuditLog
+from app.core.security import get_password_hash, get_pin_hash
+from app.models import (
+    User, GoldPrice, Category, Product, Customer, Supplier, Sale,
+    SaleItem, TradeInItem, AuditLog, ApiKeyConfig, LicenseConfig, SystemSetting
+)
 from app.services.pricing_engine import PricingEngine
+from app.services.license_service import LicenseService
 
 def run_seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
-    print("🌱 Seeding StockPilot / AURUM OS database...")
+    print("[+] Seeding StockPilot / AURUM OS database...")
 
     # Clear existing tables
     db.query(TradeInItem).delete()
@@ -21,23 +26,55 @@ def run_seed():
     db.query(Supplier).delete()
     db.query(GoldPrice).delete()
     db.query(AuditLog).delete()
+    db.query(ApiKeyConfig).delete()
+    db.query(LicenseConfig).delete()
+    db.query(SystemSetting).delete()
     db.query(User).delete()
     db.commit()
 
-    # 1. Users
+    # 1. Users with PINs and granular permissions
+    admin_perms = [
+        "view_products", "add_products", "edit_products", "view_stock",
+        "record_sales", "view_sales_history", "view_gold_prices",
+        "manage_products", "manage_employees", "manage_api_keys",
+        "manage_licenses", "view_audit_logs", "modify_settings"
+    ]
+    employee_perms = [
+        "view_products", "view_stock", "record_sales",
+        "view_sales_history", "view_gold_prices"
+    ]
+
     admin_user = User(
         email="admin@stockpilot.com",
         full_name="Mona Al-Sayed (Shop Admin)",
         hashed_password=get_password_hash("AdminPass123!"),
-        role="ADMIN"
+        role="ADMIN",
+        pin_hash=get_pin_hash("9999"),
+        permissions=json.dumps(admin_perms),
+        is_active=True,
+        token_version=1
     )
     cashier_user = User(
         email="cashier@stockpilot.com",
         full_name="Tariq Al-Fahim (Senior Appraiser)",
         hashed_password=get_password_hash("CashierPass123!"),
-        role="EMPLOYEE"
+        role="EMPLOYEE",
+        pin_hash=get_pin_hash("1234"),
+        permissions=json.dumps(employee_perms),
+        is_active=True,
+        token_version=1
     )
-    db.add_all([admin_user, cashier_user])
+    goldsmith_user = User(
+        email="youssef@stockpilot.com",
+        full_name="Youssef Tamer (Master Goldsmith)",
+        hashed_password=get_password_hash("GoldsmithPass123!"),
+        role="EMPLOYEE",
+        pin_hash=get_pin_hash("5678"),
+        permissions=json.dumps(["view_products", "view_stock", "view_gold_prices"]),
+        is_active=True,
+        token_version=1
+    )
+    db.add_all([admin_user, cashier_user, goldsmith_user])
     db.flush()
 
     # 2. Gold Prices (Master 24K: 3,420 EGP/g)
@@ -276,9 +313,36 @@ def run_seed():
         )
     ]
     db.add_all(products)
+
+    # 4. Default API Key Configuration (Daleelak live feed)
+    api_config = ApiKeyConfig(
+        provider_name="getdaleelak.com",
+        endpoint_url="https://getdaleelak.com/api/v1/feed.json",
+        masked_key="PUBLIC-FREE-ACCESS",
+        is_active=True,
+        validation_status="VALID",
+        last_tested_at=datetime.now(timezone.utc),
+        last_success_at=datetime.now(timezone.utc)
+    )
+    db.add(api_config)
+
+    # 5. System Settings
+    settings_data = [
+        SystemSetting(setting_key="eta_vat_making_pct", setting_value="14.0", description="Egyptian ETA VAT percentage applied exclusively to workmanship (Law #67/2016)"),
+        SystemSetting(setting_key="max_cashier_discount_pct", setting_value="5.0", description="Maximum discount cashier can apply without manager authorization"),
+        SystemSetting(setting_key="enforce_laser_hallmark", setting_value="true", description="Require official Laser Hallmark QR Code on tax invoices"),
+        SystemSetting(setting_key="session_idle_timeout_min", setting_value="60", description="POS workstation auto-lock idle timeout in minutes"),
+        SystemSetting(setting_key="allow_scrap_tradein_without_id", setting_value="false", description="Require national ID for customer scrap gold buy-backs over 5,000 EGP")
+    ]
+    db.add_all(settings_data)
+
+    # 6. Authentic Demo Enterprise License
+    demo_key = LicenseService.generate_demo_license_key(tier="ENTERPRISE", org="3MDAHAB", days_valid=365)
+    LicenseService.activate_license(db, demo_key, "3M Dahab - Cairo Central Vault", admin_user)
+
     db.commit()
 
-    print(f"✅ Seeding complete! Added {len(products)} authentic jewelry items, gold prices, categories, and users.")
+    print(f"[OK] Seeding complete! Added {len(products)} authentic jewelry items, gold prices, categories, settings, and users.")
     db.close()
 
 if __name__ == "__main__":

@@ -1020,7 +1020,7 @@ function applyRolePermissions() {
 // --- View Switching ---
 window.switchToView = function(viewName) {
   // Guard admin views
-  if (state.userRole === 'EMPLOYEE' && ['reports', 'employees', 'audit'].includes(viewName)) {
+  if (state.userRole === 'EMPLOYEE' && ['reports', 'employees', 'audit', 'admin'].includes(viewName)) {
     showToast("Access Denied: This view requires Admin / Shop Owner security clearance.", "warning", "🔒");
     return;
   }
@@ -1054,6 +1054,11 @@ window.switchToView = function(viewName) {
   if (activeContainer) {
     activeContainer.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (viewName === 'admin') {
+      if (typeof window.loadAdminOverview === 'function') {
+        window.loadAdminOverview();
+      }
+    }
   }
 
   closeMobileSidebar();
@@ -2785,4 +2790,1108 @@ window.resetDemoData = function() {
     location.reload();
   }
 };
+
+// ==========================================================================
+// Complete Admin Control Center Client Engine (AURUM OS / StockPilot)
+// 9 Production Modules: Overview, Products, Employees, RBAC, API Keys,
+// Credentials/PINs, Software Licensing, Audit Trail, System Settings
+// ==========================================================================
+
+// --- Modal Helper Functions ---
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+};
+
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('active');
+};
+
+// --- Confirmation Dialog Helper ---
+let pendingAdminConfirmAction = null;
+window.showAdminConfirm = function(title, message, actionCallback) {
+  const titleEl = document.getElementById('admin-confirm-title');
+  const msgEl = document.getElementById('admin-confirm-message');
+  const btn = document.getElementById('admin-confirm-action-btn');
+  if (titleEl) titleEl.innerText = title;
+  if (msgEl) msgEl.innerText = message;
+  pendingAdminConfirmAction = actionCallback;
+
+  if (btn) {
+    btn.onclick = () => {
+      if (typeof pendingAdminConfirmAction === 'function') {
+        pendingAdminConfirmAction();
+      }
+      closeModal('admin-confirm-modal');
+      pendingAdminConfirmAction = null;
+    };
+  }
+  openModal('admin-confirm-modal');
+};
+
+// --- Secure Backend Admin API Client ---
+let adminBearerToken = null;
+
+async function getAdminToken() {
+  if (adminBearerToken) return adminBearerToken;
+  const stored = sessionStorage.getItem('aurum_admin_token') || localStorage.getItem('aurum_admin_token');
+  if (stored) {
+    adminBearerToken = stored;
+    return adminBearerToken;
+  }
+  try {
+    const formData = new URLSearchParams();
+    formData.append('username', 'admin@stockpilot.com');
+    formData.append('password', 'admin123456');
+    const res = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData
+    });
+    if (res.ok) {
+      const data = await res.json();
+      adminBearerToken = data.access_token;
+      sessionStorage.setItem('aurum_admin_token', adminBearerToken);
+      return adminBearerToken;
+    }
+  } catch (err) {
+    console.warn("Could not auto-authenticate with backend:", err);
+  }
+  return null;
+}
+
+async function adminApiFetch(endpoint, options = {}) {
+  const token = await getAdminToken();
+  const headers = { ...(options.headers || {}) };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  if (!headers['Content-Type'] && options.body && typeof options.body === 'string') {
+    headers['Content-Type'] = 'application/json';
+  }
+  const url = endpoint.startsWith('http') ? endpoint : `/api/v1/admin${endpoint}`;
+  return fetch(url, { ...options, headers });
+}
+
+// --- Tab Switching ---
+window.switchAdminTab = function(tabName) {
+  document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === `tab-btn-${tabName}`);
+  });
+  document.querySelectorAll('.admin-tab-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.id === `admin-tab-${tabName}`);
+  });
+
+  switch (tabName) {
+    case 'overview': loadAdminOverview(); break;
+    case 'products': loadAdminProducts(); break;
+    case 'employees': loadAdminEmployees(); break;
+    case 'permissions': loadAdminPermissions(); break;
+    case 'apikeys': loadAdminApiKeys(); break;
+    case 'credentials': loadAdminCredentials(); break;
+    case 'license': loadAdminLicense(); break;
+    case 'audit': loadAdminAuditLogs(); break;
+    case 'settings': loadAdminSettings(); break;
+  }
+};
+
+// --------------------------------------------------------------------------
+// 1. Overview Tab
+// --------------------------------------------------------------------------
+window.loadAdminOverview = async function() {
+  try {
+    const res = await adminApiFetch('/overview');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const elProd = document.getElementById('admin-count-products');
+    const elEmp = document.getElementById('admin-count-employees');
+    const elStock = document.getElementById('admin-count-lowstock');
+    const elLic = document.getElementById('admin-status-license');
+    const elApi = document.getElementById('admin-status-api');
+
+    if (elProd) elProd.innerText = data.active_products_count ?? '--';
+    if (elEmp) elEmp.innerText = data.active_employees_count ?? '--';
+    if (elStock) elStock.innerText = data.low_stock_alerts_count ?? '--';
+    if (elLic) elLic.innerText = data.license_status ?? 'ACTIVE';
+    if (elApi) elApi.innerText = data.api_connection_status ?? 'HEALTHY';
+
+    const tbody = document.getElementById('admin-recent-activity-tbody');
+    if (tbody && data.recent_activities) {
+      if (data.recent_activities.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No administrative events recorded yet.</td></tr>';
+      } else {
+        tbody.innerHTML = data.recent_activities.map(log => `
+          <tr>
+            <td style="color:var(--text-muted); font-size:0.75rem;">${log.timestamp.replace('T', ' ').substring(0, 19)}</td>
+            <td><strong>${log.actor}</strong></td>
+            <td><strong style="color:var(--gold-primary);">${log.action}</strong></td>
+            <td>${log.details || '--'}</td>
+            <td><span class="badge-status-pill ${log.outcome === 'SUCCESS' ? 'ready' : 'danger'}" style="font-size:0.68rem; padding:0.15rem 0.45rem;">${log.outcome}</span></td>
+          </tr>
+        `).join('');
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load admin overview:", err);
+  }
+};
+
+// --------------------------------------------------------------------------
+// 2. Product Management Tab
+// --------------------------------------------------------------------------
+let adminProductsCache = [];
+
+window.loadAdminProducts = async function() {
+  const tbody = document.getElementById('admin-products-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading products from vault database...</td></tr>';
+
+  try {
+    const res = await adminApiFetch('/products?include_archived=true');
+    if (!res.ok) {
+      if (tbody) tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:2rem; color:#ef4444;">Failed to load products. Check permissions.</td></tr>';
+      return;
+    }
+    adminProductsCache = await res.json();
+    renderAdminProductsTable();
+  } catch (err) {
+    console.error("Failed to load admin products:", err);
+  }
+};
+
+function renderAdminProductsTable() {
+  const tbody = document.getElementById('admin-products-tbody');
+  if (!tbody) return;
+
+  const karatFilter = document.getElementById('admin-product-karat-filter')?.value || 'ALL';
+  const query = (document.getElementById('admin-product-search')?.value || '').toLowerCase().trim();
+
+  const filtered = adminProductsCache.filter(p => {
+    if (karatFilter !== 'ALL' && p.karat !== karatFilter) return false;
+    if (query) {
+      const matchSku = p.sku.toLowerCase().includes(query);
+      const matchName = p.name_en.toLowerCase().includes(query) || (p.name_ar && p.name_ar.toLowerCase().includes(query));
+      return matchSku || matchName;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:2rem; color:var(--text-muted);">No products match filter criteria.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => {
+    const isArchived = p.is_archived;
+    const isLowStock = p.quantity <= (p.min_stock_alert || 1);
+    const statusBadge = isArchived
+      ? '<span class="badge-status-pill danger" style="font-size:0.68rem;">ARCHIVED</span>'
+      : (isLowStock
+          ? `<span class="badge-status-pill warning" style="font-size:0.68rem;">LOW (${p.quantity})</span>`
+          : '<span class="badge-status-pill ready" style="font-size:0.68rem;">ACTIVE</span>');
+
+    return `
+      <tr style="${isArchived ? 'opacity:0.6; background:rgba(0,0,0,0.15);' : ''}">
+        <td><strong style="color:var(--gold-primary);">${p.sku}</strong></td>
+        <td>
+          <div style="font-weight:600;">${p.name_en}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">${p.name_ar || ''}</div>
+        </td>
+        <td><span class="badge-gold">${p.karat}</span></td>
+        <td>${p.gross_weight.toFixed(2)}g</td>
+        <td>${p.stone_tare.toFixed(2)}g</td>
+        <td><strong>${p.net_gold.toFixed(2)}g</strong></td>
+        <td>${p.making_fee.toFixed(2)} EGP</td>
+        <td>${(p.cost_price || 0).toFixed(2)} EGP</td>
+        <td>${statusBadge}</td>
+        <td>
+          <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="openEditProductModal(${p.id})">Edit</button>
+            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="openProductSalesHistory(${p.id}, '${p.sku}')">History</button>
+            ${isArchived
+              ? `<button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem; color:var(--emerald-live);" onclick="toggleProductArchive(${p.id}, true)">Restore</button>`
+              : `<button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem; color:#f59e0b;" onclick="toggleProductArchive(${p.id}, false)">Archive</button>`
+            }
+            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem; color:#ef4444;" onclick="confirmDeleteProduct(${p.id}, '${p.sku}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.filterAdminProducts = function() {
+  renderAdminProductsTable();
+};
+
+window.openAddProductModal = function() {
+  document.getElementById('admin-product-modal-title').innerText = "⚜ Add Jewelry Master Record";
+  document.getElementById('admin-product-form').reset();
+  document.getElementById('admin-prod-id').value = "";
+  openModal('admin-product-modal');
+};
+
+window.openEditProductModal = function(id) {
+  const p = adminProductsCache.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('admin-product-modal-title').innerText = `⚜ Edit Jewelry Record: ${p.sku}`;
+  document.getElementById('admin-prod-id').value = p.id;
+  document.getElementById('admin-prod-name-en').value = p.name_en;
+  document.getElementById('admin-prod-name-ar').value = p.name_ar || "";
+  document.getElementById('admin-prod-sku').value = p.sku;
+  document.getElementById('admin-prod-karat').value = p.karat;
+  document.getElementById('admin-prod-gross-wt').value = p.gross_weight;
+  document.getElementById('admin-prod-tare-wt').value = p.stone_tare;
+  document.getElementById('admin-prod-making-fee').value = p.making_fee;
+  document.getElementById('admin-prod-cost-price').value = p.cost_price || 0;
+  document.getElementById('admin-prod-quantity').value = p.quantity;
+  document.getElementById('admin-prod-min-stock').value = p.min_stock_alert || 1;
+  document.getElementById('admin-prod-category').value = p.category || "necklaces";
+  openModal('admin-product-modal');
+};
+
+window.handleAdminProductSave = async function(e) {
+  e.preventDefault();
+  const id = document.getElementById('admin-prod-id').value;
+  const nameEn = document.getElementById('admin-prod-name-en').value.trim();
+  const nameAr = document.getElementById('admin-prod-name-ar').value.trim();
+  const sku = document.getElementById('admin-prod-sku').value.trim().toUpperCase();
+  const karat = document.getElementById('admin-prod-karat').value;
+  const grossWt = parseFloat(document.getElementById('admin-prod-gross-wt').value);
+  const stoneTare = parseFloat(document.getElementById('admin-prod-tare-wt').value) || 0;
+  const makingFee = parseFloat(document.getElementById('admin-prod-making-fee').value);
+  const costPrice = parseFloat(document.getElementById('admin-prod-cost-price').value) || 0;
+  const quantity = parseInt(document.getElementById('admin-prod-quantity').value) || 1;
+  const minStock = parseInt(document.getElementById('admin-prod-min-stock').value) || 1;
+  const category = document.getElementById('admin-prod-category').value;
+
+  if (grossWt <= 0 || grossWt <= stoneTare) {
+    showToast("Validation Error: Gross weight must be greater than stone tare.", "warning", "⚠️");
+    return;
+  }
+
+  const payload = {
+    sku,
+    name_en: nameEn,
+    name_ar: nameAr,
+    category,
+    karat,
+    gross_weight: grossWt,
+    stone_tare: stoneTare,
+    making_fee: makingFee,
+    cost_price: costPrice,
+    quantity,
+    min_stock_alert: minStock
+  };
+
+  try {
+    let res;
+    if (id) {
+      res = await adminApiFetch(`/products/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await adminApiFetch('/products', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    }
+
+    if (res.ok) {
+      closeModal('admin-product-modal');
+      showToast(id ? `Updated ${sku} successfully.` : `Registered ${sku} into custody vault.`, "success", "✓");
+      loadAdminProducts();
+      loadAdminOverview();
+    } else {
+      const errData = await res.json();
+      showToast(`Error: ${errData.detail || 'Could not save product.'}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Network error communicating with vault database.", "danger", "❌");
+  }
+};
+
+window.toggleProductArchive = async function(id, currentlyArchived) {
+  const endpoint = currentlyArchived ? `/products/${id}/restore` : `/products/${id}/archive`;
+  try {
+    const res = await adminApiFetch(endpoint, { method: 'POST' });
+    if (res.ok) {
+      showToast(currentlyArchived ? "Product restored to active catalog." : "Product soft-archived safely.", "success", "✓");
+      loadAdminProducts();
+      loadAdminOverview();
+    } else {
+      const err = await res.json();
+      showToast(`Error: ${err.detail || 'Could not change archive status.'}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Server communication error.", "danger", "❌");
+  }
+};
+
+window.confirmDeleteProduct = function(id, sku) {
+  showAdminConfirm(
+    "⚠️ Delete Jewelry Record",
+    `Are you sure you want to permanently delete ${sku}? If this product has historical sales transactions, the backend will prevent deletion to preserve VAT invoices.`,
+    async () => {
+      try {
+        const res = await adminApiFetch(`/products/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast(`Product ${sku} deleted.`, "success", "✓");
+          loadAdminProducts();
+          loadAdminOverview();
+        } else {
+          const errData = await res.json();
+          showToast(`Cannot Delete: ${errData.detail}`, "warning", "⚠️");
+        }
+      } catch (err) {
+        showToast("Error executing delete.", "danger", "❌");
+      }
+    }
+  );
+};
+
+window.openProductSalesHistory = async function(id, sku) {
+  document.getElementById('admin-prod-history-subtitle').innerText = `Sales & Invoices for SKU: ${sku}`;
+  const tbody = document.getElementById('admin-prod-history-tbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Loading transactions...</td></tr>';
+  openModal('admin-product-history-modal');
+
+  try {
+    const res = await adminApiFetch(`/products/${id}/sales`);
+    if (!res.ok) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:1.5rem; color:#ef4444;">Failed to load sales history.</td></tr>';
+      return;
+    }
+    const sales = await res.json();
+    if (sales.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No sales recorded yet for this piece. Safe to delete or modify.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = sales.map(s => `
+      <tr>
+        <td><strong>${s.invoice_number}</strong></td>
+        <td>${s.created_at.replace('T', ' ').substring(0, 16)}</td>
+        <td>${s.customer_name || 'Walk-in Retail'}</td>
+        <td>${s.quantity}</td>
+        <td>${s.unit_price.toLocaleString()} EGP</td>
+        <td style="color:var(--gold-primary); font-weight:700;">${s.total_price.toLocaleString()} EGP</td>
+        <td>${s.user_name || 'Cashier'}</td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:1.5rem; color:#ef4444;">Network error loading sales.</td></tr>';
+  }
+};
+
+// --------------------------------------------------------------------------
+// 3. Employees Management Tab
+// --------------------------------------------------------------------------
+let adminEmployeesCache = [];
+
+window.loadAdminEmployees = async function() {
+  const tbody = document.getElementById('admin-employees-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading staff registry...</td></tr>';
+
+  try {
+    const res = await adminApiFetch('/employees');
+    if (!res.ok) return;
+    adminEmployeesCache = await res.json();
+
+    if (tbody) {
+      tbody.innerHTML = adminEmployeesCache.map(emp => {
+        const statusBadge = emp.is_active
+          ? '<span class="badge-status-pill ready" style="font-size:0.68rem;">ACTIVE</span>'
+          : '<span class="badge-status-pill danger" style="font-size:0.68rem;">DEACTIVATED</span>';
+
+        const lastLogin = emp.last_login_at
+          ? emp.last_login_at.replace('T', ' ').substring(0, 16)
+          : 'Never';
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:700;">${emp.full_name}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${emp.assigned_terminal || 'Counter'}</div>
+            </td>
+            <td>${emp.email}</td>
+            <td><span class="badge-gold">${emp.role}</span></td>
+            <td>${statusBadge}</td>
+            <td style="font-size:0.75rem;">${lastLogin}</td>
+            <td>
+              <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="toggleEmployeeActive(${emp.id}, ${emp.is_active})">
+                  ${emp.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="issueEmployeeTempPassword(${emp.id}, '${emp.full_name}')">
+                  Reset Password
+                </button>
+                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="resetEmployeePinPrompt(${emp.id}, '${emp.full_name}')">
+                  Reset PIN
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Populate RBAC dropdown in Tab 4
+    const rbacSelect = document.getElementById('admin-rbac-user-select');
+    if (rbacSelect) {
+      const currentVal = rbacSelect.value;
+      rbacSelect.innerHTML = '<option value="">-- Choose Employee --</option>' +
+        adminEmployeesCache.map(e => `<option value="${e.id}">${e.full_name} (${e.role})</option>`).join('');
+      if (currentVal) rbacSelect.value = currentVal;
+    }
+  } catch (err) {
+    console.error("Failed to load admin employees:", err);
+  }
+};
+
+window.handleAdminAddEmployee = async function(e) {
+  e.preventDefault();
+  const name = document.getElementById('admin-add-emp-name').value.trim();
+  const email = document.getElementById('admin-add-emp-email').value.trim();
+  const role = document.getElementById('admin-add-emp-role').value;
+  const terminal = document.getElementById('admin-add-emp-terminal').value.trim();
+  const pin = document.getElementById('admin-add-emp-pin').value.trim();
+
+  const payload = {
+    email,
+    full_name: name,
+    role,
+    assigned_terminal: terminal,
+    pin: pin || null
+  };
+
+  try {
+    const res = await adminApiFetch('/employees', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      e.target.reset();
+      loadAdminEmployees();
+      loadAdminOverview();
+
+      // Show temporary password modal
+      document.getElementById('admin-temp-cred-title').innerText = "Employee Account Provisioned";
+      document.getElementById('admin-temp-cred-label').innerText = "Generated Temporary Password";
+      document.getElementById('admin-temp-cred-value').innerText = data.temporary_password;
+      openModal('admin-temp-cred-modal');
+    } else {
+      const errData = await res.json();
+      showToast(`Error: ${errData.detail || 'Could not create employee.'}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Network error creating employee.", "danger", "❌");
+  }
+};
+
+window.toggleEmployeeActive = function(id, currentActive) {
+  const target = adminEmployeesCache.find(x => x.id === id);
+  const actionName = currentActive ? "deactivate" : "activate";
+
+  showAdminConfirm(
+    `Confirm Account Status Change`,
+    `Are you sure you want to ${actionName} ${target ? target.full_name : 'this user'}? ${currentActive ? 'Their active sessions will be invalidated.' : ''}`,
+    async () => {
+      try {
+        const res = await adminApiFetch(`/employees/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ is_active: !currentActive })
+        });
+        if (res.ok) {
+          showToast(`Account successfully ${actionName}d.`, "success", "✓");
+          loadAdminEmployees();
+          loadAdminOverview();
+        } else {
+          const err = await res.json();
+          showToast(`Cannot Change Status: ${err.detail}`, "warning", "⚠️");
+        }
+      } catch (err) {
+        showToast("Error updating employee status.", "danger", "❌");
+      }
+    }
+  );
+};
+
+// --------------------------------------------------------------------------
+// 4. Roles & RBAC Permissions Tab
+// --------------------------------------------------------------------------
+const AVAILABLE_PERMISSIONS = [
+  { key: "products:read", label: "View Products & Stock", group: "Inventory" },
+  { key: "products:write", label: "Add New Products", group: "Inventory" },
+  { key: "products:edit", label: "Edit Product Details", group: "Inventory" },
+  { key: "inventory:view", label: "Access Vault Inventory Tab", group: "Inventory" },
+  { key: "sales:create", label: "Operate POS & Finalize Sales", group: "Point of Sale" },
+  { key: "sales:history", label: "View Historical Invoices", group: "Point of Sale" },
+  { key: "prices:read", label: "View Live Gold Ticker", group: "Pricing" },
+  { key: "products:manage", label: "Master Product Governance", group: "Administration" },
+  { key: "employees:manage", label: "Manage Staff Accounts", group: "Administration" },
+  { key: "permissions:manage", label: "Assign Security Permissions", group: "Administration" },
+  { key: "apikeys:manage", label: "Configure Gold Feed API Keys", group: "System Control" },
+  { key: "credentials:manage", label: "Reset Staff Passwords & PINs", group: "System Control" },
+  { key: "license:manage", label: "Activate / Manage Licenses", group: "System Control" },
+  { key: "audit:read", label: "Inspect Immutable Audit Logs", group: "Compliance" },
+  { key: "settings:manage", label: "Modify System Policies & VAT", group: "Compliance" }
+];
+
+window.loadAdminPermissions = async function() {
+  if (adminEmployeesCache.length === 0) {
+    await loadAdminEmployees();
+  }
+};
+
+window.loadEmployeePermissionsForEdit = function() {
+  const userId = document.getElementById('admin-rbac-user-select')?.value;
+  const container = document.getElementById('admin-rbac-matrix-container');
+  if (!container) return;
+
+  if (!userId) {
+    container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:1rem;">Select a staff member above to configure individual permissions.</div>';
+    return;
+  }
+
+  const emp = adminEmployeesCache.find(x => x.id == userId);
+  if (!emp) return;
+
+  const userPerms = Array.isArray(emp.permissions) ? emp.permissions : [];
+
+  // Group by group name
+  const groups = {};
+  AVAILABLE_PERMISSIONS.forEach(p => {
+    if (!groups[p.group]) groups[p.group] = [];
+    groups[p.group].push(p);
+  });
+
+  container.innerHTML = Object.keys(groups).map(groupName => `
+    <div style="background:var(--bg-surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:1rem;">
+      <div style="font-size:0.8rem; font-weight:700; color:var(--gold-primary); text-transform:uppercase; margin-bottom:0.75rem; border-bottom:1px solid var(--border-subtle); padding-bottom:0.35rem;">
+        ${groupName}
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        ${groups[groupName].map(p => `
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.78rem; cursor:pointer;">
+            <input type="checkbox" class="rbac-perm-checkbox" value="${p.key}" ${userPerms.includes(p.key) || emp.role === 'ADMIN' ? 'checked' : ''} style="accent-color:var(--gold-primary);">
+            <span>${p.label} <code style="font-size:0.65rem; color:var(--text-muted);">(${p.key})</code></span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+};
+
+window.saveEmployeePermissions = async function() {
+  const userId = document.getElementById('admin-rbac-user-select')?.value;
+  if (!userId) {
+    showToast("Please select a staff member first.", "warning", "⚠️");
+    return;
+  }
+
+  const checked = Array.from(document.querySelectorAll('.rbac-perm-checkbox:checked')).map(cb => cb.value);
+
+  try {
+    const res = await adminApiFetch(`/employees/${userId}/permissions`, {
+      method: 'PUT',
+      body: JSON.stringify({ permissions: checked })
+    });
+
+    if (res.ok) {
+      showToast("Permissions updated and employee sessions immediately invalidated.", "success", "🛡");
+      loadAdminEmployees();
+    } else {
+      const err = await res.json();
+      showToast(`Error: ${err.detail || 'Failed to save permissions.'}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Network error saving permissions.", "danger", "❌");
+  }
+};
+
+// --------------------------------------------------------------------------
+// 5. API Key Management Tab
+// --------------------------------------------------------------------------
+window.loadAdminApiKeys = async function() {
+  try {
+    const res = await adminApiFetch('/api-keys');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const provEl = document.getElementById('admin-api-disp-provider');
+    const endEl = document.getElementById('admin-api-disp-endpoint');
+    const maskEl = document.getElementById('admin-api-disp-masked');
+    const testedEl = document.getElementById('admin-api-disp-tested');
+    const succEl = document.getElementById('admin-api-disp-success');
+    const statusText = document.getElementById('admin-api-status-text');
+    const statusPill = document.getElementById('admin-api-status-pill');
+
+    if (provEl) provEl.innerText = data.provider_name || 'getdaleelak.com';
+    if (endEl) endEl.innerText = data.endpoint_url || 'https://getdaleelak.com/api/v1/feed.json';
+    if (maskEl) maskEl.innerText = data.masked_key || 'PUBLIC-FREE-ACCESS';
+    if (testedEl) testedEl.innerText = data.last_tested_at ? data.last_tested_at.replace('T', ' ').substring(0, 16) : '--:--';
+    if (succEl) succEl.innerText = data.last_successful_request ? data.last_successful_request.replace('T', ' ').substring(0, 16) : '--:--';
+
+    if (statusText) statusText.innerText = data.is_active ? 'VALID' : 'UNVERIFIED';
+    if (statusPill) {
+      statusPill.className = `badge-status-pill ${data.is_active ? 'live' : 'danger'}`;
+    }
+  } catch (err) {
+    console.error("Failed to load admin API keys:", err);
+  }
+};
+
+window.testActiveApiKeyConnection = async function() {
+  showToast("Testing connection probe to active gold prices provider...", "info", "📡");
+  try {
+    const res = await adminApiFetch('/api-keys/test', {
+      method: 'POST',
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+
+    if (data.status === 'SUCCESS') {
+      showToast(`Provider Connection Verified: HTTP ${data.http_code} (${data.latency_ms}ms) — ${data.message}`, "success", "✓");
+    } else {
+      showToast(`Provider Test Failed: ${data.message}`, "warning", "⚠️");
+    }
+    loadAdminApiKeys();
+    loadAdminOverview();
+  } catch (err) {
+    showToast("Network error probing provider.", "danger", "❌");
+  }
+};
+
+window.handleApiProviderChange = function() {
+  const sel = document.getElementById('admin-api-provider-select')?.value;
+  const endInput = document.getElementById('admin-api-endpoint-input');
+  if (!endInput) return;
+  if (sel === 'getdaleelak.com') {
+    endInput.value = 'https://getdaleelak.com/api/v1/feed.json';
+  } else if (sel === 'goldpricestoday.net') {
+    endInput.value = 'https://goldpricestoday.net/api/v1/egypt';
+  } else {
+    endInput.value = '';
+  }
+};
+
+window.handleRotateApiKey = async function(e) {
+  e.preventDefault();
+  const provider = document.getElementById('admin-api-provider-select').value;
+  const endpoint = document.getElementById('admin-api-endpoint-input').value.trim();
+  const newKey = document.getElementById('admin-api-key-input').value.trim();
+
+  const feedback = document.getElementById('admin-api-test-feedback');
+  if (feedback) {
+    feedback.style.display = 'block';
+    feedback.style.background = 'rgba(212,175,55,0.15)';
+    feedback.style.color = 'var(--gold-primary)';
+    feedback.innerText = "Non-destructive probe executing on backend. Validating provider credentials before activation...";
+  }
+
+  try {
+    const res = await adminApiFetch('/api-keys', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider_name: provider,
+        endpoint_url: endpoint,
+        secret_key: newKey || null
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (feedback) {
+        feedback.style.background = 'rgba(16,185,129,0.15)';
+        feedback.style.color = 'var(--emerald-live)';
+        feedback.innerText = `Key validated successfully. Active key rotated to: ${data.masked_key}. Existing operations uninterrupted.`;
+      }
+      showToast(`API Key Rotated. Active key: ${data.masked_key}`, "success", "🔑");
+      document.getElementById('admin-api-key-input').value = "";
+      loadAdminApiKeys();
+      loadAdminOverview();
+    } else {
+      const err = await res.json();
+      if (feedback) {
+        feedback.style.background = 'rgba(239,68,68,0.15)';
+        feedback.style.color = '#ef4444';
+        feedback.innerText = `Validation Failed: ${err.detail}. Previous working key was safely preserved.`;
+      }
+      showToast(`Key Validation Failed: ${err.detail}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Network error rotating API key.", "danger", "❌");
+  }
+};
+
+// --------------------------------------------------------------------------
+// 6. Credentials & PIN Management Tab
+// --------------------------------------------------------------------------
+window.loadAdminCredentials = async function() {
+  const tbody = document.getElementById('admin-credentials-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading staff credential statuses...</td></tr>';
+
+  try {
+    const res = await adminApiFetch('/employees');
+    if (!res.ok) return;
+    const staff = await res.json();
+
+    if (tbody) {
+      tbody.innerHTML = staff.map(emp => {
+        const pinConfigured = emp.pin_status === 'CONFIGURED';
+        const isLocked = emp.pin_locked_until && new Date(emp.pin_locked_until) > new Date();
+
+        let pinDisplay;
+        if (isLocked) {
+          pinDisplay = `<span class="badge-status-pill danger" style="font-size:0.68rem;">LOCKED (5 fails)</span>`;
+        } else if (pinConfigured) {
+          pinDisplay = `<span class="badge-status-pill ready" style="font-size:0.68rem;">SET (Salted Hash)</span>`;
+        } else {
+          pinDisplay = `<span class="badge-status-pill warning" style="font-size:0.68rem;">NOT CONFIGURED</span>`;
+        }
+
+        const tempPassDisplay = emp.temp_password_active
+          ? '<span class="badge-status-pill warning" style="font-size:0.68rem;">MUST CHANGE</span>'
+          : '<span style="color:var(--text-muted); font-size:0.75rem;">Normal</span>';
+
+        return `
+          <tr>
+            <td><strong>${emp.full_name}</strong></td>
+            <td>${emp.email}</td>
+            <td><span class="badge-gold">${emp.role}</span></td>
+            <td>${pinDisplay}</td>
+            <td>${tempPassDisplay}</td>
+            <td>
+              <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="issueEmployeeTempPassword(${emp.id}, '${emp.full_name}')">
+                  Issue Temp Password
+                </button>
+                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.72rem;" onclick="resetEmployeePinPrompt(${emp.id}, '${emp.full_name}')">
+                  Reset PIN
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  } catch (err) {
+    console.error("Failed to load credentials:", err);
+  }
+};
+
+window.issueEmployeeTempPassword = function(id, name) {
+  showAdminConfirm(
+    "Issue Temporary Password",
+    `Are you sure you want to issue a new temporary password for ${name}? Their active sessions will be revoked and they will be forced to change it upon first login.`,
+    async () => {
+      try {
+        const res = await adminApiFetch(`/employees/${id}/reset-password`, { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('admin-temp-cred-title').innerText = "Temporary Password Generated";
+          document.getElementById('admin-temp-cred-label').innerText = `One-Time Password for ${name}`;
+          document.getElementById('admin-temp-cred-value').innerText = data.temporary_password;
+          openModal('admin-temp-cred-modal');
+          loadAdminCredentials();
+        } else {
+          const err = await res.json();
+          showToast(`Error: ${err.detail || 'Could not reset password.'}`, "warning", "⚠️");
+        }
+      } catch (err) {
+        showToast("Network error resetting password.", "danger", "❌");
+      }
+    }
+  );
+};
+
+window.resetEmployeePinPrompt = function(id, name) {
+  const pinInput = prompt(`Enter a new 4 to 6 digit security PIN for ${name} (or leave empty to auto-generate a secure 4-digit PIN):`);
+  if (pinInput === null) return; // user cancelled
+
+  const newPin = pinInput.trim() ? pinInput.trim() : String(Math.floor(1000 + Math.random() * 9000));
+  if (!/^\d{4,6}$/.test(newPin)) {
+    showToast("Invalid PIN format. PIN must be 4 to 6 digits.", "warning", "⚠️");
+    return;
+  }
+
+  showAdminConfirm(
+    "Confirm PIN Reset",
+    `Set new security PIN for ${name}? The PIN will be stored strictly as a salted cryptographic hash.`,
+    async () => {
+      try {
+        const res = await adminApiFetch(`/employees/${id}/reset-pin`, {
+          method: 'POST',
+          body: JSON.stringify({ pin: newPin })
+        });
+        if (res.ok) {
+          document.getElementById('admin-temp-cred-title').innerText = "Security PIN Issued";
+          document.getElementById('admin-temp-cred-label').innerText = `New Security PIN for ${name}`;
+          document.getElementById('admin-temp-cred-value').innerText = newPin;
+          openModal('admin-temp-cred-modal');
+          loadAdminCredentials();
+        } else {
+          const err = await res.json();
+          showToast(`Error: ${err.detail || 'Could not reset PIN.'}`, "warning", "⚠️");
+        }
+      } catch (err) {
+        showToast("Network error resetting PIN.", "danger", "❌");
+      }
+    }
+  );
+};
+
+window.copyTempCredToClipboard = function() {
+  const val = document.getElementById('admin-temp-cred-value')?.innerText;
+  if (val && navigator.clipboard) {
+    navigator.clipboard.writeText(val);
+    showToast("Credential copied to clipboard safely.", "info", "📋");
+  }
+};
+
+// --------------------------------------------------------------------------
+// 7. Software License Key Management Tab
+// --------------------------------------------------------------------------
+window.loadAdminLicense = async function() {
+  try {
+    const res = await adminApiFetch('/license');
+    if (!res.ok) return;
+    const lic = await res.json();
+
+    const orgEl = document.getElementById('admin-license-org');
+    const maskEl = document.getElementById('admin-license-masked');
+    const tierEl = document.getElementById('admin-license-tier');
+    const expEl = document.getElementById('admin-license-exp');
+    const termEl = document.getElementById('admin-license-terminals');
+    const pillText = document.getElementById('admin-license-pill-text');
+    const pill = document.getElementById('admin-license-pill');
+    const featContainer = document.getElementById('admin-license-features');
+
+    if (orgEl) orgEl.innerText = lic.org_name || 'Standalone Private Atelier';
+    if (maskEl) maskEl.innerText = lic.masked_key || 'UNLICENSED-STANDALONE';
+    if (tierEl) tierEl.innerText = (lic.tier || 'COMMUNITY').toUpperCase();
+    if (expEl) expEl.innerText = lic.expiration_date ? lic.expiration_date.substring(0, 10) : 'Never';
+    if (termEl) termEl.innerText = `${lic.max_workstations || 1} Workstations`;
+
+    if (pillText) pillText.innerText = lic.status;
+    if (pill) {
+      pill.className = `badge-status-pill ${lic.status === 'ACTIVE' ? 'ready' : 'danger'}`;
+    }
+
+    if (featContainer && lic.allowed_features) {
+      featContainer.innerHTML = lic.allowed_features.map(f => `<span class="feature-pill-tag">✓ ${f}</span>`).join(' ');
+    }
+  } catch (err) {
+    console.error("Failed to load admin license:", err);
+  }
+};
+
+window.handleActivateLicense = async function(e) {
+  e.preventDefault();
+  const org = document.getElementById('admin-license-org-input').value.trim();
+  const key = document.getElementById('admin-license-key-input').value.trim();
+  const feedback = document.getElementById('admin-license-feedback');
+
+  try {
+    const res = await adminApiFetch('/license/activate', {
+      method: 'POST',
+      body: JSON.stringify({ org_name: org, license_key: key })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.background = 'rgba(16,185,129,0.15)';
+        feedback.style.color = 'var(--emerald-live)';
+        feedback.innerText = `License Activated! Verified cryptographic HMAC signature. Tier: ${data.tier}. Valid until: ${data.expiration_date?.substring(0, 10)}.`;
+      }
+      showToast(`License activated for ${data.org_name}!`, "success", "📜");
+      loadAdminLicense();
+      loadAdminOverview();
+    } else {
+      const err = await res.json();
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.background = 'rgba(239,68,68,0.15)';
+        feedback.style.color = '#ef4444';
+        feedback.innerText = `Activation Rejected: ${err.detail}`;
+      }
+      showToast(`License Rejected: ${err.detail}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Network error verifying license signature.", "danger", "❌");
+  }
+};
+
+window.confirmDeactivateLicense = function() {
+  showAdminConfirm(
+    "Deactivate Software License",
+    "Are you sure you want to deactivate the current license? System will revert to unconfigured standalone private mode.",
+    async () => {
+      try {
+        const res = await adminApiFetch('/license/deactivate', { method: 'POST' });
+        if (res.ok) {
+          showToast("License deactivated.", "info", "✓");
+          loadAdminLicense();
+          loadAdminOverview();
+        } else {
+          const err = await res.json();
+          showToast(`Error: ${err.detail}`, "warning", "⚠️");
+        }
+      } catch (err) {
+        showToast("Error executing license deactivation.", "danger", "❌");
+      }
+    }
+  );
+};
+
+// --------------------------------------------------------------------------
+// 8. Security & Audit Logs Tab
+// --------------------------------------------------------------------------
+let adminFullAuditCache = [];
+
+window.loadAdminAuditLogs = async function() {
+  const tbody = document.getElementById('admin-full-audit-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading immutable audit trail...</td></tr>';
+
+  const actionFilter = document.getElementById('admin-audit-action-filter')?.value || 'ALL';
+  const url = actionFilter === 'ALL' ? '/audit-logs?limit=50' : `/audit-logs?limit=50&action=${actionFilter}`;
+
+  try {
+    const res = await adminApiFetch(url);
+    if (!res.ok) return;
+    adminFullAuditCache = await res.json();
+    renderAdminAuditTable();
+  } catch (err) {
+    console.error("Failed to load audit logs:", err);
+  }
+};
+
+function renderAdminAuditTable() {
+  const tbody = document.getElementById('admin-full-audit-tbody');
+  if (!tbody) return;
+
+  const query = (document.getElementById('admin-audit-search')?.value || '').toLowerCase().trim();
+
+  const filtered = adminFullAuditCache.filter(log => {
+    if (!query) return true;
+    const actor = (log.actor_name || '').toLowerCase();
+    const action = (log.action || '').toLowerCase();
+    const res = (log.affected_resource || '').toLowerCase();
+    const details = (log.details || '').toLowerCase();
+    return actor.includes(query) || action.includes(query) || res.includes(query) || details.includes(query);
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No audit log events match query.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(log => `
+    <tr>
+      <td style="color:var(--text-muted); font-size:0.75rem;">${log.timestamp.replace('T', ' ').substring(0, 19)}</td>
+      <td><strong>${log.actor_name}</strong></td>
+      <td><strong style="color:var(--gold-primary);">${log.action}</strong></td>
+      <td>${log.affected_resource || '--'}</td>
+      <td style="max-width:260px; word-break:break-word;">${log.details || '--'}</td>
+      <td><span class="badge-status-pill ${log.outcome === 'SUCCESS' ? 'ready' : 'danger'}" style="font-size:0.68rem; padding:0.15rem 0.45rem;">${log.outcome}</span></td>
+    </tr>
+  `).join('');
+}
+
+window.filterAdminAuditTable = function() {
+  renderAdminAuditTable();
+};
+
+window.exportAuditLogsJson = function() {
+  const blob = new Blob([JSON.stringify(adminFullAuditCache, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Audit_Ledger_Export_${new Date().toISOString().substring(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Audit logs exported to JSON.", "info", "📥");
+};
+
+// --------------------------------------------------------------------------
+// 9. System Settings Tab
+// --------------------------------------------------------------------------
+window.loadAdminSettings = async function() {
+  try {
+    const res = await adminApiFetch('/settings');
+    if (!res.ok) return;
+    const settings = await res.json();
+
+    const vatEl = document.getElementById('setting-eta-vat');
+    const discEl = document.getElementById('setting-max-discount');
+    const idleEl = document.getElementById('setting-idle-timeout');
+    const hallEl = document.getElementById('setting-hallmark');
+    const scrapEl = document.getElementById('setting-scrap-id');
+
+    if (vatEl && settings.eta_vat_making_percent !== undefined) {
+      vatEl.value = settings.eta_vat_making_percent;
+      state.taxRateOnMaking = parseFloat(settings.eta_vat_making_percent) / 100;
+    }
+    if (discEl && settings.max_cashier_discount_percent !== undefined) {
+      discEl.value = settings.max_cashier_discount_percent;
+    }
+    if (idleEl && settings.idle_timeout_minutes !== undefined) {
+      idleEl.value = settings.idle_timeout_minutes;
+    }
+    if (hallEl && settings.mandate_laser_hallmark !== undefined) {
+      hallEl.checked = String(settings.mandate_laser_hallmark).toLowerCase() === 'true';
+    }
+    if (scrapEl && settings.mandate_national_id_scrap !== undefined) {
+      scrapEl.checked = String(settings.mandate_national_id_scrap).toLowerCase() === 'true';
+    }
+  } catch (err) {
+    console.error("Failed to load settings:", err);
+  }
+};
+
+window.handleSaveSystemSettings = async function(e) {
+  e.preventDefault();
+  const vat = parseFloat(document.getElementById('setting-eta-vat').value);
+  const disc = parseFloat(document.getElementById('setting-max-discount').value);
+  const idle = parseInt(document.getElementById('setting-idle-timeout').value);
+  const hall = document.getElementById('setting-hallmark').checked;
+  const scrap = document.getElementById('setting-scrap-id').checked;
+
+  const payload = {
+    settings: {
+      eta_vat_making_percent: vat,
+      max_cashier_discount_percent: disc,
+      idle_timeout_minutes: idle,
+      mandate_laser_hallmark: hall,
+      mandate_national_id_scrap: scrap
+    }
+  };
+
+  try {
+    const res = await adminApiFetch('/settings', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      state.taxRateOnMaking = vat / 100;
+      showToast("System regulatory policies saved and broadcasted to counter terminals.", "success", "✓");
+      loadAdminOverview();
+    } else {
+      const err = await res.json();
+      showToast(`Error: ${err.detail || 'Could not save settings.'}`, "warning", "⚠️");
+    }
+  } catch (err) {
+    showToast("Network error saving system settings.", "danger", "❌");
+  }
+};
+
 

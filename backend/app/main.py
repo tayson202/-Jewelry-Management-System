@@ -8,6 +8,7 @@ from app.api.v1.gold_pricing import router as pricing_router
 from app.api.v1.inventory import router as inventory_router
 from app.api.v1.pos import router as pos_router
 from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.admin import router as admin_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -61,6 +62,7 @@ app.include_router(pricing_router, prefix=settings.API_V1_STR)
 app.include_router(inventory_router, prefix=settings.API_V1_STR)
 app.include_router(pos_router, prefix=settings.API_V1_STR)
 app.include_router(dashboard_router, prefix=settings.API_V1_STR)
+app.include_router(admin_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():

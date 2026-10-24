@@ -1354,12 +1354,13 @@
     </main>
 
     <!-- ==================== VIEW 10: ADMIN EXECUTIVE COMMAND CENTER (Admin Only) ==================== -->
+    <!-- ==================== VIEW 10: ADMIN CONTROL CENTER (Complete 9 Modules) ==================== -->
     <main id="view-admin" class="view-container">
       <div class="page-header">
         <div>
           <div class="page-eyebrow" data-i18n="admin_eyebrow">EXECUTIVE COMMAND • CAIRO CENTRAL VAULT • ROOT CLEARANCE LEVEL 3</div>
-          <h1 class="page-title" data-i18n="admin_title">Admin Executive Command Center</h1>
-          <p class="page-subtitle" data-i18n="admin_subtitle">Shop ownership governance, live pricing recalibration, staff RBAC, physical vault audit, and ETA compliance.</p>
+          <h1 class="page-title" data-i18n="admin_title">Admin Control Center</h1>
+          <p class="page-subtitle" data-i18n="admin_subtitle">Complete governance over products, employees, RBAC permissions, gold feed API keys, login PINs, licensing, and immutable audit logs.</p>
         </div>
         <div class="page-actions">
           <button class="btn btn-secondary" onclick="syncAdminLiveRates()" style="border-color:var(--gold-primary); color:var(--gold-primary); font-weight:700;">
@@ -1374,404 +1375,747 @@
         </div>
       </div>
 
-      <!-- 4 Top Executive Metric Cards -->
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-label" data-i18n="admin_metric_vault_nav">VAULT NET ASSET VALUE (NAV)</span>
-            <span class="metric-badge" style="background:var(--gold-badge); color:var(--gold-primary);">SECURE • 999.9</span>
-          </div>
-          <div class="metric-val" id="admin-vault-nav">42,650,800 <small>EGP</small></div>
-          <div class="metric-footer">
-            <span data-i18n="admin_pure_gold_backed">14,210.50g Fine 24K Gold Backed</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-label" data-i18n="admin_metric_pos_margin">TODAY'S POS SALES & MARGIN</span>
-            <span class="metric-badge">+17.8% YoY</span>
-          </div>
-          <div class="metric-val">485,200 <small>EGP</small></div>
-          <div class="metric-footer">
-            <span style="color:var(--emerald-live);" data-i18n="admin_realized_fabrique">Net Workmanship: +86,400 EGP</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-label" data-i18n="admin_metric_terminals">ACTIVE WORKSTATIONS & RBAC</span>
-            <span class="metric-badge" style="background:rgba(59, 130, 246, 0.15); color:#60a5fa;">ONLINE</span>
-          </div>
-          <div class="metric-val">3 <small data-i18n="admin_staff_registered">STAFF</small> / 2 <small data-i18n="admin_terminals_active">POS</small></div>
-          <div class="metric-footer">
-            <span data-i18n="admin_tls_security">Encrypted TLS 1.3 • Cairo Hub</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-label" data-i18n="admin_metric_compliance">ETA TAX & ASSAY HALLMARK</span>
-            <span class="metric-badge" style="background:rgba(16, 185, 129, 0.15); color:var(--emerald-live);">ETA 14% ACTIVE</span>
-          </div>
-          <div class="metric-val" style="color:var(--emerald-live);">100% <small data-i18n="admin_compliant">COMPLIANT</small></div>
-          <div class="metric-footer">
-            <span data-i18n="admin_official_hallmark">Official Laser Assay Enforced</span>
-          </div>
-        </div>
+      <!-- 9 Modules Executive Tab Navigation -->
+      <div class="admin-tab-nav" role="tablist">
+        <button class="admin-tab-btn active" id="tab-btn-overview" onclick="switchAdminTab('overview')">
+          📊 <span data-i18n="admin_tab_overview">1. Overview</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-products" onclick="switchAdminTab('products')">
+          💎 <span data-i18n="admin_tab_products">2. Products</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-employees" onclick="switchAdminTab('employees')">
+          👥 <span data-i18n="admin_tab_employees">3. Employees</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-permissions" onclick="switchAdminTab('permissions')">
+          🛡 <span data-i18n="admin_tab_permissions">4. Roles & RBAC</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-apikeys" onclick="switchAdminTab('apikeys')">
+          🔑 <span data-i18n="admin_tab_apikeys">5. API Key Management</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-credentials" onclick="switchAdminTab('credentials')">
+          🔐 <span data-i18n="admin_tab_credentials">6. Credentials & PINs</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-license" onclick="switchAdminTab('license')">
+          📜 <span data-i18n="admin_tab_license">7. Software License</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-audit" onclick="switchAdminTab('audit')">
+          📋 <span data-i18n="admin_tab_audit">8. Security Audit</span>
+        </button>
+        <button class="admin-tab-btn" id="tab-btn-settings" onclick="switchAdminTab('settings')">
+          ⚙ <span data-i18n="admin_tab_settings">9. System Settings</span>
+        </button>
       </div>
 
-      <!-- Admin Modules 2-Column Responsive Grid -->
-      <div class="admin-modules-grid">
-
-        <!-- Module 1: Gold Pricing Master Levers -->
-        <div class="card-panel admin-feature-card">
-          <div class="panel-header">
-            <div class="panel-title" style="color:var(--gold-primary);">
-              ⚜ <span data-i18n="admin_pricing_title">Gold Pricing Master Engine</span>
+      <!-- ==================== TAB 1: OVERVIEW ==================== -->
+      <div id="admin-tab-overview" class="admin-tab-panel active">
+        <!-- 6 Executive Summary Metric Cards -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:1.5rem;">
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label" data-i18n="admin_metric_active_products">ACTIVE VAULT PRODUCTS</span>
+              <span class="metric-badge" style="background:var(--gold-badge); color:var(--gold-primary);">CATALOG</span>
             </div>
-            <span class="badge-status-pill live" id="admin-feed-badge">
-              <span class="live-dot"></span>
-              <span data-i18n="admin_feed_connected">Daleelak Live Feed Connected</span>
-            </span>
-          </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_pricing_desc">
-            Direct executive override for base 24K bullion spot price. Updates cascade instantaneously to 18K, 21K, 22K, 24K, and 3,842 catalog jewelry pieces.
-          </p>
-
-          <div style="background:var(--bg-surface-subtle); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:1rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
-              <div>
-                <label style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:0.25rem;" data-i18n="admin_base_24k_label">
-                  Master 24K Spot Benchmark (EGP / Gram)
-                </label>
-                <div style="display:flex; align-items:center; gap:0.5rem;">
-                  <input type="number" id="admin-master-24k-input" class="form-input" style="font-size:1.15rem; font-weight:800; color:var(--gold-primary); width:180px;" value="3420.00" step="5">
-                  <span style="font-weight:700; color:var(--text-muted);">EGP</span>
-                </div>
-              </div>
-              <div style="display:flex; gap:0.5rem;">
-                <button class="btn btn-primary" onclick="applyAdminGoldRecalibration()" style="padding:0.6rem 1rem;">
-                  ⚡ <span data-i18n="admin_apply_recalibration">Recalibrate & Cascade</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Cascade Preview Pills -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); gap:0.5rem; margin-top:1rem;">
-              <div class="admin-rate-pill">
-                <span class="rate-purity">24K (99.9%)</span>
-                <strong id="admin-rate-24k" class="rate-val">3,420 EGP</strong>
-              </div>
-              <div class="admin-rate-pill">
-                <span class="rate-purity">22K (91.6%)</span>
-                <strong id="admin-rate-22k" class="rate-val">3,135 EGP</strong>
-              </div>
-              <div class="admin-rate-pill highlight">
-                <span class="rate-purity">21K (87.5%)</span>
-                <strong id="admin-rate-21k" class="rate-val">2,992.5 EGP</strong>
-              </div>
-              <div class="admin-rate-pill">
-                <span class="rate-purity">18K (75.0%)</span>
-                <strong id="admin-rate-18k" class="rate-val">2,565 EGP</strong>
-              </div>
-              <div class="admin-rate-pill">
-                <span class="rate-purity">14K (58.3%)</span>
-                <strong id="admin-rate-14k" class="rate-val">1,995 EGP</strong>
-              </div>
-              <div class="admin-rate-pill highlight">
-                <span class="rate-purity">Gold Pound (8g 21K)</span>
-                <strong id="admin-rate-pound" class="rate-val">23,940 EGP</strong>
-              </div>
+            <div class="metric-val" id="admin-summary-active-products">-- <small>PIECES</small></div>
+            <div class="metric-footer">
+              <span id="admin-summary-archived-products" style="color:var(--text-muted);">0 Archived</span>
             </div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-            <span style="font-size:0.75rem; color:var(--text-muted);" data-i18n="admin_sync_footnote">
-              Cascades affect all active POS registers, retail quotes, and scrap buy-back calculators.
-            </span>
-            <button class="btn btn-secondary" onclick="fetchAndApplySaghaFeed()" style="padding:0.35rem 0.75rem; font-size:0.75rem;">
-              🌐 <span data-i18n="admin_use_sagha_live">Use Egyptian Sagha Live Rate</span>
-            </button>
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label" data-i18n="admin_metric_active_staff">ACTIVE EMPLOYEES</span>
+              <span class="metric-badge" style="background:rgba(59, 130, 246, 0.15); color:#60a5fa;">RBAC ON</span>
+            </div>
+            <div class="metric-val" id="admin-summary-active-staff">-- <small>USERS</small></div>
+            <div class="metric-footer">
+              <span id="admin-summary-total-staff" style="color:var(--text-muted);">Total 3 Staff Accounts</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label" data-i18n="admin_metric_low_stock">LOW-STOCK ALERTS</span>
+              <span class="metric-badge" id="admin-summary-stock-badge" style="background:rgba(245, 158, 11, 0.15); color:#fbbf24;">MONITOR</span>
+            </div>
+            <div class="metric-val" id="admin-summary-low-stock" style="color:#fbbf24;">0 <small>ALERTS</small></div>
+            <div class="metric-footer">
+              <span style="color:var(--text-muted);">Automatic Reorder Threshold</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label" data-i18n="admin_metric_license">SOFTWARE LICENSE</span>
+              <span class="metric-badge" id="admin-summary-license-badge" style="background:rgba(16, 185, 129, 0.15); color:var(--emerald-live);">ENTERPRISE</span>
+            </div>
+            <div class="metric-val" id="admin-summary-license-status" style="font-size:1.15rem; color:var(--emerald-live);">ACTIVE</div>
+            <div class="metric-footer">
+              <span id="admin-summary-license-to" style="color:var(--text-muted);">3M Dahab Central Vault</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label" data-i18n="admin_metric_api">GOLD FEED PROVIDER</span>
+              <span class="metric-badge" id="admin-summary-api-badge" style="background:rgba(16, 185, 129, 0.15); color:var(--emerald-live);">CONNECTED</span>
+            </div>
+            <div class="metric-val" id="admin-summary-api-provider" style="font-size:1.05rem;">getdaleelak.com</div>
+            <div class="metric-footer">
+              <span id="admin-summary-api-tested" style="color:var(--text-muted);">Verified 200 OK</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label" data-i18n="admin_metric_vault_nav">VAULT VALUATION (NAV)</span>
+              <span class="metric-badge" style="background:var(--gold-badge); color:var(--gold-primary);">SECURE • 999.9</span>
+            </div>
+            <div class="metric-val" id="admin-vault-nav">42,650,800 <small>EGP</small></div>
+            <div class="metric-footer">
+              <span data-i18n="admin_pure_gold_backed">14,210.50g Fine 24K Gold Backed</span>
+            </div>
           </div>
         </div>
 
-        <!-- Module 2: Staff & RBAC Management -->
-        <div class="card-panel admin-feature-card">
-          <div class="panel-header">
-            <div class="panel-title" style="color:var(--gold-primary);">
-              🛡 <span data-i18n="admin_staff_title">Staff Accounts & Workstations</span>
-            </div>
-            <button class="btn btn-primary" onclick="openStaffModal()" style="padding:0.35rem 0.75rem; font-size:0.78rem;">
-              + <span data-i18n="admin_btn_add_staff">Add Staff</span>
-            </button>
-          </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.75rem;" data-i18n="admin_staff_desc">
-            Manage terminal logins, role-based security clearances, appraiser assignments, and credential resets.
-          </p>
-
-          <div class="table-responsive">
-            <table class="vault-table" style="font-size:0.82rem;">
-              <thead>
-                <tr>
-                  <th data-i18n="th_staff_member">STAFF MEMBER</th>
-                  <th data-i18n="th_role">ROLE</th>
-                  <th data-i18n="th_terminal">TERMINAL</th>
-                  <th data-i18n="th_action">ACTION</th>
-                </tr>
-              </thead>
-              <tbody id="admin-staff-tbody">
-                <tr>
-                  <td>
-                    <strong>Mona Al-Sayed</strong>
-                    <div style="font-size:0.7rem; color:var(--text-muted);">admin@stockpilot.com</div>
-                  </td>
-                  <td><span class="badge-gold">👑 OWNER</span></td>
-                  <td>Master Terminal #01</td>
-                  <td>
-                    <span style="color:var(--text-muted); font-size:0.75rem;" data-i18n="admin_primary_key">Master Root</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>Tariq Al-Fahim</strong>
-                    <div style="font-size:0.7rem; color:var(--text-muted);">cashier@stockpilot.com</div>
-                  </td>
-                  <td><span class="badge-emerald">👤 CASHIER</span></td>
-                  <td>Counter #04</td>
-                  <td>
-                    <button class="btn btn-secondary" onclick="resetStaffPin('Tariq Al-Fahim')" style="padding:0.2rem 0.5rem; font-size:0.72rem;">
-                      🔑 <span data-i18n="admin_reset_pin">Reset PIN</span>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>Youssef Tamer</strong>
-                    <div style="font-size:0.7rem; color:var(--text-muted);">youssef@stockpilot.com</div>
-                  </td>
-                  <td><span class="badge-blue">👤 GOLDSMITH</span></td>
-                  <td>Bench #02</td>
-                  <td>
-                    <button class="btn btn-secondary" onclick="resetStaffPin('Youssef Tamer')" style="padding:0.2rem 0.5rem; font-size:0.72rem;">
-                      🔑 <span data-i18n="admin_reset_pin">Reset PIN</span>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Module 3: Physical Vault Audit & Hydrostatic Assay Reconciliation -->
-        <div class="card-panel admin-feature-card">
-          <div class="panel-header">
-            <div class="panel-title" style="color:var(--gold-primary);">
-              ⚖ <span data-i18n="admin_vault_audit_title">Physical Vault Audit & Hydrostatic Assay</span>
-            </div>
-            <span class="badge-status-pill ready" id="admin-audit-status-badge">
-              <span class="live-dot" style="background:var(--emerald-live);"></span>
-              <span data-i18n="admin_audit_ready">RECONCILED • 0.000g Variance</span>
-            </span>
-          </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_vault_audit_desc">
-            Automated cryptographic cross-check between ERP digital book weight, RFID safe sensors, and digital precision scale.
-          </p>
-
-          <div class="audit-reconciliation-card">
-            <div class="audit-col">
-              <span class="audit-label" data-i18n="admin_book_weight">ERP Book Weight</span>
-              <strong class="audit-val">14,210.50 <small>g</small></strong>
-              <span class="audit-sub">3,842 Vault Pieces</span>
-            </div>
-            <div class="audit-col divider">
-              <span class="audit-label" data-i18n="admin_scanned_weight">Hydrostatic Scanned</span>
-              <strong class="audit-val" id="admin-scanned-wt">14,210.50 <small>g</small></strong>
-              <span class="audit-sub">Mettler USB Verified</span>
-            </div>
-            <div class="audit-col">
-              <span class="audit-label" data-i18n="admin_variance">Weight Variance</span>
-              <strong class="audit-val" style="color:var(--emerald-live);" id="admin-variance-val">0.000 <small>g (0.00%)</small></strong>
-              <span class="audit-sub" style="color:var(--emerald-live);" data-i18n="admin_perfect_match">Perfect Match</span>
-            </div>
-          </div>
-
-          <div id="admin-audit-progress-container" style="display:none; margin:1rem 0;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.25rem;">
-              <span id="admin-audit-progress-text" data-i18n="admin_scanning_rfid">Scanning RFID Trays & Hydrostatic Density...</span>
-              <span id="admin-audit-progress-percent">0%</span>
-            </div>
-            <div class="admin-progress-bar">
-              <div class="admin-progress-fill" id="admin-audit-progress-fill"></div>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem;">
-            <button class="btn btn-primary" id="btn-run-vault-audit" onclick="runPhysicalVaultAudit()">
-              🔬 <span data-i18n="admin_btn_run_audit">Initiate Hydrostatic & RFID Audit Scan</span>
-            </button>
-            <button class="btn btn-secondary" onclick="downloadAuditCertificate()">
-              📜 <span data-i18n="admin_btn_cert">Download Audit Certificate</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Module 4: ETA Tax & Regulatory Compliance -->
-        <div class="card-panel admin-feature-card">
-          <div class="panel-header">
-            <div class="panel-title" style="color:var(--gold-primary);">
-              🏛 <span data-i18n="admin_compliance_title">Egyptian Tax Authority (ETA) & Hallmarking</span>
-            </div>
-            <span class="badge-status-pill live">
-              <span class="live-dot"></span>
-              <span data-i18n="admin_eta_active">ETA Registered</span>
-            </span>
-          </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_compliance_desc">
-            Governs value-added taxation (14% VAT on making charges only per Egyptian Law #67/2016), cashier discount caps, and official Assay Directorate credentials.
-          </p>
-
-          <form id="admin-policy-form" onsubmit="saveAdminPolicy(event)">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-              <div class="form-group" style="margin-bottom:0;">
-                <label data-i18n="admin_vat_making_label">ETA VAT on Making Charges (%)</label>
-                <input type="number" id="admin-vat-rate" class="form-input" value="14.0" step="0.5" required>
+        <div class="admin-modules-grid">
+          <!-- Module: Gold Pricing Master Engine -->
+          <div class="card-panel admin-feature-card">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--gold-primary);">
+                ⚜ <span data-i18n="admin_pricing_title">Gold Pricing Master Engine</span>
               </div>
-              <div class="form-group" style="margin-bottom:0;">
-                <label data-i18n="admin_max_discount_label">Max Cashier Discount Cap (%)</label>
-                <input type="number" id="admin-max-discount" class="form-input" value="5.0" step="0.5" required>
-              </div>
+              <span class="badge-status-pill live" id="admin-feed-badge">
+                <span class="live-dot"></span>
+                <span data-i18n="admin_feed_connected">Daleelak Live Feed Connected</span>
+              </span>
             </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_pricing_desc">
+              Direct executive override for base 24K bullion spot price. Updates cascade instantaneously to 18K, 21K, 22K, 24K, and 3,842 catalog jewelry pieces.
+            </p>
 
-            <div style="background:var(--bg-surface-subtle); padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:1rem;">
-              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.82rem;">
-                <input type="checkbox" id="admin-laser-hallmark-toggle" checked style="accent-color:var(--gold-primary); width:16px; height:16px;">
-                <span data-i18n="admin_require_hallmark">Enforce Egyptian Stamp & Assay Directorate (مصلحة الدمغة والموازين) Laser QR on Invoices</span>
-              </label>
-            </div>
-
-            <button type="submit" class="btn btn-secondary" style="border-color:var(--gold-primary); color:var(--gold-primary); font-weight:700;">
-              ✓ <span data-i18n="admin_save_policy">Save Policy & Broadcast to Terminals</span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Module 5: Master Credentials & Security Vault -->
-        <div class="card-panel admin-feature-card">
-          <div class="panel-header">
-            <div class="panel-title" style="color:var(--gold-primary);">
-              🔐 <span data-i18n="admin_credentials_title">System Master Credentials & Security</span>
-            </div>
-            <span class="badge-status-pill ready">
-              <span data-i18n="admin_auth_active">Auth Active</span>
-            </span>
-          </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_credentials_desc">
-            Pre-configured production accounts for testing executive authority and cashier workflows.
-          </p>
-
-          <div class="admin-creds-container">
-            <div class="admin-cred-row">
-              <div class="cred-info">
-                <div class="cred-title">
-                  <span class="badge-gold" style="font-size:0.7rem;">ADMIN ACCOUNT</span>
-                  <strong>Mona Al-Sayed (Shop Owner)</strong>
-                </div>
-                <div class="cred-fields">
-                  <div><span class="cred-label">Email:</span> <code class="cred-code">admin@stockpilot.com</code></div>
-                  <div style="display:flex; align-items:center; gap:0.35rem;">
-                    <span class="cred-label">Password:</span>
-                    <input type="password" id="admin-pass-reveal" class="cred-pass-input" value="AdminPass123!" readonly>
-                    <button type="button" class="btn-icon-sm" onclick="toggleAdminPassVisibility()" title="Show/Hide Password">👁</button>
-                    <button type="button" class="btn-icon-sm" onclick="copyAdminCredential('AdminPass123!')" title="Copy Password">📋</button>
+            <div style="background:var(--bg-surface-subtle); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+                <div>
+                  <label style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:0.25rem;" data-i18n="admin_base_24k_label">
+                    Master 24K Spot Benchmark (EGP / Gram)
+                  </label>
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="number" id="admin-master-24k-input" class="form-input" style="font-size:1.15rem; font-weight:800; color:var(--gold-primary); width:180px;" value="3420.00" step="5">
+                    <span style="font-weight:700; color:var(--text-muted);">EGP</span>
                   </div>
                 </div>
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn btn-primary" onclick="applyAdminGoldRecalibration()" style="padding:0.6rem 1rem;">
+                    ⚡ <span data-i18n="admin_apply_recalibration">Recalibrate & Cascade</span>
+                  </button>
+                </div>
               </div>
-              <button class="btn btn-secondary" onclick="quickSetRole('ADMIN')" style="padding:0.35rem 0.75rem; font-size:0.75rem; border-color:var(--gold-primary); color:var(--gold-primary);">
-                ⚡ <span data-i18n="admin_activate_admin">Activate Admin</span>
-              </button>
+
+              <!-- Cascade Preview Pills -->
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); gap:0.5rem; margin-top:1rem;">
+                <div class="admin-rate-pill">
+                  <span class="rate-purity">24K (99.9%)</span>
+                  <strong id="admin-rate-24k" class="rate-val">3,420 EGP</strong>
+                </div>
+                <div class="admin-rate-pill">
+                  <span class="rate-purity">22K (91.6%)</span>
+                  <strong id="admin-rate-22k" class="rate-val">3,135 EGP</strong>
+                </div>
+                <div class="admin-rate-pill highlight">
+                  <span class="rate-purity">21K (87.5%)</span>
+                  <strong id="admin-rate-21k" class="rate-val">2,992.5 EGP</strong>
+                </div>
+                <div class="admin-rate-pill">
+                  <span class="rate-purity">18K (75.0%)</span>
+                  <strong id="admin-rate-18k" class="rate-val">2,565 EGP</strong>
+                </div>
+                <div class="admin-rate-pill">
+                  <span class="rate-purity">14K (58.3%)</span>
+                  <strong id="admin-rate-14k" class="rate-val">1,995 EGP</strong>
+                </div>
+                <div class="admin-rate-pill highlight">
+                  <span class="rate-purity">Gold Pound (8g 21K)</span>
+                  <strong id="admin-rate-pound" class="rate-val">23,940 EGP</strong>
+                </div>
+              </div>
             </div>
 
-            <div class="admin-cred-row" style="margin-top:0.75rem;">
-              <div class="cred-info">
-                <div class="cred-title">
-                  <span class="badge-emerald" style="font-size:0.7rem;">CASHIER ACCOUNT</span>
-                  <strong>Tariq Al-Fahim (Senior Appraiser)</strong>
-                </div>
-                <div class="cred-fields">
-                  <div><span class="cred-label">Email:</span> <code class="cred-code">cashier@stockpilot.com</code></div>
-                  <div style="display:flex; align-items:center; gap:0.35rem;">
-                    <span class="cred-label">Password:</span>
-                    <input type="password" id="cashier-pass-reveal" class="cred-pass-input" value="CashierPass123!" readonly>
-                    <button type="button" class="btn-icon-sm" onclick="toggleCashierPassVisibility()" title="Show/Hide Password">👁</button>
-                    <button type="button" class="btn-icon-sm" onclick="copyAdminCredential('CashierPass123!')" title="Copy Password">📋</button>
-                  </div>
-                </div>
-              </div>
-              <button class="btn btn-secondary" onclick="quickSetRole('EMPLOYEE')" style="padding:0.35rem 0.75rem; font-size:0.75rem;">
-                👤 <span data-i18n="admin_activate_cashier">Test Cashier</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+              <span style="font-size:0.75rem; color:var(--text-muted);" data-i18n="admin_sync_footnote">
+                Cascades affect all active POS registers, retail quotes, and scrap buy-back calculators.
+              </span>
+              <button class="btn btn-secondary" onclick="syncAdminLiveRates()" style="padding:0.35rem 0.75rem; font-size:0.75rem;">
+                🌐 <span data-i18n="admin_use_sagha_live">Use Egyptian Sagha Live Rate</span>
               </button>
             </div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle); flex-wrap:wrap; gap:0.5rem;">
-            <div style="font-size:0.75rem; color:var(--text-muted);">
-              <span data-i18n="admin_session_key">Session Key:</span> <code>SP-AURUM-2026-X89</code>
+          <!-- Module: Physical Vault Audit Scan -->
+          <div class="card-panel admin-feature-card">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--gold-primary);">
+                ⚖ <span data-i18n="admin_vault_audit_title">Physical Vault Audit & Hydrostatic Assay</span>
+              </div>
+              <span class="badge-status-pill ready" id="admin-audit-status-badge">
+                <span class="live-dot" style="background:var(--emerald-live);"></span>
+                <span data-i18n="admin_audit_ready">RECONCILED • 0.000g Variance</span>
+              </span>
             </div>
-            <button class="btn btn-secondary" onclick="resetDemoData()" style="padding:0.3rem 0.6rem; font-size:0.72rem; color:#ef4444; border-color:rgba(239, 68, 68, 0.3);">
-              ⚠️ <span data-i18n="admin_reset_demo">Reset Atelier Demo Data</span>
-            </button>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_vault_audit_desc">
+              Automated cryptographic cross-check between digital book weight, RFID safe sensors, and hydrostatic density scale.
+            </p>
+
+            <div class="audit-reconciliation-card">
+              <div class="audit-col">
+                <span class="audit-label" data-i18n="admin_book_weight">ERP Book Weight</span>
+                <strong class="audit-val">14,210.50 <small>g</small></strong>
+                <span class="audit-sub">3,842 Vault Pieces</span>
+              </div>
+              <div class="audit-col divider">
+                <span class="audit-label" data-i18n="admin_scanned_weight">Hydrostatic Scanned</span>
+                <strong class="audit-val" id="admin-scanned-wt">14,210.50 <small>g</small></strong>
+                <span class="audit-sub">Mettler USB Verified</span>
+              </div>
+              <div class="audit-col">
+                <span class="audit-label" data-i18n="admin_variance">Weight Variance</span>
+                <strong class="audit-val" style="color:var(--emerald-live);" id="admin-variance-val">0.000 <small>g (0.00%)</small></strong>
+                <span class="audit-sub" style="color:var(--emerald-live);" data-i18n="admin_perfect_match">Perfect Match</span>
+              </div>
+            </div>
+
+            <div id="admin-audit-progress-container" style="display:none; margin:1rem 0;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.25rem;">
+                <span id="admin-audit-progress-text" data-i18n="admin_scanning_rfid">Scanning RFID Trays & Hydrostatic Density...</span>
+                <span id="admin-audit-progress-percent">0%</span>
+              </div>
+              <div class="admin-progress-bar">
+                <div class="admin-progress-fill" id="admin-audit-progress-fill"></div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem;">
+              <button class="btn btn-primary" id="btn-run-vault-audit" onclick="runPhysicalVaultAudit()">
+                🔬 <span data-i18n="admin_btn_run_audit">Initiate Hydrostatic & RFID Audit Scan</span>
+              </button>
+              <button class="btn btn-secondary" onclick="downloadAuditCertificate()">
+                📜 <span data-i18n="admin_btn_cert">Download Audit Certificate</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Module 6: Live Administrative Audit Stream -->
-        <div class="card-panel admin-feature-card">
+        <!-- Recent Activities Feed on Overview -->
+        <div class="card-panel" style="margin-top:1.5rem;">
           <div class="panel-header">
             <div class="panel-title" style="color:var(--gold-primary);">
-              📋 <span data-i18n="admin_audit_stream_title">Live Administrative Audit Feed</span>
+              📋 <span data-i18n="admin_audit_stream_title">Recent Administrative Activities</span>
             </div>
-            <button class="btn btn-secondary" onclick="switchToView('audit')" style="padding:0.25rem 0.5rem; font-size:0.72rem;">
+            <button class="btn btn-secondary" onclick="switchAdminTab('audit')" style="padding:0.3rem 0.6rem; font-size:0.75rem;">
               <span data-i18n="admin_view_full_audit">View Full Audit Ledger ➔</span>
             </button>
           </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.75rem;" data-i18n="admin_audit_stream_desc">
-            Immutable stream of executive configuration updates, spot recalculations, and vault balance adjustments.
-          </p>
-
           <div class="table-responsive">
             <table class="vault-table" style="font-size:0.8rem;">
               <thead>
                 <tr>
                   <th data-i18n="th_timestamp">TIME</th>
-                  <th data-i18n="th_user">ADMIN</th>
+                  <th data-i18n="th_user">ADMIN / CASHIER</th>
                   <th data-i18n="th_action_type">ACTION</th>
                   <th data-i18n="th_details">DETAILS</th>
+                  <th>OUTCOME</th>
                 </tr>
               </thead>
               <tbody id="admin-recent-audit-tbody">
                 <tr>
-                  <td>2026-10-24 15:25</td>
-                  <td>Mona Al-Sayed</td>
-                  <td><strong style="color:var(--gold-primary);">MARKET_FEED_SYNC</strong></td>
-                  <td>Synced live quotes from getdaleelak.com (24K @ 3,420 EGP)</td>
-                </tr>
-                <tr>
-                  <td>2026-10-24 15:10</td>
-                  <td>Mona Al-Sayed</td>
-                  <td><strong style="color:var(--emerald-live);">VAULT_AUDIT_PASS</strong></td>
-                  <td>Hydrostatic assay scan matched 14,210.50g (0.000g variance)</td>
-                </tr>
-                <tr>
-                  <td>2026-10-24 14:45</td>
-                  <td>Mona Al-Sayed</td>
-                  <td><strong style="color:#60a5fa;">POLICY_UPDATE</strong></td>
-                  <td>ETA 14% VAT verified on making charges</td>
+                  <td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Loading recent administrative logs...</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+      </div>
 
+      <!-- ==================== TAB 2: PRODUCTS MANAGEMENT ==================== -->
+      <div id="admin-tab-products" class="admin-tab-panel">
+        <div class="card-panel">
+          <div class="panel-header" style="flex-wrap:wrap; gap:1rem;">
+            <div>
+              <div class="panel-title" style="color:var(--gold-primary); font-size:1.15rem;">
+                💎 <span data-i18n="admin_prod_mgmt_title">Products Management & Inventory Archival</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;" data-i18n="admin_prod_mgmt_subtitle">
+                Manage karats, gross/net weights, making fees, cost prices, quantities, and soft-archive or safely delete pieces.
+              </p>
+            </div>
+            <button class="btn btn-primary" onclick="openAdminProductModal(null)">
+              + <span data-i18n="btn_add_product">Add New Product</span>
+            </button>
+          </div>
+
+          <!-- Product Filters Bar -->
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin:1rem 0; padding:0.75rem; background:var(--bg-surface-subtle); border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <div style="flex:1; min-width:180px;">
+              <input type="text" id="admin-prod-search" class="form-input" placeholder="Search by name, SKU, or Arabic name..." oninput="filterAdminProducts()">
+            </div>
+            <div style="min-width:120px;">
+              <select id="admin-prod-karat-filter" class="form-select" onchange="filterAdminProducts()">
+                <option value="ALL">All Karats</option>
+                <option value="24K">24K</option>
+                <option value="22K">22K</option>
+                <option value="21K">21K</option>
+                <option value="18K">18K</option>
+                <option value="14K">14K</option>
+              </select>
+            </div>
+            <div style="min-width:130px;">
+              <select id="admin-prod-status-filter" class="form-select" onchange="filterAdminProducts()">
+                <option value="ALL">All Statuses</option>
+                <option value="IN_STOCK">In Stock</option>
+                <option value="ARCHIVED">Archived</option>
+                <option value="SOLD">Sold</option>
+              </select>
+            </div>
+            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.78rem; cursor:pointer; color:var(--text-secondary);">
+              <input type="checkbox" id="admin-prod-include-archived" checked onchange="filterAdminProducts()" style="accent-color:var(--gold-primary);">
+              <span>Include Archived</span>
+            </label>
+          </div>
+
+          <!-- Products Table -->
+          <div class="table-responsive">
+            <table class="vault-table" style="font-size:0.8rem;">
+              <thead>
+                <tr>
+                  <th>SKU / BARCODE</th>
+                  <th>PIECE NAME</th>
+                  <th>KARAT</th>
+                  <th>GROSS (g)</th>
+                  <th>NET GOLD (g)</th>
+                  <th>MAKING (EGP/g)</th>
+                  <th>RETAIL PRICE</th>
+                  <th>COST PRICE</th>
+                  <th>STOCK</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-tbody">
+                <tr>
+                  <td colspan="11" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading products catalog...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 3: EMPLOYEES MANAGEMENT ==================== -->
+      <div id="admin-tab-employees" class="admin-tab-panel">
+        <div class="card-panel">
+          <div class="panel-header" style="flex-wrap:wrap; gap:1rem;">
+            <div>
+              <div class="panel-title" style="color:var(--gold-primary); font-size:1.15rem;">
+                👥 <span data-i18n="admin_emp_mgmt_title">Employees & Workstation Clearances</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;" data-i18n="admin_emp_mgmt_subtitle">
+                Create employee accounts, assign workstation roles, toggle activation, and revoke sessions on demand.
+              </p>
+            </div>
+            <button class="btn btn-primary" onclick="openAdminEmployeeModal(null)">
+              + <span data-i18n="btn_add_employee">Add Employee</span>
+            </button>
+          </div>
+
+          <div class="table-responsive" style="margin-top:1rem;">
+            <table class="vault-table" style="font-size:0.82rem;">
+              <thead>
+                <tr>
+                  <th>EMPLOYEE</th>
+                  <th>ROLE</th>
+                  <th>STATUS</th>
+                  <th>PIN CONFIGURED</th>
+                  <th>PERMISSIONS</th>
+                  <th>LAST LOGIN</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="admin-employees-tbody">
+                <tr>
+                  <td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading employees directory...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 4: ROLES & RBAC PERMISSIONS ==================== -->
+      <div id="admin-tab-permissions" class="admin-tab-panel">
+        <div class="card-panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title" style="color:var(--gold-primary); font-size:1.15rem;">
+                🛡 <span data-i18n="admin_rbac_title">Server-Enforced Role-Based Access Control (RBAC)</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;" data-i18n="admin_rbac_subtitle">
+                Access is denied by default on all backend endpoints. Modify staff permissions and immediately revoke outdated sessions.
+              </p>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface-subtle); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin:1rem 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <label style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:0.25rem;">Select Staff Member to Configure:</label>
+                <select id="admin-rbac-user-select" class="form-select" style="min-width:240px;" onchange="loadEmployeePermissionsForEdit()">
+                  <option value="">-- Choose Employee --</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="saveEmployeePermissions()">
+                ✓ <span data-i18n="btn_save_permissions">Save Permissions & Invalidate Sessions</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="admin-rbac-matrix-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+            <!-- Filled dynamically by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 5: API KEY MANAGEMENT ==================== -->
+      <div id="admin-tab-apikeys" class="admin-tab-panel">
+        <div class="admin-modules-grid">
+          <!-- Active Provider Card -->
+          <div class="card-panel">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--gold-primary);">
+                🔑 <span data-i18n="admin_api_active_title">Active Gold Market Feed Credentials</span>
+              </div>
+              <span class="badge-status-pill live" id="admin-api-status-pill">
+                <span class="live-dot"></span>
+                <span id="admin-api-status-text">VALID</span>
+              </span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_api_desc">
+              Server-side secrets are encrypted and masked. Secrets are never transmitted in raw form to the browser.
+            </p>
+
+            <div style="background:var(--bg-surface-subtle); padding:1.25rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:0.75rem;">
+              <div>
+                <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase;">Configured Provider:</span>
+                <div style="font-size:1.1rem; font-weight:700; color:var(--gold-primary);" id="admin-api-disp-provider">getdaleelak.com</div>
+              </div>
+              <div>
+                <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase;">Feed Endpoint URL:</span>
+                <code class="cred-code" style="word-break:break-all;" id="admin-api-disp-endpoint">https://getdaleelak.com/api/v1/feed.json</code>
+              </div>
+              <div>
+                <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase;">Stored API Key (Masked):</span>
+                <code class="cred-code" id="admin-api-disp-masked">PUBLIC-FREE-ACCESS</code>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--border-subtle); padding-top:0.5rem; margin-top:0.25rem;">
+                <span>Last Tested: <strong id="admin-api-disp-tested">--:--</strong></span>
+                <span>Last Success: <strong id="admin-api-disp-success">--:--</strong></span>
+              </div>
+            </div>
+
+            <div style="margin-top:1rem; display:flex; gap:0.75rem;">
+              <button class="btn btn-secondary" onclick="testActiveApiKeyConnection()">
+                📡 <span data-i18n="btn_test_connection">Test Safe Probe Connection</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Rotate / Replace Key Form -->
+          <div class="card-panel">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--gold-primary);">
+                🔄 <span data-i18n="admin_api_rotate_title">Rotate / Configure Feed Key</span>
+              </div>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_api_rotate_desc">
+              Validates new key with a non-destructive probe before activation. If validation fails, existing working key is preserved.
+            </p>
+
+            <form id="admin-api-rotate-form" onsubmit="handleRotateApiKey(event)">
+              <div class="form-group">
+                <label>Provider Name</label>
+                <select id="admin-api-provider-select" class="form-select" onchange="handleApiProviderChange()">
+                  <option value="getdaleelak.com">Daleelak Sagha Exchange (getdaleelak.com)</option>
+                  <option value="goldpricestoday.net">Gold Prices Today (goldpricestoday.net)</option>
+                  <option value="custom">Custom Commercial Provider</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Feed Endpoint URL</label>
+                <input type="url" id="admin-api-endpoint-input" class="form-input" value="https://getdaleelak.com/api/v1/feed.json" required>
+              </div>
+              <div class="form-group">
+                <label>New Secret API Key (Leave empty if public/unauthenticated)</label>
+                <input type="password" id="admin-api-key-input" class="form-input" placeholder="Enter key to test and activate...">
+              </div>
+
+              <div id="admin-api-test-feedback" style="display:none; padding:0.75rem; border-radius:var(--radius-sm); margin-bottom:1rem; font-size:0.8rem;"></div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;">
+                ⚡ <span data-i18n="btn_validate_and_activate">Validate & Activate New Key</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 6: CREDENTIALS & PINS ==================== -->
+      <div id="admin-tab-credentials" class="admin-tab-panel">
+        <div class="card-panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title" style="color:var(--gold-primary); font-size:1.15rem;">
+                🔐 <span data-i18n="admin_creds_title">Login Credentials, PINs & Security Lockouts</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;" data-i18n="admin_creds_subtitle">
+                Issue temporary passwords, reset 4-digit security PINs, and manage terminal lockout protections.
+              </p>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="margin-top:1rem;">
+            <table class="vault-table" style="font-size:0.82rem;">
+              <thead>
+                <tr>
+                  <th>STAFF MEMBER</th>
+                  <th>EMAIL</th>
+                  <th>ROLE</th>
+                  <th>PIN STATUS</th>
+                  <th>TEMP PASSWORD FLAG</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="admin-credentials-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading staff credentials...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 7: SOFTWARE LICENSE KEY MANAGEMENT ==================== -->
+      <div id="admin-tab-license" class="admin-tab-panel">
+        <div class="admin-modules-grid">
+          <!-- License Certificate Card -->
+          <div class="license-cert-box">
+            <div class="license-cert-watermark">⚜</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <span class="badge-gold">AURUM OS ENTERPRISE LICENSE</span>
+              <span class="badge-status-pill ready" id="admin-license-pill">
+                <span class="live-dot" style="background:var(--emerald-live);"></span>
+                <span id="admin-license-pill-text">ACTIVE</span>
+              </span>
+            </div>
+
+            <h2 style="font-size:1.4rem; color:#fff; margin:0 0 0.5rem 0;" id="admin-license-org">3M Dahab - Cairo Central Vault</h2>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;" id="admin-license-notes">
+              Verified cryptographic signature on trusted backend.
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem; background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:var(--radius-sm); margin-bottom:1rem; font-size:0.8rem;">
+              <div>
+                <span style="color:var(--text-muted); display:block; font-size:0.7rem;">MASKED LICENSE KEY</span>
+                <code class="cred-code" id="admin-license-masked">AURUM-ENT-••••-F421</code>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); display:block; font-size:0.7rem;">LICENSE TIER</span>
+                <strong id="admin-license-tier" style="color:var(--gold-primary);">ENTERPRISE VAULT</strong>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); display:block; font-size:0.7rem;">EXPIRATION DATE</span>
+                <strong id="admin-license-exp">--</strong>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); display:block; font-size:0.7rem;">MAX WORKSTATIONS</span>
+                <strong id="admin-license-terminals">5 Terminals</strong>
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:0.35rem;">Licensed Software Features:</span>
+              <div id="admin-license-features" style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                <span class="feature-pill-tag">✓ Bullion Vault</span>
+                <span class="feature-pill-tag">✓ POS Counter</span>
+                <span class="feature-pill-tag">✓ Live Gold Feed</span>
+                <span class="feature-pill-tag">✓ ETA 14% VAT</span>
+              </div>
+            </div>
+
+            <div style="margin-top:1.25rem; border-top:1px solid rgba(212,175,55,0.2); padding-top:0.75rem; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.7rem; color:var(--text-muted);">Tamper-proof HMAC-SHA256 signed</span>
+              <button class="btn btn-secondary" onclick="confirmDeactivateLicense()" style="padding:0.25rem 0.5rem; font-size:0.72rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
+                Deactivate License
+              </button>
+            </div>
+          </div>
+
+          <!-- License Activation Form -->
+          <div class="card-panel">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--gold-primary);">
+                📜 <span data-i18n="admin_license_activate_title">Activate / Replace License Key</span>
+              </div>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;" data-i18n="admin_license_activate_desc">
+              Enter signed license key provided by your system vendor. Arbitrary or unissued strings will be strictly rejected.
+            </p>
+
+            <form id="admin-license-activate-form" onsubmit="handleActivateLicense(event)">
+              <div class="form-group">
+                <label>Licensed Organization / Boutique Name</label>
+                <input type="text" id="admin-license-org-input" class="form-input" placeholder="e.g. 3M Dahab - Cairo Boutique" required>
+              </div>
+              <div class="form-group">
+                <label>Cryptographic License Key</label>
+                <input type="text" id="admin-license-key-input" class="form-input" placeholder="AURUM-ENTERPRISE-ORG-TIMESTAMP-SIGNATURE" required style="font-family:monospace;">
+              </div>
+
+              <div id="admin-license-feedback" style="display:none; padding:0.75rem; border-radius:var(--radius-sm); margin-bottom:1rem; font-size:0.8rem;"></div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;">
+                ✓ <span data-i18n="btn_activate_license">Cryptographically Verify & Activate License</span>
+              </button>
+            </form>
+
+            <div style="margin-top:1rem; background:rgba(0,0,0,0.25); padding:0.75rem; border-radius:var(--radius-sm); font-size:0.75rem; color:var(--text-muted);">
+              <strong>ℹ️ Deployment Architecture Notice:</strong>
+              This installation is currently running on-premise standalone. If no remote licensing server is configured in environment variables (<code>AURUM_LICENSE_SERVER_URL</code>), the system operates in private single-shop mode.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 8: SECURITY & AUDIT LOGS ==================== -->
+      <div id="admin-tab-audit" class="admin-tab-panel">
+        <div class="card-panel">
+          <div class="panel-header" style="flex-wrap:wrap; gap:1rem;">
+            <div>
+              <div class="panel-title" style="color:var(--gold-primary); font-size:1.15rem;">
+                📋 <span data-i18n="admin_audit_full_title">Immutable Security & Compliance Audit Trail</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;" data-i18n="admin_audit_full_subtitle">
+                Permanent cryptographic ledger recording every product change, credential reset, API key rotation, and license action.
+              </p>
+            </div>
+            <button class="btn btn-secondary" onclick="exportAuditLogsJson()">
+              📥 <span>Export Audit Logs (JSON)</span>
+            </button>
+          </div>
+
+          <!-- Audit Filters Bar -->
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin:1rem 0; padding:0.75rem; background:var(--bg-surface-subtle); border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+            <div style="min-width:180px;">
+              <select id="admin-audit-action-filter" class="form-select" onchange="loadAdminAuditLogs()">
+                <option value="ALL">All Recorded Actions</option>
+                <option value="PRODUCT_CREATED">PRODUCT_CREATED</option>
+                <option value="PRODUCT_UPDATED">PRODUCT_UPDATED</option>
+                <option value="PRODUCT_ARCHIVED">PRODUCT_ARCHIVED</option>
+                <option value="PRODUCT_RESTORED">PRODUCT_RESTORED</option>
+                <option value="EMPLOYEE_CREATED">EMPLOYEE_CREATED</option>
+                <option value="EMPLOYEE_UPDATED">EMPLOYEE_UPDATED</option>
+                <option value="PASSWORD_RESET_ISSUED">PASSWORD_RESET_ISSUED</option>
+                <option value="PIN_RESET_ISSUED">PIN_RESET_ISSUED</option>
+                <option value="API_KEY_ROTATED">API_KEY_ROTATED</option>
+                <option value="LICENSE_ACTIVATED">LICENSE_ACTIVATED</option>
+                <option value="SYSTEM_SETTINGS_UPDATED">SYSTEM_SETTINGS_UPDATED</option>
+              </select>
+            </div>
+            <div style="flex:1; min-width:200px;">
+              <input type="text" id="admin-audit-search" class="form-input" placeholder="Search audit trail by keyword..." oninput="filterAdminAuditTable()">
+            </div>
+            <button class="btn btn-secondary" onclick="loadAdminAuditLogs()" style="padding:0.45rem 0.85rem;">
+              🔄 Refresh
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="vault-table" style="font-size:0.8rem;">
+              <thead>
+                <tr>
+                  <th>TIMESTAMP (UTC)</th>
+                  <th>USER / ACTOR</th>
+                  <th>ACTION</th>
+                  <th>ENTITY</th>
+                  <th>DETAILS</th>
+                  <th>OUTCOME</th>
+                </tr>
+              </thead>
+              <tbody id="admin-full-audit-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading audit ledger...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 9: SYSTEM SETTINGS ==================== -->
+      <div id="admin-tab-settings" class="admin-tab-panel">
+        <div class="card-panel" style="max-width:850px;">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title" style="color:var(--gold-primary); font-size:1.15rem;">
+                ⚙ <span data-i18n="admin_settings_title">System Settings & Regulatory Policies</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;" data-i18n="admin_settings_subtitle">
+                Configure ETA VAT rules, cashier discount ceilings, assay hallmark mandates, and session security policies.
+              </p>
+            </div>
+          </div>
+
+          <form id="admin-system-settings-form" onsubmit="handleSaveSystemSettings(event)" style="margin-top:1.25rem;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; margin-bottom:1.25rem;">
+              <div class="form-group">
+                <label data-i18n="admin_vat_making_label">Egyptian ETA VAT on Making Charges (%)</label>
+                <input type="number" id="setting-eta-vat" class="form-input" value="14.0" step="0.5" min="0" max="30" required>
+                <small style="color:var(--text-muted); font-size:0.7rem;">Applied exclusively to workmanship per Law #67/2016.</small>
+              </div>
+              <div class="form-group">
+                <label data-i18n="admin_max_discount_label">Max Cashier Discount Cap (%)</label>
+                <input type="number" id="setting-max-discount" class="form-input" value="5.0" step="0.5" min="0" max="25" required>
+                <small style="color:var(--text-muted); font-size:0.7rem;">Discounts above this threshold require manager authorization.</small>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; margin-bottom:1.25rem;">
+              <div class="form-group">
+                <label>POS Workstation Idle Auto-Lock (Minutes)</label>
+                <input type="number" id="setting-idle-timeout" class="form-input" value="60" min="5" max="480" required>
+                <small style="color:var(--text-muted); font-size:0.7rem;">Terminal automatically locks to PIN prompt when idle.</small>
+              </div>
+              <div class="form-group">
+                <label>Currency ISO Code</label>
+                <input type="text" id="setting-currency" class="form-input" value="EGP" readonly style="opacity:0.8;">
+                <small style="color:var(--text-muted); font-size:0.7rem;">Primary Egyptian market settlement currency.</small>
+              </div>
+            </div>
+
+            <div style="background:var(--bg-surface-subtle); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:1.5rem; display:flex; flex-direction:column; gap:0.75rem;">
+              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.82rem;">
+                <input type="checkbox" id="setting-hallmark" checked style="accent-color:var(--gold-primary); width:18px; height:18px;">
+                <span data-i18n="admin_require_hallmark">Enforce Egyptian Stamp & Assay Directorate (مصلحة الدمغة والموازين) Laser QR on Invoices</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.82rem;">
+                <input type="checkbox" id="setting-scrap-id" style="accent-color:var(--gold-primary); width:18px; height:18px;">
+                <span>Mandate National ID Card on Scrap Gold Trade-ins Exceeding 5,000 EGP</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding:0.75rem 1.5rem;">
+              ✓ <span data-i18n="admin_save_policy">Save System Policies & Broadcast to Terminals</span>
+            </button>
+          </form>
+        </div>
       </div>
     </main>
 
@@ -2037,6 +2381,160 @@
           Provision User & Issue Cryptographic Token
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADMIN PRODUCT ADD / EDIT ==================== -->
+  <div class="modal-backdrop" id="admin-product-modal">
+    <div class="modal-box" style="max-width:650px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="admin-product-modal-title">⚜ Add / Edit Jewelry Master Record</h3>
+        <button onclick="closeModal('admin-product-modal')" style="background:none; border:none; color:var(--text-muted); font-size:1.25rem; cursor:pointer;">✕</button>
+      </div>
+      <form id="admin-product-form" onsubmit="handleAdminProductSave(event)">
+        <input type="hidden" id="admin-prod-id" value="">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label>Piece Name (EN)</label>
+            <input type="text" id="admin-prod-name-en" class="form-input" placeholder="e.g. Royal Cartouche Necklace" required>
+          </div>
+          <div class="form-group">
+            <label>Piece Name (AR)</label>
+            <input type="text" id="admin-prod-name-ar" class="form-input" placeholder="مثال: قلادة الخرطوش الملكي" required>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label>SKU / Hallmark Serial</label>
+            <input type="text" id="admin-prod-sku" class="form-input" placeholder="SKU-8821" required>
+          </div>
+          <div class="form-group">
+            <label>Gold Karat Purity</label>
+            <select id="admin-prod-karat" class="form-select">
+              <option value="24K">24K (999.9 Fine Pure Ingot)</option>
+              <option value="21K" selected>21K (Egyptian Standard 875)</option>
+              <option value="18K">18K (Italian Benchmark 750)</option>
+              <option value="22K">22K (Gulf Sovereign 916)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label>Gross Wt (g)</label>
+            <input type="number" id="admin-prod-gross-wt" class="form-input" step="0.01" min="0.01" placeholder="15.20" required>
+          </div>
+          <div class="form-group">
+            <label>Stone Tare (g)</label>
+            <input type="number" id="admin-prod-tare-wt" class="form-input" step="0.01" min="0" placeholder="0.00" value="0.00" required>
+          </div>
+          <div class="form-group">
+            <label>Making Fee (EGP/g)</label>
+            <input type="number" id="admin-prod-making-fee" class="form-input" step="5" min="0" placeholder="180" required>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label>Cost Price (EGP/g)</label>
+            <input type="number" id="admin-prod-cost-price" class="form-input" step="10" min="0" placeholder="3200" value="0">
+          </div>
+          <div class="form-group">
+            <label>Vault Stock (Qty)</label>
+            <input type="number" id="admin-prod-quantity" class="form-input" min="0" placeholder="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>Min Alert Level</label>
+            <input type="number" id="admin-prod-min-stock" class="form-input" min="0" placeholder="1" value="1" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Jewelry Category</label>
+          <select id="admin-prod-category" class="form-select">
+            <option value="necklaces">Necklaces & Chokers (سلاسل وأطواق)</option>
+            <option value="rings">Rings (خواتم)</option>
+            <option value="bangles">Bangles & Bracelets (أساور وغوايش)</option>
+            <option value="bullion">Bullion & Sovereign Coins (سبائك وجنيهات)</option>
+            <option value="earrings">Earrings (حلقان)</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:0.75rem; margin-top:1rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('admin-product-modal')" style="flex:1;">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex:2;">💾 Save Product to Vault</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: PRODUCT SALES HISTORY ==================== -->
+  <div class="modal-backdrop" id="admin-product-history-modal">
+    <div class="modal-box" style="max-width:700px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" style="color:var(--gold-primary);">📜 Product Transaction & Sales History</h3>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin:0.25rem 0 0 0;" id="admin-prod-history-subtitle">SKU: --</p>
+        </div>
+        <button onclick="closeModal('admin-product-history-modal')" style="background:none; border:none; color:var(--text-muted); font-size:1.25rem; cursor:pointer;">✕</button>
+      </div>
+      <div class="table-responsive" style="margin-top:1rem; max-height:400px; overflow-y:auto;">
+        <table class="vault-table" style="font-size:0.8rem;">
+          <thead>
+            <tr>
+              <th>INVOICE #</th>
+              <th>DATE</th>
+              <th>CUSTOMER</th>
+              <th>QTY</th>
+              <th>UNIT PRICE</th>
+              <th>TOTAL (EGP)</th>
+              <th>CASHIER</th>
+            </tr>
+          </thead>
+          <tbody id="admin-prod-history-tbody">
+            <tr>
+              <td colspan="7" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Loading sales history...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:1rem; text-align:right;">
+        <button class="btn btn-secondary" onclick="closeModal('admin-product-history-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: TEMPORARY CREDENTIALS DISPLAY ==================== -->
+  <div class="modal-backdrop" id="admin-temp-cred-modal">
+    <div class="modal-box" style="max-width:480px; text-align:center;">
+      <div style="font-size:2.5rem; margin-bottom:0.5rem;">🔐</div>
+      <h3 class="modal-title" id="admin-temp-cred-title">Temporary Credentials Issued</h3>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin:0.5rem 0 1rem 0;">
+        Provide these temporary credentials to the employee. They will be forced to change them on their next sign-in.
+      </p>
+      <div style="background:var(--bg-surface-subtle); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:1rem;">
+        <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:0.25rem;" id="admin-temp-cred-label">Temporary Credential</span>
+        <div style="font-size:1.5rem; font-weight:800; font-family:monospace; color:var(--gold-primary); letter-spacing:2px;" id="admin-temp-cred-value">------</div>
+      </div>
+      <button class="btn btn-primary" onclick="copyTempCredToClipboard()" style="width:100%; margin-bottom:0.5rem;">
+        📋 Copy to Clipboard
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal('admin-temp-cred-modal')" style="width:100%;">
+        Dismiss
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADMIN CONFIRMATION DIALOG ==================== -->
+  <div class="modal-backdrop" id="admin-confirm-modal">
+    <div class="modal-box" style="max-width:440px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="admin-confirm-title" style="color:var(--gold-primary);">⚠️ Confirm Action</h3>
+        <button onclick="closeModal('admin-confirm-modal')" style="background:none; border:none; color:var(--text-muted); font-size:1.25rem; cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-main); margin:1rem 0;" id="admin-confirm-message">
+        Are you sure you want to perform this sensitive action?
+      </p>
+      <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="closeModal('admin-confirm-modal')">Cancel</button>
+        <button class="btn btn-primary" id="admin-confirm-action-btn" style="background:#ef4444; border-color:#dc2626;">Proceed</button>
+      </div>
     </div>
   </div>
 

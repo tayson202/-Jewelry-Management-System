@@ -29,9 +29,32 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     except Exception:
         return False
 
-def create_access_token(subject: Union[str, Any], role: str, expires_delta: timedelta = None) -> str:
+def get_pin_hash(pin: str) -> str:
+    """Secure PBKDF2-HMAC-SHA256 salted hash for 4-6 digit employee security PINs."""
+    salt = os.urandom(16)
+    key = hashlib.pbkdf2_hmac("sha256", pin.encode("utf-8"), salt, 100000)
+    return salt.hex() + "$" + key.hex()
+
+def verify_pin(plain_pin: str, hashed_pin: str) -> bool:
+    try:
+        if not hashed_pin or "$" not in hashed_pin:
+            return False
+        salt_hex, key_hex = hashed_pin.split("$")
+        salt = bytes.fromhex(salt_hex)
+        expected_key = bytes.fromhex(key_hex)
+        new_key = hashlib.pbkdf2_hmac("sha256", plain_pin.encode("utf-8"), salt, 100000)
+        return hmac.compare_digest(expected_key, new_key)
+    except Exception:
+        return False
+
+def create_access_token(
+    subject: Union[str, Any],
+    role: str,
+    expires_delta: timedelta = None,
+    token_version: int = 1
+) -> str:
     """
-    Blueprint Section 1: Signs token using strict HS256 algorithm.
+    Signs token using strict HS256 algorithm with token_version for session revocation.
     """
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -42,7 +65,8 @@ def create_access_token(subject: Union[str, Any], role: str, expires_delta: time
     payload = {
         "exp": int(expire.timestamp()),
         "sub": str(subject),
-        "role": role
+        "role": role,
+        "tv": int(token_version)
     }
 
     header_b64 = _b64url_encode(json.dumps(header, separators=(',', ':')).encode('utf-8'))
