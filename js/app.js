@@ -1,15 +1,15 @@
 /**
- * StockPilot (AURUM OS) - Haute Joaillerie Management System
+ * 3M Dahab OS - Gold & Jewelry Shop Management System
  * Interactive Client Logic, Role-Based Access Control, Real-Time Calculations & USB Scale Simulator
  */
 
 // --- Global State ---
 const state = {
   theme: 'dark',
-  locale: 'en',
+  locale: 'ar',
   userRole: 'ADMIN', // 'ADMIN' or 'EMPLOYEE'
   activeView: 'dashboard',
-  base24kRate: 7160.00,
+  base24kRate: 0.00,
   taxRateOnMaking: 0.14,
   scaleWeight: 0.000,
   cart: [],
@@ -21,145 +21,35 @@ const state = {
   // Role profiles
   users: {
     ADMIN: {
-      name: "Mona Al-Sayed",
-      name_ar: "منى السيد",
-      title: "Shop Owner & Vault Master",
-      title_ar: "مالك المتجر ومدير الخزينة",
-      avatar: "MA",
+      name: "Shop Owner",
+      name_ar: "مالك المتجر والمدير",
+      title: "Master Admin & Vault Custodian",
+      title_ar: "المدير العام وأمين الخزينة",
+      avatar: "3M",
       roleLabel: "ADMIN",
       canViewFinancials: true,
       canUpdateGoldEngine: true
     },
     EMPLOYEE: {
-      name: "Tariq Al-Fahim",
-      name_ar: "طارق الفهيم",
+      name: "Sales Associate",
+      name_ar: "مسؤول المبيعات والمثمن",
       title: "Senior Appraiser / Cashier",
       title_ar: "كبير مثمني الذهب / أمين الصندوق",
-      avatar: "TF",
+      avatar: "SA",
       roleLabel: "EMPLOYEE",
       canViewFinancials: false,
       canUpdateGoldEngine: false
     }
   },
 
-  // Vault Inventory Items matching Figma
-  inventory: [
-    {
-      id: "prod-1",
-      sku: "AUR-7841-SOL",
-      name: "Aethelred Solitaire Royale",
-      name_ar: "خاتم سوليتير أثيلريد الملكي 18 قيراط",
-      category: "rings",
-      karat: "18K",
-      gross_wt: 14.82,
-      stone_tare: 2.72,
-      net_gold: 12.10,
-      making_fee: 450.00,
-      hallmark: "18K • 750 (EPC-E280-0019)",
-      image: "assets/images/diamond_solitaire_ring_1792597878725.jpg",
-      status: "IN_STOCK"
-    },
-    {
-      id: "prod-2",
-      sku: "AUR-9904",
-      name: "Vendôme Floral Choker",
-      name_ar: "طوق فاندوم الزهري عيار 21",
-      category: "necklaces",
-      karat: "21K",
-      gross_wt: 38.40,
-      stone_tare: 0.00,
-      net_gold: 38.40,
-      making_fee: 280.00,
-      hallmark: "21K • 875 EGYPTIAN STANDARD",
-      image: "assets/images/byzantine_gold_choker_1792598803717.jpg",
-      status: "IN_STOCK"
-    },
-    {
-      id: "prod-3",
-      sku: "AUR-7731",
-      name: "Nile Royal Bangle Pair",
-      name_ar: "زوج أساور النيل الملكية عيار 21",
-      category: "bangles",
-      karat: "21K",
-      gross_wt: 54.20,
-      stone_tare: 0.00,
-      net_gold: 54.20,
-      making_fee: 190.00,
-      hallmark: "21K • 875 CAIRO HALLMARK",
-      image: "assets/images/cleopatra_gold_cuff_1792598857432.jpg",
-      status: "IN_STOCK"
-    },
-    {
-      id: "prod-4",
-      sku: "AUR-2401",
-      name: "PAMP Suisse Fine Ingot 50g",
-      name_ar: "سبيكة بامب سويسرا 50 جرام عيار 24",
-      category: "bullion",
-      karat: "24K",
-      gross_wt: 50.00,
-      stone_tare: 0.00,
-      net_gold: 50.00,
-      making_fee: 65.00,
-      hallmark: "999.9 ESSAYEUR FONDEUR",
-      image: "assets/images/gold_bullion_sovereign_1792598760193.jpg",
-      status: "IN_STOCK"
-    },
-    {
-      id: "prod-5",
-      sku: "21K-RN-092",
-      name: "Royal Damascene Ring",
-      name_ar: "خاتم دمشقي أثري منقوش عيار 21",
-      category: "rings",
-      karat: "21K",
-      gross_wt: 6.80,
-      stone_tare: 0.00,
-      net_gold: 6.80,
-      making_fee: 180.00,
-      hallmark: "21K • 875 KHAN EL-KHALILI",
-      image: "assets/images/damascene_gold_ring_1792598690682.jpg",
-      status: "IN_STOCK"
-    },
-    {
-      id: "prod-6",
-      sku: "24K-COIN-08",
-      name: "George Sovereign Bullion",
-      name_ar: "جنيه جورج ذهب إنجليزي عيار 24",
-      category: "bullion",
-      karat: "24K",
-      gross_wt: 8.00,
-      stone_tare: 0.00,
-      net_gold: 8.00,
-      making_fee: 45.00,
-      hallmark: "ROYAL MINT SOVEREIGN 999.9",
-      image: "assets/images/gold_bullion_sovereign_1792598760193.jpg",
-      status: "IN_STOCK"
-    }
-  ],
+  // Vault Inventory Items (starts empty for clean fresh shop)
+  inventory: [],
 
-  // Live Audit Logs
-  auditLogs: [
-    {
-      timestamp: "2026-10-21 20:30 UTC",
-      user: "Mona Al-Sayed",
-      action: "RECALIBRATE_GOLD_RATES",
-      entity: "GoldPrice",
-      details: "Master 24K spot rate set to 3,420.00 EGP/g"
-    },
-    {
-      timestamp: "2026-10-21 20:15 UTC",
-      user: "Tariq Al-Fahim",
-      action: "COMPLETE_SALE",
-      entity: "Sale (INV-2026-1082)",
-      details: "Issued invoice for 45,951.76 EGP with scrap deduction"
-    },
-    {
-      timestamp: "2026-10-21 19:40 UTC",
-      user: "Mona Al-Sayed",
-      action: "BULK_REPRICE",
-      entity: "Inventory",
-      details: "Recalculated valuation for 3,842 jewelry pieces"
-    }
-  ]
+  // Live Sales Transactions
+  sales: [],
+
+  // Live Audit Logs (starts empty for clean fresh shop)
+  auditLogs: []
 };
 
 // --- Karat Ratios ---
@@ -862,11 +752,14 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSearch();
   setupModals();
   applyRolePermissions();
+  renderDashboard();
   renderInventoryTable();
   renderPOSCatalog();
   renderAuditTable();
   updateCartUI();
   updateTickerDisplay();
+  checkSetupWizardStatus();
+  loadLiveProducts();
   const screen = document.getElementById('gold-market-screen');
   const overlay = document.getElementById('gold-popup-overlay');
   if (screen && screen.classList.contains('active')) {
@@ -967,8 +860,7 @@ function applyRolePermissions() {
   const marginValEl = document.getElementById('metric-margin-val');
 
   if (state.userRole === 'ADMIN') {
-    if (vaultValEl) vaultValEl.innerHTML = '42,650,800 <small>EGP</small>';
-    if (marginValEl) marginValEl.innerHTML = '86,400 <small>EGP</small>';
+    renderDashboard();
   } else {
     // Mask sensitive financial cards for Employee
     if (vaultValEl) vaultValEl.innerHTML = '<span class="confidential-badge">🔒 CONFIDENTIAL [ADMIN]</span>';
@@ -980,11 +872,11 @@ function applyRolePermissions() {
   const dashSub = document.getElementById('dash-greeting-subtitle');
 
   if (state.userRole === 'ADMIN') {
-    if (dashTitle) dashTitle.innerText = isAr ? "لوحة المالك والمدير العام • خزينة ميزون دور" : "Maison D'Or Atelier Overview";
-    if (dashSub) dashSub.innerText = isAr ? "تقييم الخزينة في الوقت الفعلي، تسوية مصوغات الذهب وأرباح المصنعية IFRS." : "Real-time appraisal, automated assay reconciliation, and high-frequency bullion trading matrix.";
+    if (dashTitle) dashTitle.innerText = isAr ? "نظرة عامة على ورشة ومتجر 3M Dahab" : "3M Dahab Atelier Overview";
+    if (dashSub) dashSub.innerText = isAr ? "تقييم الخزينة الفعلي، تسوية مصوغات الذهب وأرباح المصنعية المعتمدة." : "Real-time appraisal, automated assay reconciliation, and certified gold trading matrix.";
   } else {
     if (dashTitle) dashTitle.innerText = isAr ? "كاونتر المبيعات ونقطة البيع • الوردية النشطة" : "POS Counter Terminal & Floor Registry";
-    if (dashSub) dashSub.innerText = isAr ? "محطة الصندوق رقم 04 • تفعيل الميزان الإلكتروني وفحص كسر الذهب وإصدار الفواتير." : "Cashier Workstation #04 • Ready for live customer transactions, digital scale weighing & scrap trade-ins.";
+    if (dashSub) dashSub.innerText = isAr ? "محطة الصندوق رقم 01 • تفعيل الميزان الإلكتروني وفحص كسر الذهب وإصدار الفواتير." : "Cashier Workstation #01 • Ready for live customer transactions, digital scale weighing & scrap trade-ins.";
   }
 
   // Gold Engine Permissions
@@ -1057,6 +949,18 @@ window.switchToView = function(viewName) {
     if (viewName === 'admin') {
       if (typeof window.loadAdminOverview === 'function') {
         window.loadAdminOverview();
+      }
+    } else if (viewName === 'dashboard') {
+      if (typeof window.renderDashboard === 'function') {
+        window.renderDashboard();
+      }
+    } else if (viewName === 'employees') {
+      if (typeof window.renderStaffTable === 'function') {
+        window.renderStaffTable();
+      }
+    } else if (viewName === 'inventory') {
+      if (typeof window.renderInventoryTable === 'function') {
+        window.renderInventoryTable();
       }
     }
   }
@@ -1847,107 +1751,8 @@ window.MarketFeedEngine = {
   consecutiveErrors: 0,
   previousSnapshot: null,
 
-  // Initialized with verified live quotes from Daleelak API v1 (never null, zero blank screen)
-  lastValidSnapshot: {
-    status: 'live',
-    provider: 'Daleelak (getdaleelak.com)',
-    provider_url: 'https://getdaleelak.com/ar/api',
-    generated_at: new Date().toISOString(),
-    observed_at: new Date().toISOString(),
-    retrieved_at: new Date().toISOString(),
-    currency: 'EGP',
-    karats: {
-      '21K': {
-        karat: '21K',
-        purity: '87.5% (875)',
-        sell_price: 6266.10,
-        buy_price: 6250.00,
-        spread: 16.10,
-        source: 'getdaleelak.com',
-        best_seller: 'BTC / Gold Bullion EG',
-        observed_at: new Date().toISOString(),
-        is_indicative: false,
-        movement: { change_egp: 16.10, change_pct: 0.26, direction: 'up' }
-      },
-      '24K': {
-        karat: '24K',
-        purity: '99.9% (1000)',
-        sell_price: 7160.39,
-        buy_price: 7143.00,
-        spread: 17.39,
-        source: 'getdaleelak.com',
-        best_seller: 'BTC / Gold Bullion EG',
-        observed_at: new Date().toISOString(),
-        is_indicative: false,
-        movement: { change_egp: 17.39, change_pct: 0.24, direction: 'up' }
-      },
-      '18K': {
-        karat: '18K',
-        purity: '75.0% (750)',
-        sell_price: 5374.00,
-        buy_price: 5357.00,
-        spread: 17.00,
-        source: 'getdaleelak.com',
-        best_seller: 'Gold Bullion EG',
-        observed_at: new Date().toISOString(),
-        is_indicative: false,
-        movement: { change_egp: 17.00, change_pct: 0.32, direction: 'up' }
-      },
-      '22K': {
-        karat: '22K',
-        purity: '91.6% (916)',
-        sell_price: 6563.69,
-        buy_price: 6547.75,
-        spread: 15.94,
-        source: 'Indicative Benchmark (عيار استرشادي)',
-        best_seller: 'Standard Assay Ratio of 24K',
-        observed_at: new Date().toISOString(),
-        is_indicative: true,
-        movement: { change_egp: 0, change_pct: 0, direction: 'flat' }
-      },
-      '14K': {
-        karat: '14K',
-        purity: '58.3% (583)',
-        sell_price: 4176.89,
-        buy_price: 4166.75,
-        spread: 10.14,
-        source: 'Indicative Benchmark (عيار استرشادي)',
-        best_seller: 'Standard Assay Ratio of 24K',
-        observed_at: new Date().toISOString(),
-        is_indicative: true,
-        movement: { change_egp: 0, change_pct: 0, direction: 'flat' }
-      },
-      '12K': {
-        karat: '12K',
-        purity: '50.0% (500)',
-        sell_price: 3580.20,
-        buy_price: 3571.50,
-        spread: 8.70,
-        source: 'Indicative Benchmark (عيار استرشادي)',
-        best_seller: 'Standard Assay Ratio of 24K',
-        observed_at: new Date().toISOString(),
-        is_indicative: true,
-        movement: { change_egp: 0, change_pct: 0, direction: 'flat' }
-      }
-    },
-    gold_pound: {
-      sell_price: 50160,
-      buy_price: 50000,
-      weight_g: 8.00,
-      karat: '21K'
-    },
-    dealers: [
-      { seller: "BTC", seller_ar: "بي تي سي BTC", karat: "21K", buy: 6197.40, sell: 6266.10, spread: 68.70 },
-      { seller: "Gold Bullion EG", seller_ar: "جولد بيليون Gold Bullion", karat: "21K", buy: 6250.00, sell: 6270.00, spread: 20.00 },
-      { seller: "eDahab", seller_ar: "eDahab", karat: "21K", buy: 6250.00, sell: 6270.00, spread: 20.00 },
-      { seller: "Goldady", seller_ar: "جولدادي Goldady", karat: "21K", buy: 6240.48, sell: 6303.05, spread: 62.57 },
-      { seller: "iSagha", seller_ar: "آي صاغة iSagha", karat: "21K", buy: 6235.00, sell: 6285.00, spread: 50.00 }
-    ],
-    indicators: {
-      usd_egp: 55.27,
-      global_xau_usd: 2740.50
-    }
-  },
+  // Holds only verified live quotes from configured market feed (never fake prices)
+  lastValidSnapshot: null,
 
   init() {
     // 1. Automatically launch the full-screen Egyptian gold market pop screen
@@ -2378,14 +2183,67 @@ window.MarketFeedEngine = {
 
   renderUI() {
     const snap = this.lastValidSnapshot;
-    if (!snap) return;
-
     const isAr = state.locale === 'ar';
     const t = I18N[state.locale] || I18N['en'];
 
-    // 1. Status Pill
     const pill = document.getElementById('gmd-status-pill');
     const pillText = document.getElementById('gmd-status-text');
+    const container = document.getElementById('gmd-karats-container');
+    const floatingPillRate = document.getElementById('floating-market-pill-rate');
+
+    if (!snap || !snap.karats || Object.keys(snap.karats).length === 0 || snap.status === 'offline') {
+      if (pill) {
+        pill.className = 'gmd-status-pill stale';
+        if (pillText) pillText.innerText = isAr ? '⚠️ مزود الأسعار غير متصل • يرجى التهيئة' : '⚠️ Feed Offline • Unconfigured';
+      }
+      if (floatingPillRate) {
+        floatingPillRate.innerText = isAr ? 'غير متصل' : 'Offline';
+      }
+      if (container) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; background: var(--bg-surface-subtle); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); padding: 3rem 1.5rem; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📡</div>
+            <h3 style="color: var(--gold-primary); font-family: var(--font-heading); margin-bottom: 0.5rem;">
+              ${isAr ? 'بورصة الذهب قيد التهيئة • لا توجد بيانات سوق متصلة' : 'Gold Market Feed Offline / Unconfigured'}
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 520px; margin: 0 auto 1.5rem auto;">
+              ${isAr 
+                ? 'لم يتم استلام أسعار لحظية معتمدة من المزود. لن يتم عرض أسعار تقديرية أو وهمية حفاظاً على دقة التقييم والتسعير.' 
+                : 'No verified live prices received from market provider. Simulated or fake prices are disabled to prevent transaction appraisal errors.'}
+            </p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="closeMarketScreen(); switchToView('admin'); switchAdminTab('apikeys');" style="padding: 0.65rem 1.25rem;">
+                ⚙ ${isAr ? 'تهيئة مزود الأسعار في لوحة الإدارة' : 'Configure Provider in Admin'}
+              </button>
+              <button class="btn btn-secondary" onclick="refreshMarketFeedNow()" style="padding: 0.65rem 1.25rem;">
+                🔄 ${isAr ? 'إعادة المحاولة الآن' : 'Retry Now'}
+              </button>
+            </div>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    // Update floating pill with live 24K price
+    if (floatingPillRate && snap.karats && snap.karats['24K']) {
+      floatingPillRate.innerText = `${snap.karats['24K'].sell_price.toLocaleString()} ${isAr ? 'ج.م' : 'EGP'}`;
+    }
+
+    // Update global 24K base rate for retail appraisals
+    if (snap.karats && snap.karats['24K'] && snap.karats['24K'].sell_price > 0) {
+      state.base24kRate = snap.karats['24K'].sell_price;
+    }
+
+    // Update top header tickers with verified prices
+    const tick24 = document.getElementById('ticker-24k');
+    const tick21 = document.getElementById('ticker-21k');
+    const tick18 = document.getElementById('ticker-18k');
+    if (tick24 && snap.karats['24K']) tick24.innerText = `${snap.karats['24K'].sell_price.toLocaleString()} EGP/g`;
+    if (tick21 && snap.karats['21K']) tick21.innerText = `${snap.karats['21K'].sell_price.toLocaleString()} EGP/g`;
+    if (tick18 && snap.karats['18K']) tick18.innerText = `${snap.karats['18K'].sell_price.toLocaleString()} EGP/g`;
+
+    // 1. Status Pill
     if (pill && pillText) {
       pill.className = `gmd-status-pill ${snap.status}`;
       if (snap.status === 'live') {
@@ -2840,26 +2698,471 @@ async function getAdminToken() {
     adminBearerToken = stored;
     return adminBearerToken;
   }
+  return null;
+}
+
+window.openAdminLoginModal = function() {
+  const modal = document.getElementById('admin-login-modal');
+  if (modal) modal.classList.add('active');
+};
+
+window.handleAdminLoginSubmit = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('admin-login-error');
+  const btn = document.getElementById('admin-login-submit-btn');
+  const email = document.getElementById('admin-login-email')?.value.trim();
+  const password = document.getElementById('admin-login-password')?.value;
+
+  if (errEl) { errEl.style.display = 'none'; errEl.innerText = ''; }
+  if (btn) { btn.disabled = true; btn.innerText = 'Signing In...'; }
+
   try {
     const formData = new URLSearchParams();
-    formData.append('username', 'admin@stockpilot.com');
-    formData.append('password', 'admin123456');
+    formData.append('username', email);
+    formData.append('password', password);
+
     const res = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData
     });
-    if (res.ok) {
-      const data = await res.json();
-      adminBearerToken = data.access_token;
-      sessionStorage.setItem('aurum_admin_token', adminBearerToken);
-      return adminBearerToken;
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'Invalid admin credentials');
+    }
+
+    const data = await res.json();
+    adminBearerToken = data.access_token;
+    sessionStorage.setItem('aurum_admin_token', adminBearerToken);
+
+    closeModal('admin-login-modal');
+    showToast(state.locale === 'ar' ? 'تم تسجيل دخول المدير بنجاح' : 'Admin signed in successfully', 'success', '👑');
+    switchToView('admin');
+    if (typeof window.switchAdminTab === 'function') window.switchAdminTab('overview');
+  } catch (err) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerText = err.message || 'Authentication failed';
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerText = 'Sign In as Admin ➔'; }
+  }
+};
+
+// --- First-Time Setup Wizard Client Controller ---
+window.checkSetupWizardStatus = async function() {
+  try {
+    const res = await fetch('/api/v1/setup/status');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // If no admin exists in the system, show setup wizard step 1
+    if (!data.has_admin) {
+      openModal('shop-setup-wizard-modal');
+      showWizardStep(1);
+      return;
+    }
+
+    // If admin exists but shop profile is unconfigured, prompt step 2 if authenticated
+    if (!data.shop_configured) {
+      const token = await getAdminToken();
+      if (token) {
+        openModal('shop-setup-wizard-modal');
+        showWizardStep(2);
+      }
+    }
+
+    // Apply shop profile settings if available
+    if (data.shop_profile) {
+      const p = data.shop_profile;
+      if (p.shop_name) {
+        const titleText = document.getElementById('brand-title-text');
+        const subtitleText = document.getElementById('dash-greeting-title');
+        if (titleText && p.shop_name) titleText.innerHTML = `${p.shop_name.toUpperCase()} <span>OS</span>`;
+        if (subtitleText) subtitleText.innerText = `${p.shop_name} Atelier Overview`;
+      }
     }
   } catch (err) {
-    console.warn("Could not auto-authenticate with backend:", err);
+    console.warn("Could not check setup wizard status:", err);
   }
-  return null;
-}
+};
+
+window.showWizardStep = function(stepNum) {
+  document.querySelectorAll('.wizard-step').forEach((el, idx) => {
+    el.classList.toggle('active', idx + 1 === stepNum);
+    el.classList.toggle('completed', idx + 1 < stepNum);
+  });
+  const p1 = document.getElementById('wizard-panel-admin');
+  const p2 = document.getElementById('wizard-panel-shop');
+  const p3 = document.getElementById('wizard-panel-complete');
+  if (p1) p1.style.display = stepNum === 1 ? 'block' : 'none';
+  if (p2) p2.style.display = stepNum === 2 ? 'block' : 'none';
+  if (p3) p3.style.display = stepNum === 3 ? 'block' : 'none';
+};
+
+window.handleWizardAdminSubmit = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('wizard-admin-error');
+  const btn = document.getElementById('wizard-btn-admin-submit');
+  const fullname = document.getElementById('wizard-admin-fullname')?.value.trim();
+  const email = document.getElementById('wizard-admin-email')?.value.trim();
+  const password = document.getElementById('wizard-admin-password')?.value;
+  const confirm = document.getElementById('wizard-admin-confirm')?.value;
+  const pin = document.getElementById('wizard-admin-pin')?.value.trim();
+
+  if (errEl) { errEl.style.display = 'none'; errEl.innerText = ''; }
+
+  if (password !== confirm) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerText = state.locale === 'ar' ? 'كلمات المرور غير متطابقة' : 'Passwords do not match';
+    }
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.innerText = 'Creating Admin...'; }
+
+  try {
+    const res = await fetch('/api/v1/setup/init-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        full_name: fullname,
+        email: email,
+        password: password,
+        pin: pin || null
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'Could not initialize admin account');
+    }
+
+    // Auto-authenticate with the newly created admin account
+    const formData = new URLSearchParams();
+    formData.append('username', email);
+    formData.append('password', password);
+
+    const loginRes = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData
+    });
+
+    if (loginRes.ok) {
+      const loginData = await loginRes.json();
+      adminBearerToken = loginData.access_token;
+      sessionStorage.setItem('aurum_admin_token', adminBearerToken);
+    }
+
+    state.users.ADMIN.name = fullname;
+    applyRolePermissions();
+    showToast(state.locale === 'ar' ? 'تم إنشاء حساب المالك بنجاح' : 'Admin created successfully', 'success', '👑');
+    showWizardStep(2);
+  } catch (err) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerText = err.message || 'Setup error';
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerText = 'Save & Continue to Shop Profile ➔'; }
+  }
+};
+
+window.handleWizardShopSubmit = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('wizard-shop-error');
+  const btn = document.getElementById('wizard-btn-shop-submit');
+  const shopName = document.getElementById('wizard-shop-name')?.value.trim();
+  const shopPhone = document.getElementById('wizard-shop-phone')?.value.trim();
+  const shopAddress = document.getElementById('wizard-shop-address')?.value.trim();
+  const displayLang = document.getElementById('wizard-shop-language')?.value || 'ar';
+  const goldProvider = document.getElementById('wizard-shop-gold-provider')?.value || 'getdaleelak.com';
+  const apiEndpoint = document.getElementById('wizard-shop-api-endpoint')?.value.trim();
+
+  if (errEl) { errEl.style.display = 'none'; errEl.innerText = ''; }
+  if (btn) { btn.disabled = true; btn.innerText = 'Applying Profile...'; }
+
+  try {
+    const token = await getAdminToken();
+    const res = await fetch('/api/v1/setup/shop-profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      body: JSON.stringify({
+        shop_name: shopName,
+        shop_phone: shopPhone || null,
+        shop_address: shopAddress || null,
+        default_currency: 'EGP',
+        display_language: displayLang,
+        timezone: 'Africa/Cairo',
+        gold_provider: goldProvider,
+        api_endpoint: apiEndpoint || null
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'Could not save shop profile');
+    }
+
+    // Set locale if chosen
+    if (state.locale !== displayLang) {
+      state.locale = displayLang;
+      document.documentElement.lang = displayLang;
+      document.documentElement.dir = displayLang === 'ar' ? 'rtl' : 'ltr';
+    }
+
+    const titleText = document.getElementById('brand-title-text');
+    const subtitleText = document.getElementById('dash-greeting-title');
+    if (titleText && shopName) titleText.innerHTML = `${shopName.toUpperCase()} <span>OS</span>`;
+    if (subtitleText && shopName) subtitleText.innerText = `${shopName} Atelier Overview`;
+
+    showToast(state.locale === 'ar' ? 'تم حفظ إعدادات المتجر بنجاح' : 'Shop profile saved', 'success', '🚀');
+    showWizardStep(3);
+  } catch (err) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerText = err.message || 'Setup error';
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerText = 'Complete Setup & Launch Shop 🚀'; }
+  }
+};
+
+window.toggleWizardApiEndpoint = function(val) {
+  const grp = document.getElementById('wizard-api-endpoint-group');
+  if (grp) grp.style.display = val === 'manual' ? 'none' : 'block';
+};
+
+window.closeWizardAndOpenAddProduct = function() {
+  closeModal('shop-setup-wizard-modal');
+  openAddProductModal();
+};
+
+window.closeWizardAndOpenAddStaff = function() {
+  closeModal('shop-setup-wizard-modal');
+  openStaffModal();
+};
+
+window.closeWizardAndOpenMarketScreen = function() {
+  closeModal('shop-setup-wizard-modal');
+  openMarketScreen();
+};
+
+window.openAddProductModal = function() {
+  openNewPieceModal();
+};
+
+// --- Dynamic Dashboard & Real Empty State Renderer ---
+window.renderDashboard = function() {
+  const isAr = state.locale === 'ar';
+  const vaultValEl = document.getElementById('metric-vault-val');
+  const marginValEl = document.getElementById('metric-margin-val');
+  const weightsEl = document.getElementById('metric-vault-weights');
+  const salesValEl = document.getElementById('metric-sales-val');
+  const salesCountEl = document.getElementById('metric-sales-count');
+  const piecesValEl = document.getElementById('metric-active-pieces-val');
+  const piecesSubEl = document.getElementById('metric-active-pieces-sub');
+  const vaultCountBadge = document.getElementById('dash-vault-count-badge');
+
+  let totalVal = 0;
+  let totalNetGold = 0;
+  let totalStoneTare = 0;
+
+  state.inventory.forEach(item => {
+    totalVal += getItemPrice(item);
+    totalNetGold += (item.net_gold || 0);
+    totalStoneTare += (item.stone_tare || 0);
+  });
+
+  if (state.userRole === 'ADMIN') {
+    if (vaultValEl) vaultValEl.innerHTML = totalVal > 0 ? `${totalVal.toLocaleString()} <small>EGP</small>` : '0.00 <small>EGP</small>';
+    if (marginValEl) marginValEl.innerHTML = '0.00 <small>EGP</small>';
+  }
+
+  if (weightsEl) weightsEl.innerHTML = `<span>NW: ${totalNetGold.toFixed(2)}g</span> • <span>Tare: ${totalStoneTare.toFixed(2)}g</span>`;
+  if (salesValEl) salesValEl.innerHTML = '0.00 <small>EGP</small>';
+  if (salesCountEl) salesCountEl.innerText = isAr ? '0 فواتير مكتملة' : '0 Completed Slips';
+  if (piecesValEl) piecesValEl.innerHTML = `${state.inventory.length} <small data-i18n="in_works">${isAr ? 'قطعة' : 'PIECES'}</small>`;
+  if (piecesSubEl) piecesSubEl.innerHTML = `<span>${state.inventory.length > 0 ? (state.inventory.length + (isAr ? ' قطعة بالخزينة' : ' Pieces in Vault')) : (isAr ? 'لا توجد قطع بالخزينة حالياً' : 'No active pieces in inventory')}</span>`;
+  if (vaultCountBadge) vaultCountBadge.innerText = `${state.inventory.length} ${isAr ? 'في الخزينة' : 'in custody'}`;
+
+  // 1. Digital Vault Items Container
+  const vaultContainer = document.getElementById('dash-vault-items-container');
+  if (vaultContainer) {
+    if (state.inventory.length === 0) {
+      vaultContainer.innerHTML = `
+        <div class="empty-state-card">
+          <div class="empty-state-icon">⚜</div>
+          <h4>${isAr ? 'الخزينة الرقمية فارغة' : 'Digital Vault is Empty'}</h4>
+          <p>${isAr ? 'لم يتم إضافة أي مصوغات أو سبائك بالمتجر حتى الآن.' : 'No jewelry pieces or bullion registered in the vault yet.'}</p>
+          <button class="btn btn-primary" onclick="openAddProductModal()" style="margin-top:0.75rem;">
+            ${isAr ? '+ إضافة أول قطعة مصوغة' : '+ Add First Product'}
+          </button>
+        </div>
+      `;
+    } else {
+      vaultContainer.innerHTML = state.inventory.slice(0, 4).map(item => `
+        <div class="cart-item-row" onclick="addToCart('${item.id}')" style="cursor:pointer;">
+          <div>
+            <div style="font-weight:700;">${isAr ? item.name_ar : item.name}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${item.karat} • ${item.gross_wt.toFixed(2)}g GW • ${item.making_fee}/g Fee</div>
+          </div>
+          <div style="font-weight:700; color:var(--gold-primary);">${getItemPrice(item).toLocaleString()} EGP</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // 2. Center Masterpiece Showcase Container
+  const masterContainer = document.getElementById('dash-masterpiece-container');
+  if (masterContainer) {
+    if (state.inventory.length === 0) {
+      masterContainer.innerHTML = `
+        <div class="empty-state-card" style="padding:2.5rem 1rem;">
+          <div class="empty-state-icon">💎</div>
+          <h4>${isAr ? 'منصة عرض القطع الفاخرة' : 'Showroom Masterpiece Showcase'}</h4>
+          <p style="max-width:380px; margin:0 auto 1.25rem auto;">
+            ${isAr ? 'ستظهر هنا أحدث وأفخم المصوغات المسجلة في الخزينة تلقائياً للترويج الفوري بكاونتر المبيعات.' : 'Your premier jewelry pieces will be featured here automatically once registered in the vault.'}
+          </p>
+          <button class="btn btn-secondary" onclick="openAddProductModal()">
+            ${isAr ? 'تسجيل قطعة فاخرة' : 'Register Premier Piece'}
+          </button>
+        </div>
+      `;
+    } else {
+      const topItem = state.inventory[0];
+      const price = getItemPrice(topItem);
+      masterContainer.innerHTML = `
+        <div class="panel-header">
+          <span class="badge" style="background:var(--gold-badge); color:var(--gold-primary); font-size:0.75rem; font-weight:700;">${isAr ? 'القطعة المميزة' : 'FEATURED MASTERPIECE'}</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">SKU: ${topItem.sku}</span>
+        </div>
+        <div class="masterpiece-image-wrap">
+          <img src="${topItem.image || 'assets/images/diamond_solitaire_ring_1792597878725.jpg'}" alt="${topItem.name}">
+        </div>
+        <h2 class="masterpiece-title">${isAr ? topItem.name_ar : topItem.name}</h2>
+        <p class="masterpiece-spec">${topItem.karat} Gold • ${topItem.gross_wt.toFixed(2)}g Gross Weight</p>
+        <button class="btn btn-primary" style="width:100%; padding:0.8rem; margin-top:1rem;" onclick="addToCart('${topItem.id}')">
+          🛒 ${isAr ? 'إدراج في كاونتر المبيعات' : 'Commit to POS Counter'} (${price.toLocaleString()} EGP)
+        </button>
+      `;
+    }
+  }
+
+  // 3. Karat Mix Breakdown Container
+  const karatMixContainer = document.getElementById('dash-karat-mix-container');
+  if (karatMixContainer) {
+    if (state.inventory.length === 0) {
+      karatMixContainer.innerHTML = `
+        <div style="text-align:center; padding:1.5rem; color:var(--text-muted); font-size:0.82rem;">
+          ${isAr ? 'الخزينة فارغة. سيتم حساب توزيع العيارات (24K, 21K, 18K) تلقائياً عند إضافة قطع الذهب.' : 'Vault is empty. Karat breakdown will calculate automatically from inventory.'}
+        </div>
+      `;
+    } else {
+      const weightsByKarat = { '24K': 0, '22K': 0, '21K': 0, '18K': 0, '14K': 0 };
+      let totalAssayed = 0;
+      state.inventory.forEach(i => {
+        if (weightsByKarat[i.karat] !== undefined) {
+          weightsByKarat[i.karat] += (i.net_gold || 0);
+          totalAssayed += (i.net_gold || 0);
+        }
+      });
+      karatMixContainer.innerHTML = `
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">VAULT ASSAYED WEIGHT BY KARAT</div>
+        ${Object.entries(weightsByKarat).filter(([_, w]) => w > 0).map(([k, w]) => {
+          const pct = totalAssayed > 0 ? Math.round((w / totalAssayed) * 100) : 0;
+          return `
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem;">
+              <span>● ${k} Assayed</span>
+              <strong>${pct}% (${w.toFixed(2)}g)</strong>
+            </div>
+          `;
+        }).join('')}
+      `;
+    }
+  }
+
+  // 4. Live Operations Container
+  const liveOpsContainer = document.getElementById('dash-live-ops-container');
+  if (liveOpsContainer) {
+    liveOpsContainer.innerHTML = `
+      <div style="text-align:center; padding:1rem; color:var(--text-muted); font-size:0.8rem;">
+        ${isAr ? 'لا توجد حركات بيع أو توريد مسجلة حتى الآن.' : 'No POS sales or vault operations recorded yet.'}
+      </div>
+    `;
+  }
+};
+
+// --- Staff Table Renderer ---
+window.renderStaffTable = async function() {
+  const tbody = document.getElementById('employees-table-tbody');
+  if (!tbody) return;
+
+  const isAr = state.locale === 'ar';
+  try {
+    const res = await adminApiFetch('/employees');
+    if (!res.ok) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">${isAr ? 'يرجى تسجيل الدخول بحساب المدير لعرض الموظفين.' : 'Please authenticate as Admin to view staff accounts.'}</td></tr>`;
+      return;
+    }
+    const staff = await res.json();
+    if (staff.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">${isAr ? 'لا يوجد موظفون مسجلون سوى حساب المدير الرئيسي.' : 'No staff accounts registered. Click "+ Add Staff Account" to create cashiers.'}</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = staff.map(s => `
+      <tr>
+        <td><strong>${s.full_name}</strong></td>
+        <td>${s.email}</td>
+        <td><span style="color:${s.role === 'ADMIN' ? 'var(--gold-primary)' : '#60a5fa'}; font-weight:700;">${s.role === 'ADMIN' ? '👑 ADMIN' : '👤 CASHIER'}</span></td>
+        <td>${s.terminal_assigned || 'Counter Terminal #01'}</td>
+        <td><span class="metric-badge" style="background:${s.is_active ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color:${s.is_active ? 'var(--emerald-live)' : '#ef4444'};">${s.is_active ? 'ACTIVE' : 'DEACTIVATED'}</span></td>
+        <td>${s.role === 'ADMIN' ? 'Full System & Vault Governance' : 'POS Sales & Counter Scale Only'}</td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">${isAr ? 'تعذر تحميل قائمة الموظفين.' : 'Could not retrieve staff list.'}</td></tr>`;
+  }
+};
+
+// --- Live Products Loader ---
+window.loadLiveProducts = async function() {
+  try {
+    const res = await fetch('/api/v1/inventory');
+    if (!res.ok) return;
+    const prods = await res.json();
+    if (Array.isArray(prods) && prods.length > 0) {
+      state.inventory = prods.map(p => ({
+        id: p.id,
+        sku: p.sku,
+        name: p.name,
+        name_ar: p.name_ar || p.name,
+        category: p.category_id || 'rings',
+        karat: p.karat,
+        gross_wt: parseFloat(p.gross_weight || 0),
+        stone_tare: parseFloat(p.stone_tare || 0),
+        net_gold: parseFloat(p.net_gold_weight || (p.gross_weight - p.stone_tare)),
+        making_fee: parseFloat(p.making_charge_rate || 0),
+        hallmark: p.hallmark_code || `${p.karat} ASSAY CERTIFIED`,
+        image: p.image_url || 'assets/images/diamond_solitaire_ring_1792597878725.jpg',
+        status: p.status || 'IN_STOCK'
+      }));
+    } else {
+      state.inventory = [];
+    }
+    renderInventoryTable();
+    renderPOSCatalog();
+    renderDashboard();
+  } catch (e) {
+    console.warn("Could not load products from API:", e);
+  }
+};
 
 async function adminApiFetch(endpoint, options = {}) {
   const token = await getAdminToken();

@@ -1,7 +1,9 @@
 import json
+import sys
 from decimal import Decimal
 from datetime import datetime, timezone
 from app.core.database import SessionLocal, Base, engine
+from app.core.config import settings
 from app.core.security import get_password_hash, get_pin_hash
 from app.models import (
     User, GoldPrice, Category, Product, Customer, Supplier, Sale,
@@ -10,11 +12,17 @@ from app.models import (
 from app.services.pricing_engine import PricingEngine
 from app.services.license_service import LicenseService
 
-def run_seed():
+def run_seed(force_dev: bool = False):
+    if settings.ENVIRONMENT == "production" and not force_dev:
+        print("[SAFETY ABORT] Refusing to load demo seed data in PRODUCTION environment!")
+        print("  To initialize a clean production shop, use: python -m app.init_production")
+        print("  If you strictly intend to seed development demo data, pass --force-dev")
+        return
+
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
-    print("[+] Seeding StockPilot / AURUM OS database...")
+    print("[+] Seeding 3M Dahab OS development database...")
 
     # Clear existing tables
     db.query(TradeInItem).delete()
@@ -346,4 +354,5 @@ def run_seed():
     db.close()
 
 if __name__ == "__main__":
-    run_seed()
+    force = "--force-dev" in sys.argv
+    run_seed(force_dev=force)

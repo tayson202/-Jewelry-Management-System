@@ -1,13 +1,15 @@
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from typing import List
 from decimal import Decimal
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "StockPilot - Gold & Jewelry Management System (AURUM OS)"
+    PROJECT_NAME: str = "3M Dahab OS"
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = "AURUM_SECRET_KEY_CHANGE_IN_PRODUCTION_999_9"
+    SECRET_KEY: str = "3M_DAHAB_OS_SECRET_KEY_CHANGE_IN_PRODUCTION_SECURE_99"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+    ENVIRONMENT: str = "production"  # "development", "staging", "production"
 
     # Database: Default SQLite for local standalone execution, easily overridden by POSTGRES_URL in .env
     DATABASE_URL: str = "sqlite:///./stockpilot.db"
@@ -20,8 +22,11 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="allow"
+    )
 
 settings = Settings()
+

@@ -9,6 +9,7 @@ from app.api.v1.inventory import router as inventory_router
 from app.api.v1.pos import router as pos_router
 from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.admin import router as admin_router
+from app.api.v1.setup import router as setup_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="StockPilot (AURUM OS) - Haute Joaillerie Point of Sale and Bullion Vault Management System",
+    description="3M Dahab OS - Point of Sale and Gold & Jewelry Management System",
     version="1.0.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
@@ -63,11 +64,12 @@ app.include_router(inventory_router, prefix=settings.API_V1_STR)
 app.include_router(pos_router, prefix=settings.API_V1_STR)
 app.include_router(dashboard_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)
+app.include_router(setup_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():
     return {
-        "system": "StockPilot (AURUM OS) - Haute Joaillerie Management System",
+        "system": "3M Dahab OS - Gold & Jewelry Management System",
         "version": "1.0.0",
         "docs": f"{settings.API_V1_STR}/docs",
         "status": "operational"

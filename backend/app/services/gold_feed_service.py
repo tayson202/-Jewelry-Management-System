@@ -39,7 +39,7 @@ class GoldFeedService:
         now_utc = datetime.now(timezone.utc)
         headers = {
             "Accept": "application/json",
-            "User-Agent": "3M-Dahab-JewelryOS/1.0 (Egyptian Gold Market Monitor)"
+            "User-Agent": "3M-Dahab-OS/1.0 (Egyptian Gold Market Monitor)"
         }
         if _FEED_CACHE["etag"]:
             headers["If-None-Match"] = _FEED_CACHE["etag"]
@@ -327,30 +327,19 @@ class GoldFeedService:
         """Provides graceful fallback values when internet is completely disconnected on startup"""
         return {
             "status": "offline",
-            "provider": "Offline Vault Engine",
-            "provider_url": "https://getdaleelak.com/ar/api",
-            "license": "Free to use",
-            "attribution": "المنظومة تعمل في الوضع غير المتصل (سجلات الخزينة المحفوظة)",
-            "generated_at": now_utc.isoformat(),
-            "observed_at": now_utc.isoformat(),
+            "provider": "Unverified (Offline)",
+            "provider_url": "",
+            "license": "",
+            "attribution": "المنظومة غير متصلة بالإنترنت حالياً ولا توجد بيانات أسعار معتمدة مؤقتة.",
+            "warning": "تعذر جلب أسعار الذهب اللحظية. يرجى التحقق من اتصال الإنترنت أو إعداد مزود الأسعار من لوحة الإدارة.",
+            "generated_at": None,
+            "observed_at": None,
             "retrieved_at": now_utc.isoformat(),
             "currency": "EGP",
-            "karats": {
-                "24K": {"karat": "24K", "purity_pct": 99.9, "sell_price": 7143.0, "buy_price": 7081.0, "spread": 62.0, "source": "OFFLINE_CACHE", "best_seller": "Egyptian Sagha Standard", "observed_at": now_utc.isoformat(), "is_indicative": False, "movement": {"change_egp": 0.0, "change_pct": 0.0, "direction": "flat"}},
-                "22K": {"karat": "22K", "purity_pct": 91.6, "sell_price": 6548.0, "buy_price": 6491.0, "spread": 57.0, "source": "Indicative Benchmark", "best_seller": "Derived from 24K", "observed_at": now_utc.isoformat(), "is_indicative": True, "movement": {"change_egp": 0.0, "change_pct": 0.0, "direction": "flat"}},
-                "21K": {"karat": "21K", "purity_pct": 87.5, "sell_price": 6250.0, "buy_price": 6230.0, "spread": 20.0, "source": "OFFLINE_CACHE", "best_seller": "Egyptian Sagha Standard", "observed_at": now_utc.isoformat(), "is_indicative": False, "movement": {"change_egp": 0.0, "change_pct": 0.0, "direction": "flat"}},
-                "18K": {"karat": "18K", "purity_pct": 75.0, "sell_price": 5357.0, "buy_price": 5340.0, "spread": 17.0, "source": "OFFLINE_CACHE", "best_seller": "Egyptian Sagha Standard", "observed_at": now_utc.isoformat(), "is_indicative": False, "movement": {"change_egp": 0.0, "change_pct": 0.0, "direction": "flat"}},
-                "14K": {"karat": "14K", "purity_pct": 58.3, "sell_price": 4167.0, "buy_price": 4130.0, "spread": 37.0, "source": "Indicative Benchmark", "best_seller": "Derived from 24K", "observed_at": now_utc.isoformat(), "is_indicative": True, "movement": {"change_egp": 0.0, "change_pct": 0.0, "direction": "flat"}},
-                "12K": {"karat": "12K", "purity_pct": 50.0, "sell_price": 3571.0, "buy_price": 3540.0, "spread": 31.0, "source": "Indicative Benchmark", "best_seller": "Derived from 24K", "observed_at": now_utc.isoformat(), "is_indicative": True, "movement": {"change_egp": 0.0, "change_pct": 0.0, "direction": "flat"}}
-            },
-            "gold_pound": {
-                "name": "Gold Sovereign / Egyptian Gold Pound",
-                "name_ar": "جنيه الذهب المصري (8 جرام عيار 21)",
-                "sell_price": 50000.0,
-                "buy_price": 49840.0,
-                "weight_g": 8.00,
-                "karat": "21K"
-            },
+            "is_stale": True,
+            "karats": {},
+            "gold_pound": None,
             "dealers": [],
-            "indicators": {"usd_egp": 55.30, "global_xau_usd": 2740.0}
+            "indicators": {}
         }
+

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from decimal import Decimal
@@ -39,8 +39,7 @@ class UserResponse(BaseModel):
     last_login_at: Optional[datetime] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Gold Pricing Schemas ---
 class RecalibrateRequest(BaseModel):
@@ -104,8 +103,7 @@ class ProductResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- POS & Sales Schemas ---
 class POSCartItemInput(BaseModel):
@@ -145,8 +143,7 @@ class SaleItemResponse(BaseModel):
     making_charge_snapshot: float
     item_total: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SaleResponse(BaseModel):
     id: str
@@ -166,8 +163,7 @@ class SaleResponse(BaseModel):
     created_at: datetime
     items: List[SaleItemResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Dashboard Schemas ---
 class DashboardMetricsResponse(BaseModel):
@@ -244,8 +240,7 @@ class ApiKeyConfigResponse(BaseModel):
     validation_status: str
     last_error_message: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ApiKeyUpdateRequest(BaseModel):
     provider_name: str

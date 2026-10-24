@@ -90,14 +90,22 @@ def recalibrate_global_rate(
     return get_current_rates(db)
 
 @router.get("/history")
-def get_gold_price_history():
-    """Returns 21K Sagha trend points matching the Figma chart (May 01 to Now)"""
+def get_gold_price_history(db: Session = Depends(get_db)):
+    """Returns actual recorded gold spot rate trend points from the database."""
+    records = db.query(GoldPrice).filter(
+        GoldPrice.karat == "21K"
+    ).order_by(GoldPrice.effective_at.desc()).limit(15).all()
+
+    if not records:
+        return []
+
     return [
-        {"date": "May 01", "label": "May 01 (2,810 EGP)", "price": 2810.00},
-        {"date": "May 08", "label": "May 08 (2,845 EGP)", "price": 2845.00},
-        {"date": "May 15", "label": "May 15 (2,830 EGP)", "price": 2830.00},
-        {"date": "May 22", "label": "May 22 (2,890 EGP)", "price": 2890.00},
-        {"date": "Now", "label": "Now (2,992.50 EGP)", "price": 2992.50}
+        {
+            "date": p.effective_at.strftime("%b %d") if p.effective_at else "Recent",
+            "label": f"{p.effective_at.strftime('%b %d') if p.effective_at else 'Spot'} ({float(p.price_per_gram):,.2f} EGP)",
+            "price": float(p.price_per_gram)
+        }
+        for p in reversed(records)
     ]
 
 @router.get("/live-feed")
