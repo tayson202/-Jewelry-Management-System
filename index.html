@@ -13,10 +13,13 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="gold-popup-open">
+
+  <!-- ==================== GOLD PRICES POPUP OVERLAY BACKDROP ==================== -->
+  <div id="gold-popup-overlay" class="gold-popup-overlay active" onclick="closeMarketScreen()" aria-hidden="true"></div>
 
   <!-- ==================== FULL-SCREEN EGYPTIAN GOLD MARKET PRICES DASHBOARD ==================== -->
-  <div id="gold-market-screen" class="gold-market-fullscreen active" role="dialog" aria-label="Egyptian Gold Market Prices Display">
+  <div id="gold-market-screen" class="gold-market-fullscreen gold-popup active" role="dialog" aria-modal="true" aria-label="Egyptian Gold Market Prices Display">
     <!-- Header -->
     <header class="gmd-header">
       <div class="gmd-brand-block">
@@ -55,6 +58,7 @@
         <button class="gmd-btn gmd-btn-primary" id="gmd-btn-enter-dash" title="الانتقال للوحة إدارة الصاغة" onclick="closeMarketScreen()">
           <span data-i18n="gmd_enter_dash">الدخول إلى لوحة إدارة المتجر ➔</span>
         </button>
+        <button class="gmd-btn" id="gmd-btn-close-x" title="إغلاق الشاشة (Close ESC)" onclick="closeMarketScreen()" aria-label="Close" style="padding: 0.5rem 0.8rem; font-size: 1.15rem; line-height: 1; border-color: rgba(239, 68, 68, 0.4); color: #f87171;">✕</button>
       </div>
     </header>
 

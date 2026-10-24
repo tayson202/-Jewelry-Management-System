@@ -867,6 +867,12 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAuditTable();
   updateCartUI();
   updateTickerDisplay();
+  const screen = document.getElementById('gold-market-screen');
+  const overlay = document.getElementById('gold-popup-overlay');
+  if (screen && screen.classList.contains('active')) {
+    document.body.classList.add('gold-popup-open');
+    if (overlay) overlay.classList.add('active');
+  }
   if (window.MarketFeedEngine) {
     MarketFeedEngine.init();
   }
@@ -1765,8 +1771,11 @@ function renderAuditTable() {
 // ==========================================================================
 window.openMarketScreen = function() {
   const screen = document.getElementById('gold-market-screen');
+  const overlay = document.getElementById('gold-popup-overlay');
   if (screen) {
     screen.classList.add('active');
+    if (overlay) overlay.classList.add('active');
+    document.body.classList.add('gold-popup-open');
     MarketFeedEngine.updateClock();
     MarketFeedEngine.startTimers();
   }
@@ -1774,11 +1783,24 @@ window.openMarketScreen = function() {
 
 window.closeMarketScreen = function() {
   const screen = document.getElementById('gold-market-screen');
+  const overlay = document.getElementById('gold-popup-overlay');
   if (screen) {
     screen.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+    document.body.classList.remove('gold-popup-open');
     showToast(state.locale === 'ar' ? 'تم الانتقال إلى لوحة إدارة الصاغة والمخزون' : 'Switched to Jewelry Management Dashboard', 'info', '⚜');
   }
 };
+
+// Keyboard listener: Dismiss Gold Prices Popup on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' || e.key === 'Esc') {
+    const screen = document.getElementById('gold-market-screen');
+    if (screen && screen.classList.contains('active')) {
+      closeMarketScreen();
+    }
+  }
+});
 
 window.toggleHardwareFullscreen = function() {
   if (!document.fullscreenElement) {

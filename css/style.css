@@ -1489,15 +1489,56 @@ body {
 }
 
 /* ==========================================================================
-   13. Full-Screen Egyptian Gold Market Prices Dashboard
+/* ==========================================================================
+   13. Full-Screen Egyptian Gold Market Prices Dashboard & Blur Overlay
    ========================================================================== */
+
+/* Disable background scrolling while gold popup is open */
+body.gold-popup-open {
+  overflow: hidden !important;
+}
+
+/* Semi-transparent dark overlay with strong 16px background blur covering entire viewport */
+.gold-popup-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9998;
+  background: rgba(8, 10, 14, 0.88); /* Baseline fallback for unsupported browsers */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
+}
+
+.gold-popup-overlay.active {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Fallback background color for browsers that do not support backdrop-filter */
+@supports not ((backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px))) {
+  .gold-popup-overlay {
+    background: rgba(8, 10, 14, 0.92) !important;
+  }
+}
+
+/* Keep the Gold Prices Popup completely sharp and clear, elevated above the overlay */
+.gold-popup,
 .gold-market-fullscreen {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 10000;
-  background: radial-gradient(ellipse at 50% 8%, rgba(212, 175, 55, 0.15) 0%, rgba(13, 16, 23, 0.98) 55%, #080a0e 100%);
+  z-index: 9999;
+  background: radial-gradient(ellipse at 50% 8%, rgba(212, 175, 55, 0.12) 0%, rgba(13, 16, 23, 0.96) 50%, rgba(8, 10, 14, 0.98) 100%);
   color: #f3f4f6;
   overflow-y: auto;
   display: flex;
@@ -1505,17 +1546,23 @@ body {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
   padding: 1.5rem 2rem;
   box-sizing: border-box;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.gold-market-fullscreen.active {
+.gold-market-fullscreen.active,
+.gold-popup.active {
   display: flex !important;
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
-  z-index: 999999 !important;
+  z-index: 9999 !important;
 }
 
 /* Floating quick access button to open market screen anytime */
@@ -1523,7 +1570,7 @@ body {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  z-index: 9999;
+  z-index: 9990;
   background: rgba(18, 21, 29, 0.95);
   border: 1.5px solid var(--gold-primary, #d4af37);
   color: var(--text-main, #fff);
